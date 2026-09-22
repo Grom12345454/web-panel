@@ -5,35 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}University{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-gradient-to-br {
+            background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+        }
+        .hover\:shadow-lg:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
+    
     {% if session.user_id %}
-    <nav class="bg-white border-b border-slate-200 px-6 py-3 shadow-sm sticky top-0 z-40">
+    <!-- Навигация -->
+    <nav class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-8">
-                <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold text-blue-600">🎓 Воспитательная работа</a>
-                <a href="{{ url_for('admin.dashboard') }}" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition">Дашборд</a>
-                <a href="{{ url_for('directions.directions_list') }}" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition">Направления</a>
-                <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition">Квоты</a>
+                <a href="{{ url_for('admin.dashboard') }}" 
+                   class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    🎓 Воспитательная работа
+                </a>
+                
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="{{ url_for('admin.dashboard') }}" 
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition">
+                        📊 Дашборд
+                    </a>
+                    <a href="{{ url_for('admin.students_list') }}" 
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition">
+                        👥 Студенты
+                    </a>
+                    <a href="{{ url_for('directions.directions_list') }}" 
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition">
+                        🎯 Направления
+                    </a>
+                    <a href="{{ url_for('quotas.quotas_list') }}" 
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition">
+                        📅 Мероприятия
+                    </a>
+                </div>
             </div>
-            <a href="{{ url_for('auth.logout') }}" class="text-sm font-medium text-red-500 hover:text-red-600 transition">Выйти</a>
+            
+            <div class="flex items-center gap-4">
+                <a href="{{ url_for('auth.logout') }}" 
+                   class="text-sm font-medium text-red-500 hover:text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg transition">
+                    Выйти
+                </a>
+            </div>
         </div>
     </nav>
     {% endif %}
-    
+
+    <!-- Основной контент -->
     <main class="py-6">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Уведомления -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="fixed bottom-4 right-4 space-y-2 z-50">
         {% for cat, msg in messages %}
-        <div class="bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-lg shadow-lg text-sm flash-msg">{{ msg }}</div>
+        <div class="bg-slate-800 border border-slate-700 text-white px-6 py-4 rounded-xl shadow-lg text-sm flash-msg max-w-md">
+            <div class="flex items-start gap-3">
+                <span class="text-xl">
+                    {% if cat == 'success' %}✅
+                    {% elif cat == 'danger' %}❌
+                    {% elif cat == 'warning' %}⚠️
+                    {% else %}ℹ️{% endif %}
+                </span>
+                <span>{{ msg }}</span>
+            </div>
+        </div>
         {% endfor %}
     </div>
-    <script>setTimeout(() => document.querySelectorAll('.flash-msg').forEach(e => e.remove()), 3000)</script>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash-msg').forEach(e => {
+                e.style.opacity = '0';
+                e.style.transform = 'translateY(10px)';
+                setTimeout(() => e.remove(), 300);
+            });
+        }, 3000);
+    </script>
     {% endif %}
     {% endwith %}
+
 </body>
 </html>

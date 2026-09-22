@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}{{ direction.name }} | University{% endblock %}
+
+{% block content %}
+<div class="p-6 max-w-7xl mx-auto space-y-8">
+    
+    <!-- Заголовок -->
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex items-start justify-between">
+            <div class="flex items-center gap-4">
+                <div class="text-5xl">{{ direction.icon or '' }}</div>
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2">{{ direction.name }}</h1>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-bold">
+                            {{ direction.code }}
+                        </span>
+                        <span class="text-slate-500">{{ direction.description }}</span>
+                    </div>
+                </div>
+            </div>
+            <a href="{{ url_for('directions.directions_list') }}" 
+               class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
+                <span>←</span>
+                <span>Назад</span>
+            </a>
+        </div>
+        
+        <!-- Статистика направления (без отрядов) -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-100">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-slate-800">{{ direction.students|length }}</p>
+                <p class="text-sm text-slate-500">Всего студентов</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-green-600">
+                    {{ direction.students|selectattr('status', 'equalto', 'active')|list|length }}
+                </p>
+                <p class="text-sm text-slate-500">Активных</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-purple-600">{{ direction.quotas|length }}</p>
+                <p class="text-sm text-slate-500">Мероприятий</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+        <div class="flex flex-wrap gap-3">
+            <button onclick="filterStudents('all')" 
+                    class="filter-btn active px-4 py-2 rounded-lg font-medium transition bg-blue-600 text-white"
+                    data-filter="all">
+                Все ({{ students_by_status['all']|length }})
+            </button>
+            <button onclick="filterStudents('active')" 
+                    class="filter-btn px-4 py-2 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    data-filter="active">
+                Активные ({{ students_by_status['active']|length }})
+            </button>
+            <button onclick="filterStudents('approved')" 
+                    class="filter-btn px-4 py-2 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    data-filter="approved">
+                Одобренные ({{ students_by_status['approved']|length }})
+            </button>
+            <button onclick="filterStudents('pending')" 
+                    class="filter-btn px-4 py-2 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    data-filter="pending">
+                Ожидают ({{ students_by_status['pending']|length }})
+            </button>
+        </div>
+    </div>
+
+    <!-- Список студентов -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        {% if students %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Студент</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Группа / Телефон</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Статус</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Все направления</th>
+                        <th class="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">Действия</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for student in students %}
+                    <tr class="student-row hover:bg-slate-50 transition" data-status="{{ student.status }}">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                                    {{ student.full_name[0] if student.full_name else '?' }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-slate-800">{{ student.full_name }}</p>
+                                    <p class="text-xs text-slate-500">ID: {{ student.id }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if student.group %}
+                            <p class="text-sm font-medium text-slate-700">🎓 {{ student.group }}</p>
+                            {% endif %}
+                            {% if student.phone %}
+                            <p class="text-sm text-slate-600">📱 {{ student.phone }}</p>
+                            {% endif %}
+                            {% if not student.group and not student.phone %}
+                            <span class="text-xs text-slate-400">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if student.status == 'active' %}
+                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">✅ Активен</span>
+                            {% elif student.status == 'approved' %}
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">✓ Одобрен</span>
+                            {% elif student.status == 'pending' %}
+                            <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold">⏳ Ожидает</span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">❌ Отклонен</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-1">
+                                {% for dir in student.directions %}
+                                <span class="px-2 py-1 bg-{{ dir.color or 'slate' }}-100 text-{{ dir.color or 'slate' }}-700 rounded text-xs font-medium">
+                                    {{ dir.icon or '' }} {{ dir.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <form method="POST" 
+                                  action="{{ url_for('directions.remove_student_from_direction', direction_id=direction.id, student_id=student.id) }}"
+                                  onsubmit="return confirm('Удалить студента из этого направления?')">
+                                <button type="submit" 
+                                        class="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg text-sm font-medium transition">
+                                    🗑️ Удалить
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="text-6xl mb-4">👥</div>
+            <p class="text-lg font-medium text-slate-600">В этом направлении пока нет студентов</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+function filterStudents(status) {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === status) {
+            btn.classList.remove('bg-slate-100', 'text-slate-700');
+            btn.classList.add('bg-blue-600', 'text-white');
+        } else {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-slate-100', 'text-slate-700');
+        }
+    });
+    
+    const rows = document.querySelectorAll('.student-row');
+    rows.forEach(row => {
+        if (status === 'all' || row.dataset.status === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+
+{% endblock %}

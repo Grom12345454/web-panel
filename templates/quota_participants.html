@@ -1,46 +1,87 @@
 {% extends "base.html" %}
-{% block title %}{{ quota.event_title }} | Участники{% endblock %}
+{% block title %}Участники: {{ quota.event_title }}{% endblock %}
 {% block content %}
-<div class="p-6 max-w-5xl mx-auto space-y-6">
-    <div class="flex items-center gap-4">
-        <a href="{{ url_for('quotas.quotas_list') }}" class="text-slate-500 hover:text-blue-600 transition">← Назад</a>
-        <div>
-            <h1 class="text-2xl font-bold text-slate-800">{{ quota.event_title }}</h1>
-            <p class="text-sm text-slate-500">{{ quota.event_date.strftime('%d.%m.%Y %H:%M') }} | 🎓 {{ quota.direction.name }}</p>
+<div class="p-6 max-w-5xl mx-auto space-y-8">
+    
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm text-slate-500 hover:text-blue-600 mb-2 inline-block">← Назад</a>
+        <h1 class="text-2xl font-bold text-slate-800">{{ quota.event_title }}</h1>
+        <div class="mt-2 text-sm text-slate-600">
+            {% if quota.location %}📍 {{ quota.location }} | {% endif %}
+            {% if quota.time_range %}🗓 {{ quota.time_range }}{% endif %}
         </div>
     </div>
-    
+
+    {% for day in quota.days %}
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 text-slate-500">
-                <tr><th class="p-4">Студент</th><th class="p-4">Телефон</th><th class="p-4">Статус</th><th class="p-4">Действия</th></tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                {% for p in quota.participants %}
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-4 font-medium text-slate-800">{{ p.student.full_name }}</td>
-                    <td class="p-4 text-slate-500">{{ p.student.phone or '—' }}</td>
-                    <td class="p-4">
-                        {% set badges = {'registered':'bg-blue-50 text-blue-600','attended':'bg-green-50 text-green-600','absent':'bg-red-50 text-red-600','cancelled':'bg-slate-100 text-slate-500'} %}
-                        {% set labels = {'registered':' Записан','attended':'✅ Посетил','absent':'❌ Не явился','cancelled':'⛔ Отменил'} %}
-                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ badges[p.status] }}">{{ labels[p.status] }}</span>
-                    </td>
-                    <td class="p-4">
-                        <div class="flex gap-2">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+            <h2 class="font-bold text-slate-700 flex items-center gap-2">
+                📅 {{ day.date.strftime('%d.%m.%Y') }} 
+                <span class="text-xs font-normal text-slate-500">({{ day.current_count() }} / {{ day.daily_places }} мест)</span>
+            </h2>
+        </div>
+        
+        {% if day.participations %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold">
+                    <tr>
+                        <th class="px-6 py-3">Студент</th>
+                        <th class="px-6 py-3">Группа / Телефон</th>
+                        <th class="px-6 py-3">Статус</th>
+                        <th class="px-6 py-3 text-right">Отметка явки</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for p in day.participations %}
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ p.student.full_name }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-600">
+                            {{ p.student.group or '-' }} <br> {{ p.student.phone or '' }}
+                        </td>
+                        <td class="px-6 py-4">
                             {% if p.status == 'registered' %}
-                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='attended') }}" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs font-medium transition">Посетил</a>
-                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='absent') }}" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-medium transition">Не явился</a>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Записан</span>
                             {% elif p.status == 'attended' %}
-                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='registered') }}" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition">Вернуть</a>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">✅ Был</span>
+                            {% elif p.status == 'absent' %}
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">❌ Не был</span>
+                            {% else %}
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">{{ p.status }}</span>
                             {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="4" class="p-8 text-center text-slate-500">Пока никто не записался</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            {% if p.status != 'attended' %}
+                            <a href="{{ url_for('quotas.mark_day_attendance', participation_id=p.id, new_status='attended') }}" 
+                               class="text-xs bg-green-50 text-green-600 hover:bg-green-100 px-3 py-1.5 rounded-lg font-medium transition">
+                                ✅ Был
+                            </a>
+                            {% endif %}
+                            
+                            {% if p.status != 'absent' %}
+                            <a href="{{ url_for('quotas.mark_day_attendance', participation_id=p.id, new_status='absent') }}" 
+                               class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-medium transition">
+                                ❌ Не был
+                            </a>
+                            {% endif %}
+
+                            {% if p.status != 'cancelled' %}
+                            <a href="{{ url_for('quotas.mark_day_attendance', participation_id=p.id, new_status='cancelled') }}" 
+                               class="text-xs bg-slate-50 text-slate-600 hover:bg-slate-100 px-3 py-1.5 rounded-lg font-medium transition">
+                                Отменить запись
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-slate-500">На этот день пока никто не записался.</div>
+        {% endif %}
     </div>
+    {% endfor %}
+
 </div>
 {% endblock %}

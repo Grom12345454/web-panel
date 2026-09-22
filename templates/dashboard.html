@@ -1,62 +1,175 @@
 {% extends "base.html" %}
+
 {% block title %}Dashboard | University{% endblock %}
+
 {% block content %}
 <div class="p-8 max-w-7xl mx-auto space-y-8">
+    
+    <!-- Заголовок -->
     <div class="flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-slate-800">Панель управления</h1>
-        <button onclick="runDistribute()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition flex items-center gap-2">
-             Запустить автораспределение
+        <div>
+            <h1 class="text-4xl font-bold text-slate-800 mb-2">Панель управления</h1>
+            <p class="text-slate-600">Управление направлениями воспитательной работы</p>
+        </div>
+        <button onclick="runDistribute()" 
+                class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 
+                       text-white px-6 py-3 rounded-xl font-bold shadow-lg transition flex items-center gap-2">
+            <span>🚀</span>
+            <span>Автораспределение</span>
         </button>
     </div>
 
     <!-- Карточки статистики -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <span class="text-2xl">👥</span>
+                </div>
+                <span class="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Всего</span>
+            </div>
             <p class="text-slate-500 text-sm font-medium">Всего студентов</p>
             <p class="text-4xl font-bold text-slate-800 mt-2">{{ stats.total_students }}</p>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <span class="text-2xl">⏳</span>
+                </div>
+                <span class="text-xs font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full">Ожидают</span>
+            </div>
             <p class="text-slate-500 text-sm font-medium">Новые заявки</p>
             <p class="text-4xl font-bold text-amber-500 mt-2">{{ stats.pending_apps }}</p>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <span class="text-2xl">✅</span>
+                </div>
+                <span class="text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">Активны</span>
+            </div>
             <p class="text-slate-500 text-sm font-medium">Зачислено</p>
-            <p class="text-4xl font-bold text-green-500 mt-2">{{ stats.enrolled }}</p>
+            <p class="text-4xl font-bold text-green-500 mt-2">{{ stats.active_participants }}</p>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <span class="text-2xl">🎯</span>
+                </div>
+                <span class="text-xs font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Свободно</span>
+            </div>
             <p class="text-slate-500 text-sm font-medium">Свободные места</p>
-            <p class="text-4xl font-bold text-blue-500 mt-2">{{ stats.free_places }}</p>
+            <p class="text-4xl font-bold text-purple-500 mt-2">{{ stats.free_places }}</p>
         </div>
     </div>
 
-    <!-- Аналитика по направлениям -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h2 class="text-xl font-bold text-slate-800 mb-6">Заполненность направлений</h2>
-        <div class="space-y-4">
-            {% for d in directions %}
-            {% set enrolled = d.students|selectattr('status', 'equalto', 'enrolled')|list|length %}
-            {% set total_quota = d.quotas|map(attribute='total_places')|sum %}
-            {% set pct = (enrolled / total_quota * 100)|round if total_quota > 0 else 0 %}
-            
-            <div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium text-slate-700">{{ d.name }} ({{ d.code }})</span>
-                    <span class="text-slate-500">{{ enrolled }} / {{ total_quota }} ({{ pct }}%)</span>
+    <!-- Направления -->
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">Направления воспитательной работы</h2>
+            <a href="{{ url_for('directions.directions_list') }}" 
+               class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1">
+                Все направления →
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {% for d in direction_stats %}
+            <a href="{{ url_for('directions.direction_detail', direction_id=d.id) }}" 
+               class="group relative overflow-hidden bg-gradient-to-br from-{{ d.color }}-50 to-white 
+                      p-6 rounded-2xl border border-{{ d.color }}-100 hover:border-{{ d.color }}-300 
+                      hover:shadow-lg transition-all duration-300">
+                
+                <!-- Иконка -->
+                <div class="text-4xl mb-3">{{ d.icon }}</div>
+                
+                <!-- Название -->
+                <h3 class="font-bold text-slate-800 mb-2 group-hover:text-{{ d.color }}-600 transition">
+                    {{ d.name }}
+                </h3>
+                
+                <!-- Код -->
+                <span class="inline-block px-2 py-1 bg-{{ d.color }}-100 text-{{ d.color }}-700 
+                             rounded-md text-xs font-medium mb-3">
+                    {{ d.code }}
+                </span>
+                
+                <!-- Статистика -->
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Студентов:</span>
+                        <span class="font-semibold text-slate-700">{{ d.students_count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Активных:</span>
+                        <span class="font-semibold text-green-600">{{ d.active_count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Отрядов:</span>
+                        <span class="font-semibold text-slate-700">{{ d.groups_count }}</span>
+                    </div>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-3">
-                    <div class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: {{ pct }}%"></div>
-                </div>
-            </div>
+                
+                <!-- Декоративный элемент -->
+                <div class="absolute -bottom-4 -right-4 w-20 h-20 bg-{{ d.color }}-100 rounded-full opacity-50"></div>
+            </a>
             {% endfor %}
         </div>
     </div>
+
+    <!-- Быстрые действия -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="{{ url_for('admin.students_list') }}" 
+           class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition group">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:bg-amber-200 transition">
+                    <span class="text-2xl">👥</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800">Заявки</h3>
+                    <p class="text-sm text-slate-500">{{ stats.pending_apps }} ожидают</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('quotas.quotas_list') }}" 
+           class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition group">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-200 transition">
+                    <span class="text-2xl">📅</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800">Мероприятия</h3>
+                    <p class="text-sm text-slate-500">Управление квотами</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('directions.directions_list') }}" 
+           class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition group">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:bg-emerald-200 transition">
+                    <span class="text-2xl">🎯</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800">Направления</h3>
+                    <p class="text-sm text-slate-500">Все направления</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
 </div>
 
 <script>
 async function runDistribute() {
     const btn = document.querySelector('button[onclick="runDistribute()"]');
+    const originalContent = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = "⏳ Распределение...";
+    btn.innerHTML = '<span>⏳</span><span>Распределение...</span>';
     
     try {
         const res = await fetch('/api/distribute', { method: 'POST' });
@@ -67,8 +180,9 @@ async function runDistribute() {
         alert("Ошибка при распределении");
     } finally {
         btn.disabled = false;
-        btn.innerHTML = "🚀 Запустить автораспределение";
+        btn.innerHTML = originalContent;
     }
 }
 </script>
+
 {% endblock %}

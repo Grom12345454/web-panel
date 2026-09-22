@@ -1,16 +1,26 @@
 import threading
 import asyncio
-from database import init_db
 from web_app import create_app
-from bot import run_bot
-
-def main():
-    app = create_app()
-    init_db(app)
-    bot_thread = threading.Thread(target=lambda: asyncio.run(run_bot()), daemon=True)
-    bot_thread.start()
-    print("🌐 Сайт запущен: http://localhost:5000")
-    app.run(debug=True, port=5000, use_reloader=False)
+from database import init_db
+from bot import run_bot as start_bot
 
 if __name__ == "__main__":
-    main()
+    app = create_app()
+    with app.app_context():
+        init_db(app)
+
+    print("🚀 Запуск веб-панели и бота...")
+    print("📍 Сайт: http://127.0.0.1:5000/login")
+    
+    def run_bot_thread():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(start_bot(app))
+        finally:
+            loop.close()
+
+    bot_thread = threading.Thread(target=run_bot_thread, daemon=True)
+    bot_thread.start()
+    
+    app.run(debug=True, host="127.0.0.1", port=5000, use_reloader=False)

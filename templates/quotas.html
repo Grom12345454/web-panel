@@ -1,73 +1,154 @@
 {% extends "base.html" %}
-{% block title %}Квоты мероприятий | University{% endblock %}
+{% block title %}Мероприятия | University{% endblock %}
 {% block content %}
-<div class="p-6 max-w-7xl mx-auto space-y-8">
+<div class="p-6 max-w-4xl mx-auto space-y-8">
+    
     <div class="flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-slate-800"> Квоты на мероприятия</h1>
-        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">
-            + Создать квоту
+        <h1 class="text-3xl font-bold text-slate-800">Управление мероприятиями</h1>
+        <button onclick="document.getElementById('createModal').classList.remove('hidden')" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
+            <span>+</span> Новая квота
         </button>
     </div>
 
-    <!-- Модальное окно -->
-    <div id="createModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <form method="POST" action="{{ url_for('quotas.create_quota') }}" class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4">
-            <h2 class="text-xl font-bold text-slate-800">Новая квота</h2>
-            <input name="title" placeholder="Название мероприятия" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
-            <textarea name="description" placeholder="Описание" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 h-20 focus:border-blue-500 outline-none"></textarea>
-            <input name="event_date" type="datetime-local" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
-            
-            <select name="direction_id" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
-                <option value="">Выберите направление...</option>
-                {% for d in directions %}
-                <option value="{{ d.id }}">{{ d.name }} ({{ d.code }})</option>
-                {% endfor %}
-            </select>
-            
-            <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
-                <option value="sport">🏆 Спорт</option>
-                <option value="culture">🎭 Культура</option>
-                <option value="volunteer">🤝 Волонтерство</option>
-                <option value="science"> Наука</option>
-                <option value="other">📌 Прочее</option>
-            </select>
-            
-            <input name="total_places" type="number" min="1" placeholder="Количество мест" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
-            
-            <div class="flex gap-2 pt-2">
-                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-bold">Создать</button>
-                <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 rounded-lg font-bold">Отмена</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Сетка квот -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Список мероприятий -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {% for q in quotas %}
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition">
-            <div class="flex justify-between items-start mb-3">
-                <span class="px-3 py-1 rounded-full text-xs font-bold 
-                    {{ 'bg-blue-50 text-blue-600' if q.category=='sport' else 
-                       'bg-purple-50 text-purple-600' if q.category=='culture' else 
-                       'bg-green-50 text-green-600' if q.category=='volunteer' else 
-                       'bg-orange-50 text-orange-600' }}">
-                    {{ {'sport':'Спорт','culture':'Культура','volunteer':'Волонтерство','science':'Наука','other':'Прочее'}[q.category] }}
-                </span>
-                <span class="text-xs text-slate-500">{{ q.event_date.strftime('%d.%m %H:%M') }}</span>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div class="flex justify-between items-start mb-2">
+                <h3 class="font-bold text-lg text-slate-800">{{ q.event_title }}</h3>
             </div>
-            <h3 class="font-bold text-lg mb-1 text-slate-800">{{ q.event_title }}</h3>
-            <p class="text-xs text-blue-600 mb-3 font-medium">🎓 {{ q.direction.name }}</p>
-            <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ q.event_description or 'Нет описания' }}</p>
-            <div class="flex justify-between items-center pt-4 border-t border-slate-50">
-                <span class="text-sm font-medium text-slate-700">👥 {{ q.current_count() }} / {{ q.total_places }}</span>
-                <a href="{{ url_for('quotas.quota_participants', quota_id=q.id) }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg font-medium transition text-slate-700">
-                    Участники →
+            
+            <div class="flex flex-wrap gap-1 mb-3">
+                {% for d in q.directions %}
+                <span class="px-2 py-0.5 bg-{{ d.color }}-100 text-{{ d.color }}-700 rounded text-xs font-medium">
+                    {{ d.icon }} {{ d.name }}
+                </span>
+                {% endfor %}
+            </div>
+
+            <div class="space-y-1 mb-4 text-sm text-slate-600">
+                {% if q.location %}<p>📍 {{ q.location }}</p>{% endif %}
+                {% if q.time_range %}<p>🗓 {{ q.time_range }}</p>{% endif %}
+                
+                <!-- Показываем дни и занятость -->
+                {% for day in q.days %}
+                <div class="flex justify-between items-center bg-slate-50 px-2 py-1 rounded mt-1">
+                    <span>📅 {{ day.date.strftime('%d.%m.%Y') }}</span>
+                    <span class="text-xs font-bold {% if day.available_places() == 0 %}text-red-500{% else %}text-green-600{% endif %}">
+                        {{ day.available_places() }} / {{ day.daily_places }} мест
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                <a href="{{ url_for('quotas.quota_participants', quota_id=q.id) }}" 
+                   class="text-sm text-blue-600 hover:text-blue-700 font-medium w-full text-center">
+                    Управление днями и участниками →
                 </a>
             </div>
         </div>
         {% else %}
-        <div class="col-span-full text-center py-12 text-slate-500 bg-white rounded-2xl">Квот пока нет</div>
+        <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
+            <p class="text-slate-500">Мероприятий пока нет.</p>
+        </div>
         {% endfor %}
     </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ -->
+    <div id="createModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h2 class="text-xl font-bold text-slate-800">Новое мероприятие</h2>
+                <button onclick="document.getElementById('createModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            </div>
+            
+            <form method="POST" action="{{ url_for('quotas.create_quota') }}" class="p-6 space-y-5">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Название *</label>
+                        <input type="text" name="title" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Описание</label>
+                        <textarea name="description" rows="2" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <h3 class="font-bold text-slate-700 text-sm uppercase tracking-wide">📍 Детали</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Место</label>
+                            <input type="text" name="location" placeholder="ул. Гагарина, ауд. 1308" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Общее время</label>
+                            <input type="text" name="time_range" placeholder="с 9:00 до 17:30" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Функционал / Расписание</label>
+                        <textarea name="functionality" rows="3" placeholder="09:00 - раскладка...&#10;13:00 - сопровождение..." class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Дресс-код</label>
+                        <input type="text" name="dress_code" placeholder="Приличное, не рваное" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Направления *</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        {% for d in directions %}
+                        <label class="flex items-center p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="checkbox" name="direction_ids" value="{{ d.id }}" class="w-4 h-4 text-blue-600 rounded">
+                            <span class="ml-2 text-sm font-medium">{{ d.icon }} {{ d.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- ДИНАМИЧЕСКИЕ ДНИ -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Дни мероприятия и места *</label>
+                    <div id="daysContainer" class="space-y-2">
+                        <div class="flex gap-2 day-row items-center">
+                            <input type="date" name="day_date_0" required class="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <input type="number" name="day_places_0" required min="1" placeholder="Мест" class="w-24 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <button type="button" onclick="addDayField()" class="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                         + Добавить ещё день
+                    </button>
+                </div>
+
+                <div class="flex gap-3 pt-4 sticky bottom-0 bg-white pb-2">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold transition shadow-lg">Создать</button>
+                    <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-lg font-bold transition">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
+
+<script>
+let dayIndex = 1;
+function addDayField() {
+    const container = document.getElementById('daysContainer');
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 day-row items-center animate-fade-in';
+    div.innerHTML = `
+        <input type="date" name="day_date_${dayIndex}" required class="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+        <input type="number" name="day_places_${dayIndex}" required min="1" placeholder="Мест" class="w-24 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+        <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 px-2">✕</button>
+    `;
+    container.appendChild(div);
+    dayIndex++;
+}
+</script>
+<style>.animate-fade-in { animation: fadeIn 0.3s ease-out; } @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }</style>
 {% endblock %}
