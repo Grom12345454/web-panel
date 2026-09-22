@@ -6,21 +6,25 @@
     <title>{% block title %}University{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-white min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen">
     {% if session.user_id %}
-    <nav class="bg-slate-900 border-b border-slate-800 px-6 py-3">
+    <nav class="bg-white border-b border-slate-200 px-6 py-3 shadow-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-6">
-                <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold text-amber-400">🎓 University</a>
-                <a href="{{ url_for('admin.dashboard') }}" class="text-sm text-slate-300 hover:text-white transition">Заявки</a>
-                <a href="{{ url_for('directions.directions_list') }}" class="text-sm text-slate-300 hover:text-white transition">Направления</a>
-                <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm text-slate-300 hover:text-white transition">Квоты</a>
+            <div class="flex items-center gap-8">
+                <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold text-blue-600">🎓 Воспитательная работа</a>
+                <a href="{{ url_for('admin.dashboard') }}" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition">Дашборд</a>
+                <a href="{{ url_for('directions.directions_list') }}" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition">Направления</a>
+                <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm font-medium text-slate-600 hover:text-blue-600 transition">Квоты</a>
             </div>
-            <a href="{{ url_for('auth.logout') }}" class="text-sm text-slate-400 hover:text-white transition">Выйти</a>
+            <a href="{{ url_for('auth.logout') }}" class="text-sm font-medium text-red-500 hover:text-red-600 transition">Выйти</a>
         </div>
     </nav>
     {% endif %}
-    {% block content %}{% endblock %}
+    
+    <main class="py-6">
+        {% block content %}{% endblock %}
+    </main>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="fixed bottom-4 right-4 space-y-2 z-50">

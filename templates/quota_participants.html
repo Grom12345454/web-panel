@@ -3,32 +3,35 @@
 {% block content %}
 <div class="p-6 max-w-5xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-        <a href="{{ url_for('quotas.quotas_list') }}" class="text-slate-400 hover:text-white">← Назад</a>
+        <a href="{{ url_for('quotas.quotas_list') }}" class="text-slate-500 hover:text-blue-600 transition">← Назад</a>
         <div>
-            <h1 class="text-2xl font-bold text-amber-400">{{ quota.event_title }}</h1>
+            <h1 class="text-2xl font-bold text-slate-800">{{ quota.event_title }}</h1>
             <p class="text-sm text-slate-500">{{ quota.event_date.strftime('%d.%m.%Y %H:%M') }} | 🎓 {{ quota.direction.name }}</p>
         </div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+    
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <table class="w-full text-left text-sm">
-            <thead class="bg-slate-800/50 text-slate-400"><tr><th class="p-4">Студент</th><th class="p-4">Телефон</th><th class="p-4">Статус</th><th class="p-4">Действия</th></tr></thead>
-            <tbody class="divide-y divide-slate-800">
+            <thead class="bg-slate-50 text-slate-500">
+                <tr><th class="p-4">Студент</th><th class="p-4">Телефон</th><th class="p-4">Статус</th><th class="p-4">Действия</th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
                 {% for p in quota.participants %}
-                <tr class="hover:bg-slate-800/30">
-                    <td class="p-4 font-medium">{{ p.student.full_name }}</td>
-                    <td class="p-4 text-slate-400">{{ p.student.phone or '—' }}</td>
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-4 font-medium text-slate-800">{{ p.student.full_name }}</td>
+                    <td class="p-4 text-slate-500">{{ p.student.phone or '—' }}</td>
                     <td class="p-4">
-                        {% set badges = {'registered':'bg-blue-500/20 text-blue-400','attended':'bg-green-500/20 text-green-400','absent':'bg-red-500/20 text-red-400','cancelled':'bg-slate-500/20 text-slate-400'} %}
-                        {% set labels = {'registered':'📝 Записан','attended':'✅ Посетил','absent':'❌ Не явился','cancelled':'⛔ Отменил'} %}
-                        <span class="px-2 py-1 rounded text-xs font-medium {{ badges[p.status] }}">{{ labels[p.status] }}</span>
+                        {% set badges = {'registered':'bg-blue-50 text-blue-600','attended':'bg-green-50 text-green-600','absent':'bg-red-50 text-red-600','cancelled':'bg-slate-100 text-slate-500'} %}
+                        {% set labels = {'registered':' Записан','attended':'✅ Посетил','absent':'❌ Не явился','cancelled':'⛔ Отменил'} %}
+                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ badges[p.status] }}">{{ labels[p.status] }}</span>
                     </td>
                     <td class="p-4">
-                        <div class="flex gap-1">
+                        <div class="flex gap-2">
                             {% if p.status == 'registered' %}
-                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='attended') }}" class="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs">Посетил</a>
-                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='absent') }}" class="px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-xs">Не явился</a>
+                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='attended') }}" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs font-medium transition">Посетил</a>
+                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='absent') }}" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-medium transition">Не явился</a>
                             {% elif p.status == 'attended' %}
-                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='registered') }}" class="px-2 py-1 bg-blue-600 hover:bg-blue-500 rounded text-xs">Вернуть</a>
+                                <a href="{{ url_for('quotas.mark', participant_id=p.id, new_status='registered') }}" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition">Вернуть</a>
                             {% endif %}
                         </div>
                     </td>

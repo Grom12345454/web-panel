@@ -3,48 +3,70 @@
 {% block content %}
 <div class="p-6 max-w-7xl mx-auto space-y-8">
     <div class="flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-amber-400">📅 Квоты на мероприятия</h1>
-        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-4 rounded-lg transition">+ Создать квоту</button>
+        <h1 class="text-3xl font-bold text-slate-800"> Квоты на мероприятия</h1>
+        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">
+            + Создать квоту
+        </button>
     </div>
+
+    <!-- Модальное окно -->
     <div id="createModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <form method="POST" action="{{ url_for('quotas.create_quota') }}" class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md space-y-4">
-            <h2 class="text-xl font-bold">Новая квота</h2>
-            <input name="title" placeholder="Название мероприятия" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
-            <textarea name="description" placeholder="Описание" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 h-20"></textarea>
-            <input name="event_date" type="datetime-local" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
-            <select name="category" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
-                <option value="sport">🏆 Спорт</option><option value="culture">🎭 Культура</option><option value="volunteer">🤝 Волонтерство</option><option value="science">🔬 Наука</option><option value="other">📌 Прочее</option>
-            </select>
-            <select name="direction_id" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
+        <form method="POST" action="{{ url_for('quotas.create_quota') }}" class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4">
+            <h2 class="text-xl font-bold text-slate-800">Новая квота</h2>
+            <input name="title" placeholder="Название мероприятия" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
+            <textarea name="description" placeholder="Описание" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 h-20 focus:border-blue-500 outline-none"></textarea>
+            <input name="event_date" type="datetime-local" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
+            
+            <select name="direction_id" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
                 <option value="">Выберите направление...</option>
-                {% for d in directions %}<option value="{{ d.id }}">{{ d.name }} ({{ d.code }})</option>{% endfor %}
+                {% for d in directions %}
+                <option value="{{ d.id }}">{{ d.name }} ({{ d.code }})</option>
+                {% endfor %}
             </select>
-            <input name="total_places" type="number" min="1" placeholder="Количество мест" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
+            
+            <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
+                <option value="sport">🏆 Спорт</option>
+                <option value="culture">🎭 Культура</option>
+                <option value="volunteer">🤝 Волонтерство</option>
+                <option value="science"> Наука</option>
+                <option value="other">📌 Прочее</option>
+            </select>
+            
+            <input name="total_places" type="number" min="1" placeholder="Количество мест" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 focus:border-blue-500 outline-none">
+            
             <div class="flex gap-2 pt-2">
-                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-500 py-2 rounded font-bold">Создать</button>
-                <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-2 rounded">Отмена</button>
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-bold">Создать</button>
+                <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 rounded-lg font-bold">Отмена</button>
             </div>
         </form>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <!-- Сетка квот -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for q in quotas %}
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-amber-500/50 transition">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-blue-200 transition">
             <div class="flex justify-between items-start mb-3">
-                <span class="px-2 py-1 rounded text-xs font-bold {{ 'bg-blue-500/20 text-blue-400' if q.category=='sport' else 'bg-purple-500/20 text-purple-400' if q.category=='culture' else 'bg-green-500/20 text-green-400' if q.category=='volunteer' else 'bg-orange-500/20 text-orange-400' }}">
+                <span class="px-3 py-1 rounded-full text-xs font-bold 
+                    {{ 'bg-blue-50 text-blue-600' if q.category=='sport' else 
+                       'bg-purple-50 text-purple-600' if q.category=='culture' else 
+                       'bg-green-50 text-green-600' if q.category=='volunteer' else 
+                       'bg-orange-50 text-orange-600' }}">
                     {{ {'sport':'Спорт','culture':'Культура','volunteer':'Волонтерство','science':'Наука','other':'Прочее'}[q.category] }}
                 </span>
                 <span class="text-xs text-slate-500">{{ q.event_date.strftime('%d.%m %H:%M') }}</span>
             </div>
-            <h3 class="font-bold text-lg mb-1">{{ q.event_title }}</h3>
-            <p class="text-xs text-amber-400 mb-3">🎓 {{ q.direction.name }}</p>
-            <p class="text-sm text-slate-400 mb-4 line-clamp-2">{{ q.event_description or 'Нет описания' }}</p>
-            <div class="flex justify-between items-center">
-                <span class="text-xs text-slate-500">👥 {{ q.current_count() }} / {{ q.total_places }}</span>
-                <a href="{{ url_for('quotas.quota_participants', quota_id=q.id) }}" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded transition">Участники →</a>
+            <h3 class="font-bold text-lg mb-1 text-slate-800">{{ q.event_title }}</h3>
+            <p class="text-xs text-blue-600 mb-3 font-medium">🎓 {{ q.direction.name }}</p>
+            <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ q.event_description or 'Нет описания' }}</p>
+            <div class="flex justify-between items-center pt-4 border-t border-slate-50">
+                <span class="text-sm font-medium text-slate-700">👥 {{ q.current_count() }} / {{ q.total_places }}</span>
+                <a href="{{ url_for('quotas.quota_participants', quota_id=q.id) }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg font-medium transition text-slate-700">
+                    Участники →
+                </a>
             </div>
         </div>
         {% else %}
-        <div class="col-span-full text-center py-12 text-slate-500">Квот пока нет</div>
+        <div class="col-span-full text-center py-12 text-slate-500 bg-white rounded-2xl">Квот пока нет</div>
         {% endfor %}
     </div>
 </div>

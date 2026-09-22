@@ -1,51 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Заявки | University{% endblock %}
+{% block title %}Dashboard | University{% endblock %}
 {% block content %}
-<div class="p-6 max-w-7xl mx-auto space-y-8">
-    <h1 class="text-3xl font-bold text-amber-400"> Заявки студентов</h1>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><p class="text-slate-400 text-sm">Всего заявок</p><p class="text-3xl font-bold text-blue-400">{{ stats.total }}</p></div>
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><p class="text-slate-400 text-sm">На проверке</p><p class="text-3xl font-bold text-yellow-400">{{ stats.pending }}</p></div>
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><p class="text-slate-400 text-sm">Зачислено</p><p class="text-3xl font-bold text-green-400">{{ stats.enrolled }}</p></div>
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><p class="text-slate-400 text-sm">Направлений</p><p class="text-3xl font-bold text-purple-400">{{ stats.directions_count }}</p></div>
+<div class="p-8 max-w-7xl mx-auto space-y-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-slate-800">Панель управления</h1>
+        <button onclick="runDistribute()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition flex items-center gap-2">
+             Запустить автораспределение
+        </button>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-slate-800/50 text-slate-400">
-                <tr><th class="p-4">ФИО</th><th class="p-4">Направление</th><th class="p-4">Дата</th><th class="p-4">Статус</th><th class="p-4">Действия</th></tr>
-            </thead>
-            <tbody class="divide-y divide-slate-800">
-                {% for s in students %}
-                <tr class="hover:bg-slate-800/30 transition">
-                    <td class="p-4 font-medium">{{ s.full_name }}</td>
-                    <td class="p-4 text-slate-400">{{ s.direction.name if s.direction else '—' }}</td>
-                    <td class="p-4 text-slate-400">{{ s.created_at.strftime('%d.%m.%Y') }}</td>
-                    <td class="p-4">
-                        {% set badges = {'pending':'bg-yellow-500/20 text-yellow-400','approved':'bg-blue-500/20 text-blue-400','enrolled':'bg-green-500/20 text-green-400'} %}
-                        {% set labels = {'pending':'🟡 На проверке','approved':'🔵 Одобрено','enrolled':' Зачислен'} %}
-                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ badges.get(s.status,'') }}">{{ labels.get(s.status,s.status) }}</span>
-                    </td>
-                    <td class="p-4">
-                        {% if s.status == 'pending' %}
-                            <form method="POST" action="{{ url_for('admin.assign_direction', student_id=s.id) }}" class="flex gap-2 items-center">
-                                <select name="direction_id" required class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs w-40">
-                                    <option value="">Выбрать...</option>
-                                    {% for d in directions_list %}
-                                    <option value="{{ d.id }}">{{ d.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button class="px-3 py-1 bg-amber-600 hover:bg-amber-500 rounded text-xs font-medium transition">Назначить</button>
-                            </form>
-                        {% elif s.status == 'approved' %}
-                            <a href="{{ url_for('admin.update_status', student_id=s.id, new_status='enrolled') }}" class="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-xs font-medium transition">Зачислить</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="5" class="p-8 text-center text-slate-500">Нет заявок</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- Карточки статистики -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <p class="text-slate-500 text-sm font-medium">Всего студентов</p>
+            <p class="text-4xl font-bold text-slate-800 mt-2">{{ stats.total_students }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <p class="text-slate-500 text-sm font-medium">Новые заявки</p>
+            <p class="text-4xl font-bold text-amber-500 mt-2">{{ stats.pending_apps }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <p class="text-slate-500 text-sm font-medium">Зачислено</p>
+            <p class="text-4xl font-bold text-green-500 mt-2">{{ stats.enrolled }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <p class="text-slate-500 text-sm font-medium">Свободные места</p>
+            <p class="text-4xl font-bold text-blue-500 mt-2">{{ stats.free_places }}</p>
+        </div>
+    </div>
+
+    <!-- Аналитика по направлениям -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h2 class="text-xl font-bold text-slate-800 mb-6">Заполненность направлений</h2>
+        <div class="space-y-4">
+            {% for d in directions %}
+            {% set enrolled = d.students|selectattr('status', 'equalto', 'enrolled')|list|length %}
+            {% set total_quota = d.quotas|map(attribute='total_places')|sum %}
+            {% set pct = (enrolled / total_quota * 100)|round if total_quota > 0 else 0 %}
+            
+            <div>
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium text-slate-700">{{ d.name }} ({{ d.code }})</span>
+                    <span class="text-slate-500">{{ enrolled }} / {{ total_quota }} ({{ pct }}%)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3">
+                    <div class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: {{ pct }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
+
+<script>
+async function runDistribute() {
+    const btn = document.querySelector('button[onclick="runDistribute()"]');
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Распределение...";
+    
+    try {
+        const res = await fetch('/api/distribute', { method: 'POST' });
+        const data = await res.json();
+        alert(data.message);
+        location.reload();
+    } catch (e) {
+        alert("Ошибка при распределении");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "🚀 Запустить автораспределение";
+    }
+}
+</script>
 {% endblock %}
