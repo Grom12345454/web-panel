@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}University{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+    {% if session.user_id %}
+    <nav class="bg-slate-900 border-b border-slate-800 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold text-amber-400">🎓 University</a>
+                <a href="{{ url_for('admin.dashboard') }}" class="text-sm text-slate-300 hover:text-white transition">Заявки</a>
+                <a href="{{ url_for('directions.directions_list') }}" class="text-sm text-slate-300 hover:text-white transition">Направления</a>
+                <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm text-slate-300 hover:text-white transition">Квоты</a>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="text-sm text-slate-400 hover:text-white transition">Выйти</a>
+        </div>
+    </nav>
+    {% endif %}
+    {% block content %}{% endblock %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="fixed bottom-4 right-4 space-y-2 z-50">
+        {% for cat, msg in messages %}
+        <div class="bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-lg shadow-lg text-sm flash-msg">{{ msg }}</div>
+        {% endfor %}
+    </div>
+    <script>setTimeout(() => document.querySelectorAll('.flash-msg').forEach(e => e.remove()), 3000)</script>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Вход | University{% endblock %}
+{% block content %}
+<div class="flex items-center justify-center p-4 min-h-screen">
+    <form method="POST" class="bg-slate-900 border border-slate-800 rounded-xl p-8 w-full max-w-md space-y-6">
+        <h1 class="text-2xl font-bold text-center text-amber-400">🎓 University System</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<p class="text-red-400 text-sm text-center">{{ msg }}</p>{% endfor %}
+        {% endwith %}
+        <div>
+            <label class="block text-sm text-slate-400 mb-1">Email</label>
+            <input name="email" type="email" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 focus:border-amber-500 outline-none transition">
+        </div>
+        <div>
+            <label class="block text-sm text-slate-400 mb-1">Пароль</label>
+            <input name="password" type="password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 focus:border-amber-500 outline-none transition">
+        </div>
+        <button class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 rounded-lg transition">Войти</button>
+        <p class="text-xs text-slate-500 text-center">Логин: admin@uni.local | Пароль: admin123</p>
+    </form>
+</div>
+{% endblock %}

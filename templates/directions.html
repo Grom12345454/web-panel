@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Направления | University{% endblock %}
+{% block content %}
+<div class="p-6 max-w-7xl mx-auto space-y-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-amber-400"> Направления обучения</h1>
+        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-4 rounded-lg transition">+ Добавить</button>
+    </div>
+    <div id="createModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <form method="POST" action="{{ url_for('directions.create_direction') }}" class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md space-y-4">
+            <h2 class="text-xl font-bold">Новое направление</h2>
+            <input name="name" placeholder="Название" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
+            <input name="code" placeholder="Код (например, IT-2026)" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
+            <div class="flex gap-2 pt-2">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-500 py-2 rounded font-bold">Создать</button>
+                <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-2 rounded">Отмена</button>
+            </div>
+        </form>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-slate-800/50 text-slate-400"><tr><th class="p-4">Код</th><th class="p-4">Название</th><th class="p-4">Студентов</th><th class="p-4">Действия</th></tr></thead>
+            <tbody class="divide-y divide-slate-800">
+                {% for d in directions %}
+                <tr class="hover:bg-slate-800/30">
+                    <td class="p-4 font-mono text-amber-400">{{ d.code }}</td>
+                    <td class="p-4 font-medium">{{ d.name }}</td>
+                    <td class="p-4 text-slate-400">{{ d.students|length }}</td>
+                    <td class="p-4"><a href="{{ url_for('directions.delete_direction', direction_id=d.id) }}" onclick="return confirm('Удалить?')" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-xs font-medium transition">Удалить</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="p-8 text-center text-slate-500">Нет направлений</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
