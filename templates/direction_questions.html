@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Вопросы: {{ direction.name }}{% endblock %}
+{% block content %}
+<div class="p-6 max-w-3xl mx-auto space-y-8">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">{{ direction.icon }} {{ direction.name }}</h1>
+            <p class="text-slate-600">Управление дополнительными вопросами для заявки</p>
+        </div>
+        <a href="{{ url_for('directions.direction_detail', did=direction.id) }}" 
+           class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition">← Назад</a>
+    </div>
+
+    <!-- Форма добавления вопроса -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h2 class="text-xl font-bold text-slate-800 mb-4">Добавить новый вопрос</h2>
+        <form method="POST" class="flex gap-3">
+            <input type="hidden" name="action" value="add">
+            <input type="text" name="question_text" required placeholder="Например: Был ли опыт выступлений?" 
+                   class="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                Добавить
+            </button>
+        </form>
+    </div>
+
+    <!-- Список существующих вопросов -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        {% if questions %}
+        <table class="w-full">
+            <thead class="bg-slate-50 border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">#</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Вопрос</th>
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase">Действия</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for q in questions %}
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4 text-sm text-slate-500">{{ q.sort_order }}</td>
+                    <td class="px-6 py-4 font-medium text-slate-800">{{ q.question_text }}</td>
+                    <td class="px-6 py-4 text-right">
+                        <form method="POST" class="inline" onsubmit="return confirm('Удалить этот вопрос?')">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="question_id" value="{{ q.id }}">
+                            <button type="submit" class="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg text-sm transition">
+                                🗑️ Удалить
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="text-center py-12 text-slate-500">
+            <p class="text-lg mb-2"> Нет дополнительных вопросов</p>
+            <p class="text-sm">Студенты будут подавать заявку без дополнительной информации.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,182 +1,96 @@
 {% extends "base.html" %}
-
-{% block title %}Управление студентами | University{% endblock %}
-
+{% block title %}Студенты | University{% endblock %}
 {% block content %}
 <div class="p-6 max-w-7xl mx-auto space-y-8">
-    
-    <!-- Заголовок -->
     <div class="flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold text-slate-800 mb-2">Управление студентами</h1>
-            <p class="text-slate-600">Одобрение заявок и управление участниками</p>
-        </div>
-        <a href="{{ url_for('admin.dashboard') }}" 
-           class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
-            <span>←</span>
-            <span>Назад</span>
-        </a>
+        <h1 class="text-3xl font-bold text-slate-800">Управление студентами</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition">← Назад</a>
     </div>
 
     <!-- Статистика -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center">
-            <p class="text-2xl font-bold text-slate-800">{{ stats.total }}</p>
-            <p class="text-xs text-slate-500">Всего</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-100 text-center">
+            <p class="text-2xl font-bold">{{ stats.total }}</p><p class="text-xs text-slate-500">Всего заявок</p>
         </div>
-        <div class="bg-amber-50 p-4 rounded-xl shadow-sm border border-amber-200 text-center">
-            <p class="text-2xl font-bold text-amber-600">{{ stats.pending }}</p>
-            <p class="text-xs text-amber-700">Ожидают</p>
+        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-center">
+            <p class="text-2xl font-bold text-amber-600">{{ stats.pending }}</p><p class="text-xs text-amber-700">Ожидают</p>
         </div>
-        <div class="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-200 text-center">
-            <p class="text-2xl font-bold text-blue-600">{{ stats.approved }}</p>
-            <p class="text-xs text-blue-700">Одобрены</p>
+        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 text-center">
+            <p class="text-2xl font-bold text-blue-600">{{ stats.approved }}</p><p class="text-xs text-blue-700">Одобрены</p>
         </div>
-        <div class="bg-green-50 p-4 rounded-xl shadow-sm border border-green-200 text-center">
-            <p class="text-2xl font-bold text-green-600">{{ stats.active }}</p>
-            <p class="text-xs text-green-700">Активны</p>
-        </div>
-        <div class="bg-red-50 p-4 rounded-xl shadow-sm border border-red-200 text-center">
-            <p class="text-2xl font-bold text-red-600">{{ stats.rejected }}</p>
-            <p class="text-xs text-red-700">Отклонены</p>
+        <div class="bg-green-50 p-4 rounded-xl border border-green-200 text-center">
+            <p class="text-2xl font-bold text-green-600">{{ stats.active }}</p><p class="text-xs text-green-700">Активны</p>
         </div>
     </div>
 
     <!-- Фильтры -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <div class="flex flex-wrap gap-2">
-            <a href="?status=all" 
-               class="px-4 py-2 rounded-lg font-medium transition {% if status_filter == 'all' %}bg-blue-600 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                Все ({{ stats.total }})
-            </a>
-            <a href="?status=pending" 
-               class="px-4 py-2 rounded-lg font-medium transition {% if status_filter == 'pending' %}bg-amber-600 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                ⏳ Ожидают ({{ stats.pending }})
-            </a>
-            <a href="?status=approved" 
-               class="px-4 py-2 rounded-lg font-medium transition {% if status_filter == 'approved' %}bg-blue-600 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                ✓ Одобрены ({{ stats.approved }})
-            </a>
-            <a href="?status=active" 
-               class="px-4 py-2 rounded-lg font-medium transition {% if status_filter == 'active' %}bg-green-600 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                ✅ Активны ({{ stats.active }})
-            </a>
-            <a href="?status=rejected" 
-               class="px-4 py-2 rounded-lg font-medium transition {% if status_filter == 'rejected' %}bg-red-600 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                ❌ Отклонены ({{ stats.rejected }})
-            </a>
-        </div>
+    <div class="flex flex-wrap gap-2 bg-white p-4 rounded-xl border border-slate-100">
+        <a href="?status=all" class="px-4 py-2 rounded-lg {% if status_filter == 'all' %}bg-blue-600 text-white{% else %}bg-slate-100{% endif %}">Все</a>
+        <a href="?status=pending" class="px-4 py-2 rounded-lg {% if status_filter == 'pending' %}bg-amber-600 text-white{% else %}bg-slate-100{% endif %}">⏳ Ожидают</a>
+        <a href="?status=approved" class="px-4 py-2 rounded-lg {% if status_filter == 'approved' %}bg-blue-600 text-white{% else %}bg-slate-100{% endif %}">✓ Одобрены</a>
+        <a href="?status=active" class="px-4 py-2 rounded-lg {% if status_filter == 'active' %}bg-green-600 text-white{% else %}bg-slate-100{% endif %}">✅ Активны</a>
     </div>
 
-    <!-- Список студентов -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <!-- Таблица -->
+    <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden">
         {% if students %}
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-slate-50 border-b border-slate-200">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Студент</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Группа / Телефон</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Направления</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Дата заявки</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Статус</th>
-                        <th class="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">Действия</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    {% for student in students %}
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                                    {{ student.full_name[0] if student.full_name else '?' }}
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-slate-800">{{ student.full_name }}</p>
-                                    <p class="text-xs text-slate-500">ID: {{ student.id }} | TG: {{ student.tg_id }}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            {% if student.group %}
-                            <p class="text-sm font-medium text-slate-700">🎓 {{ student.group }}</p>
-                            {% endif %}
-                            {% if student.phone %}
-                            <p class="text-sm text-slate-600">📱 {{ student.phone }}</p>
-                            {% endif %}
-                            {% if not student.group and not student.phone %}
-                            <span class="text-xs text-slate-400">—</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                {% for dir in student.directions %}
-                                <span class="px-2 py-1 bg-{{ dir.color or 'slate' }}-100 text-{{ dir.color or 'slate' }}-700 rounded text-xs font-medium">
-                                    {{ dir.icon or '' }} {{ dir.name }}
-                                </span>
-                                {% else %}
-                                <span class="text-xs text-slate-400">Не выбрано</span>
-                                {% endfor %}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <p class="text-sm text-slate-700">{{ student.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            {% if student.status == 'active' %}
-                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">✅ Активен</span>
-                            {% elif student.status == 'approved' %}
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">✓ Одобрен</span>
-                            {% elif student.status == 'pending' %}
-                            <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold">⏳ Ожидает</span>
-                            {% else %}
-                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">❌ Отклонен</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex justify-end gap-2">
-                                {% if student.status == 'pending' %}
-                                <form method="POST" action="{{ url_for('admin.approve_student', student_id=student.id) }}" class="inline">
-                                    <button type="submit" 
-                                            class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition">
-                                        ✅ Одобрить
-                                    </button>
-                                </form>
-                                <form method="POST" action="{{ url_for('admin.reject_student', student_id=student.id) }}" class="inline">
-                                    <button type="submit" 
-                                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition">
-                                        ❌ Отклонить
-                                    </button>
-                                </form>
-                                {% elif student.status == 'approved' %}
-                                <form method="POST" action="{{ url_for('admin.activate_student', student_id=student.id) }}" class="inline">
-                                    <button type="submit" 
-                                            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition">
-                                        🚀 Активировать
-                                    </button>
-                                </form>
-                                {% endif %}
-                                
-                                {% if student.directions %}
-                                <a href="{{ url_for('directions.direction_detail', direction_id=student.directions[0].id) }}" 
-                                   class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-lg text-sm font-medium transition">
-                                    👁️ Направления
-                                </a>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <table class="w-full">
+            <thead class="bg-slate-50 border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Студент</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Группа</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Телефон</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Направления</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Статус</th>
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase">Действия</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for s in students %}
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4">
+                        <p class="font-semibold">{{ s.full_name }}</p>
+                        <p class="text-xs text-slate-500">TG: {{ s.tg_id }}</p>
+                    </td>
+                    <!-- ✅ РАЗДЕЛЬНЫЕ СТОЛБЦЫ -->
+                    <td class="px-6 py-4 text-sm">{{ s.group or '—' }}</td>
+                    <td class="px-6 py-4 text-sm">{{ s.phone or '—' }}</td>
+                    
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-1">
+                            {% for d in s.directions %}
+                            <span class="px-2 py-1 bg-{{ d.color }}-100 text-{{ d.color }}-700 rounded text-xs">{{ d.icon }} {{ d.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if s.status == 'active' %}<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">✅ Активен</span>
+                        {% elif s.status == 'approved' %}<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">✓ Одобрен</span>
+                        {% elif s.status == 'pending' %}<span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">⏳ Ожидает</span>
+                        {% else %}<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs"> Отклонен</span>{% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        {% if s.status == 'pending' %}
+                        <!-- ✅ ИСПРАВЛЕННЫЕ ССЫЛКИ URL_FOR -->
+                        <form method="POST" action="{{ url_for('admin.approve_student', sid=s.id) }}" class="inline">
+                            <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded-lg text-sm">✅</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin.reject_student', sid=s.id) }}" class="inline">
+                            <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm ml-1">❌</button>
+                        </form>
+                        {% elif s.status == 'approved' %}
+                        <form method="POST" action="{{ url_for('admin.activate_student', sid=s.id) }}" class="inline">
+                            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">🚀</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
-        <div class="text-center py-12">
-            <div class="text-6xl mb-4">👥</div>
-            <p class="text-lg font-medium text-slate-600">Студенты не найдены</p>
-        </div>
+        <div class="text-center py-12 text-slate-500">Нет студентов для отображения</div>
         {% endif %}
     </div>
-
 </div>
 {% endblock %}

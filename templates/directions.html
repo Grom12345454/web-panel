@@ -1,75 +1,85 @@
 {% extends "base.html" %}
-
 {% block title %}Направления | University{% endblock %}
-
 {% block content %}
-<div class="p-6 max-w-7xl mx-auto space-y-8">
+<div class="p-6 max-w-7xl mx-auto">
     
-    <!-- Заголовок -->
-    <div class="flex justify-between items-center">
+    <!-- Заголовок страницы -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-slate-800 mb-2">Направления воспитательной работы</h1>
-            <p class="text-slate-600">Управление направлениями и участниками</p>
+            <h1 class="text-3xl font-bold text-slate-900">Направления воспитательной работы</h1>
+            <p class="text-slate-500 mt-1">Управление участниками, мероприятиями и анкетами</p>
         </div>
         <a href="{{ url_for('admin.dashboard') }}" 
-           class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
-            <span>←</span>
-            <span>Назад к дашборду</span>
+           class="inline-flex items-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition shadow-sm">
+            ← Назад к дашборду
         </a>
     </div>
 
-    <!-- Карточки направлений -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Сетка направлений -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {% for d in directions %}
-        <a href="{{ url_for('directions.direction_detail', direction_id=d.id) }}" 
-           class="group bg-white p-6 rounded-2xl shadow-sm border border-slate-100 
-                  hover:border-blue-200 hover:shadow-lg transition-all duration-300">
+        <!-- Карточка направления -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full relative overflow-hidden group">
             
-            <!-- Верхняя часть -->
-            <div class="flex items-center justify-between mb-4">
-                <span class="text-4xl">{{ d.icon or '📌' }}</span>
-                <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold">
-                    {{ d.code }}
-                </span>
+            <!-- Цветная полоска сверху (опционально, для красоты) -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-{{ d.color }}-500"></div>
+
+            <div class="p-6 flex-1 flex flex-col">
+                <!-- Верхняя часть: Иконка и Код -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-{{ d.color }}-50 flex items-center justify-center text-2xl border border-{{ d.color }}-100">
+                        {{ d.icon or '📌' }}
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider border border-slate-200">
+                        {{ d.code }}
+                    </span>
+                </div>
+
+                <!-- Название и Описание -->
+                <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {{ d.name }}
+                </h3>
+                <p class="text-sm text-slate-500 mb-6 line-clamp-2 flex-grow">
+                    {{ d.description or 'Вектор воспитательной деятельности' }}
+                </p>
+
+                <!-- Статистика (внутри карточки) -->
+                <div class="space-y-2 mb-6 pt-4 border-t border-slate-100">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            Участники
+                        </span>
+                        <span class="font-semibold text-slate-800">{{ d.students|length }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Мероприятия
+                        </span>
+                        <span class="font-semibold text-slate-800">{{ d.quotas|length }}</span>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Название и описание -->
-            <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition">
-                {{ d.name }}
-            </h3>
-            <p class="text-sm text-slate-500 mb-4 line-clamp-2">
-                {{ d.description or 'Вектор воспитательной деятельности' }}
-            </p>
-            
-            <!-- Статистика -->
-            <div class="space-y-2 pt-4 border-t border-slate-100">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-500">👥 Участники:</span>
-                    <span class="font-semibold text-slate-700">{{ d.students|length }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-500">🏆 Отряды:</span>
-                    <span class="font-semibold text-slate-700">{{ d.groups|length }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-500">📅 Мероприятия:</span>
-                    <span class="font-semibold text-slate-700">{{ d.quotas|length }}</span>
-                </div>
-            </div>
-            
-            <!-- Кнопка -->
-            <div class="mt-4 pt-4 border-t border-slate-100">
-                <span class="text-sm font-medium text-blue-600 group-hover:text-blue-700 flex items-center gap-1">
+
+            <!-- Нижняя панель действий (Спрятанный блок вопросов) -->
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                <a href="{{ url_for('directions.direction_detail', did=d.id) }}" 
+                   class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm">
                     Подробнее →
-                </span>
+                </a>
+                
+                <a href="{{ url_for('directions.manage_questions', did=d.id) }}" 
+                   class="inline-flex items-center justify-center w-10 h-10 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition shadow-sm" title="Управление вопросами">
+                   ️
+                </a>
             </div>
-        </a>
+        </div>
         
         {% else %}
-        <div class="col-span-full text-center py-12 text-slate-500 bg-white rounded-2xl">
-            <div class="text-6xl mb-4">🎯</div>
-            <p class="text-lg font-medium">Направления не найдены</p>
-            <p class="text-sm mt-2">Перезапустите сервер для инициализации</p>
+        <div class="col-span-full flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+            <div class="text-4xl mb-3"></div>
+            <p class="text-lg font-medium text-slate-600">Направления пока не добавлены</p>
         </div>
         {% endfor %}
     </div>

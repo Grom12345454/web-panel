@@ -1,19 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Участники: {{ quota.event_title }}{% endblock %}
 {% block content %}
-<div class="p-6 max-w-5xl mx-auto space-y-8">
+<div class="p-6 max-w-7xl mx-auto space-y-8">
     
+    <!-- Заголовок -->
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm text-slate-500 hover:text-blue-600 mb-2 inline-block">← Назад</a>
+        <a href="{{ url_for('quotas.quotas_list') }}" class="text-sm text-slate-500 hover:text-blue-600 mb-2 inline-block">← Назад к списку</a>
         <h1 class="text-2xl font-bold text-slate-800">{{ quota.event_title }}</h1>
-        <div class="mt-2 text-sm text-slate-600">
-            {% if quota.location %}📍 {{ quota.location }} | {% endif %}
-            {% if quota.time_range %}🗓 {{ quota.time_range }}{% endif %}
+        <div class="mt-2 text-sm text-slate-600 flex gap-4">
+            {% if quota.location %}<span>📍 {{ quota.location }}</span>{% endif %}
+            {% if quota.time_range %}<span>🗓 {{ quota.time_range }}</span>{% endif %}
         </div>
     </div>
 
+    <!-- Цикл по дням мероприятия -->
     {% for day in quota.days %}
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        
+        <!-- Шапка дня -->
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
             <h2 class="font-bold text-slate-700 flex items-center gap-2">
                 📅 {{ day.date.strftime('%d.%m.%Y') }} 
@@ -51,24 +55,25 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-right space-x-2">
+                            <!-- ✅ ИСПРАВЛЕННЫЕ ССЫЛКИ: используем mark_attendance вместо mark_day_attendance -->
                             {% if p.status != 'attended' %}
-                            <a href="{{ url_for('quotas.mark_day_attendance', participation_id=p.id, new_status='attended') }}" 
+                            <a href="{{ url_for('quotas.mark_attendance', pid=p.id, st='attended') }}" 
                                class="text-xs bg-green-50 text-green-600 hover:bg-green-100 px-3 py-1.5 rounded-lg font-medium transition">
                                 ✅ Был
                             </a>
                             {% endif %}
                             
                             {% if p.status != 'absent' %}
-                            <a href="{{ url_for('quotas.mark_day_attendance', participation_id=p.id, new_status='absent') }}" 
+                            <a href="{{ url_for('quotas.mark_attendance', pid=p.id, st='absent') }}" 
                                class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-medium transition">
                                 ❌ Не был
                             </a>
                             {% endif %}
 
                             {% if p.status != 'cancelled' %}
-                            <a href="{{ url_for('quotas.mark_day_attendance', participation_id=p.id, new_status='cancelled') }}" 
+                            <a href="{{ url_for('quotas.mark_attendance', pid=p.id, st='cancelled') }}" 
                                class="text-xs bg-slate-50 text-slate-600 hover:bg-slate-100 px-3 py-1.5 rounded-lg font-medium transition">
-                                Отменить запись
+                                Отменить
                             </a>
                             {% endif %}
                         </td>
