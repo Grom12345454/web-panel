@@ -1,11 +1,24 @@
-from pydantic_settings import BaseSettings
+import os
+from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    BOT_TOKEN: str
-    SECRET_KEY: str = "secret"
-    DATABASE_URI: str = "sqlite:///university.db"
+load_dotenv()
 
-    class Config:
-        env_file = ".env"
+class Settings:
+    BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+    DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///university.db")
+    SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-me-in-production")
+    DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
+
+# Состояния для FSM (в продакшене лучше использовать Aiogram FSM Storage)
+class RegState:
+    NAME = "reg_name"
+    GROUP = "reg_group"
+    PHONE = "reg_phone"
+    DIR_SELECT = "reg_dir_select"
+
+class AddState:
+    NAME = "add_name"
+    GROUP = "add_group"
+    PHONE = "add_phone"
 
 settings = Settings()

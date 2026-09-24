@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher
 from config import settings
 from database import db, Student
 
+# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -18,20 +19,21 @@ app_instance = None
 bot_instance = None
 
 async def run_bot(app):
+    """Точка входа для запуска бота"""
     global app_instance, bot_instance
     
-    # Сохраняем ссылку на Flask app для доступа к БД из хендлеров
+    # Сохраняем ссылку на приложение для доступа к БД из хендлеров
     app_instance = app
     
     with app.app_context():
         count = db.session.query(db.func.count(Student.id)).scalar()
-        logger.info(f"БД подключена. Студентов: {count}")
+        logger.info(f"️ БД подключена. Студентов: {count}")
     
     # Создание бота и диспетчера
     bot_instance = Bot(token=settings.BOT_TOKEN)
     dp = Dispatcher()
     
-    # Регистрируем роутеры из разных файлов
+    # Регистрируем роутеры из модульной структуры
     try:
         from handlers.registration import router as reg_router
         from handlers.menu import router as menu_router
@@ -45,3 +47,19 @@ async def run_bot(app):
     
     logger.info("🤖 Telegram Bot запущен...")
     await dp.start_polling(bot_instance)
+
+if __name__ == "__main__":
+    try:
+        from web_app import create_app, set_flask_app
+        app = create_app()
+        set_flask_app(app)
+        
+        with app.app_context():
+            from database import init_db
+            init_db(app)
+            
+        asyncio.run(run_bot(app))
+    except KeyboardInterrupt:
+        logger.info("🛑 Бот остановлен пользователем")
+    except Exception as e:
+        logger.error(f"💥 Критическая ошибка: {e}", exc_info=True)
