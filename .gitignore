@@ -1,0 +1,6 @@
+.env
+*.log
+__pycache__/
+*.pyc
+data/*.sqlite3
+data/.split_migration_v23

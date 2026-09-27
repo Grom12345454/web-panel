@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Редактирование занятия · {{ direction.name }}{% endblock %}
+{% block content %}
+<div class="section-title" style="margin-top:0"><div><div class="eyebrow">LESSON / EDIT</div><h2 style="font-size:30px;margin-top:7px">Редактирование занятия</h2><p>{{ direction.name }}</p></div><a class="btn btn-soft" href="{{ url_for('directions.lessons', did=direction.id) }}">← К расписанию</a></div>
+<div class="card card-pad" style="max-width:900px">
+<form method="POST">
+<div class="form-grid">
+<div class="field field-full"><label class="label">Название</label><input class="input" name="title" value="{{ lesson.title }}" required></div>
+<div class="field"><label class="label">Дата и время</label><input class="input" name="starts_at" type="datetime-local" value="{{ lesson.starts_at.strftime('%Y-%m-%dT%H:%M') }}" required></div>
+<div class="field"><label class="label">Продолжительность, минут</label><input class="input" name="duration_minutes" type="number" min="15" step="15" value="{{ lesson.duration_minutes }}" required></div>
+<div class="field"><label class="label">Преподаватель / руководитель</label><input class="input" name="teacher" value="{{ lesson.teacher or '' }}"></div>
+<div class="field"><label class="label">Аудитория / место</label><input class="input" name="room" value="{{ lesson.room or '' }}"></div>
+<div class="field"><label class="label">Вместимость</label><input class="input" name="capacity" type="number" min="0" value="{{ lesson.capacity }}"><div class="subtle">0 — без ограничения</div></div>
+<div class="field"><label class="label">Статус</label><select class="select" name="status"><option value="scheduled" {% if lesson.status == 'scheduled' %}selected{% endif %}>Запланировано</option><option value="completed" {% if lesson.status == 'completed' %}selected{% endif %}>Завершено</option><option value="cancelled" {% if lesson.status == 'cancelled' %}selected{% endif %}>Отменено</option></select></div>
+<div class="field field-full"><label class="label">Описание</label><textarea class="textarea" name="description">{{ lesson.description or '' }}</textarea></div>
+</div>
+<div class="form-foot"><a class="btn btn-soft" href="{{ url_for('directions.lessons', did=direction.id) }}">Отмена</a><button class="btn btn-primary" type="submit">Сохранить изменения</button></div>
+</form>
+</div>
+{% endblock %}

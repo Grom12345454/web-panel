@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Занятия · {{ direction.name }}{% endblock %}
+{% block content %}
+<div class="section-title" style="margin-top:0">
+    <div>
+        <div class="eyebrow">DIRECTION / SCHEDULE</div>
+        <h2 style="font-size:30px;margin-top:7px">{{ direction.icon or '✦' }} Занятия направления</h2>
+        <p>{{ direction.name }} · самостоятельное расписание занятий и учебных встреч.</p>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=direction.id) }}">← К направлению</a>
+</div>
+
+<div class="grid-3">
+    <div class="card stat-card card-pad" style="--accent:#62a6ff"><div class="stat-top"><span>Всего занятий</span><span class="stat-icon">◷</span></div><div class="stat-number">{{ lessons|length }}</div></div>
+    <div class="card stat-card card-pad" style="--accent:#42d392"><div class="stat-top"><span>Запланировано</span><span class="stat-icon">✦</span></div><div class="stat-number">{{ lessons|selectattr('status','equalto','scheduled')|list|length }}</div></div>
+    <div class="card stat-card card-pad" style="--accent:#9b8cff"><div class="stat-top"><span>Ближайшее</span><span class="stat-icon">⌁</span></div><div class="stat-number" style="font-size:20px">{% if lessons %}{{ lessons[0].formatted_date }}{% else %}—{% endif %}</div></div>
+</div>
+
+<div class="grid-2" style="margin-top:18px">
+    <div class="card card-pad" id="new-lesson">
+        <div class="eyebrow">NEW LESSON</div>
+        <h3 style="margin:8px 0 4px">Добавить занятие</h3>
+        <p class="subtle">Новое занятие сразу появится в расписании направления.</p>
+        <form method="POST" action="{{ url_for('directions.create_lesson', did=direction.id) }}" style="margin-top:15px">
+            <div class="form-grid">
+                <div class="field field-full"><label class="label">Название</label><input class="input" name="title" required placeholder="Например: Репетиция основного состава"></div>
+                <div class="field"><label class="label">Дата и время</label><input class="input" name="starts_at" type="datetime-local" required></div>
+                <div class="field"><label class="label">Продолжительность, минут</label><input class="input" name="duration_minutes" type="number" min="15" step="15" value="90" required></div>
+                <div class="field"><label class="label">Преподаватель / руководитель</label><input class="input" name="teacher" placeholder="Иванов И.И."></div>
+                <div class="field"><label class="label">Аудитория / место</label><input class="input" name="room" placeholder="Корпус 1 · 304"></div>
+                <div class="field"><label class="label">Вместимость</label><input class="input" name="capacity" type="number" min="0" value="0"><div class="subtle">0 — без ограничения</div></div>
+                <div class="field field-full"><label class="label">Описание</label><textarea class="textarea" name="description" placeholder="Что будет на занятии, что подготовить студентам и т. д."></textarea></div>
+            </div>
+            <div class="form-foot"><a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=direction.id) }}">Отмена</a><button class="btn btn-primary" type="submit">Создать занятие</button></div>
+        </form>
+    </div>
+
+    <div class="card card-pad">
+        <div class="eyebrow">LESSON PRINCIPLES</div>
+        <h3 style="margin:8px 0 10px">Как использовать расписание</h3>
+        <div class="timeline-mini">
+            <div class="timeline-mini-item"><span class="timeline-dot"></span><div><strong>Планирование</strong><p>Фиксируйте дату, время и продолжительность.</p></div></div>
+            <div class="timeline-mini-item"><span class="timeline-dot"></span><div><strong>Организация</strong><p>Добавляйте руководителя и аудиторию.</p></div></div>
+            <div class="timeline-mini-item"><span class="timeline-dot"></span><div><strong>Вместимость</strong><p>Оставляйте 0, когда лимит участников не нужен.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="card table-wrap" style="margin-top:18px">
+    <div class="card-pad" style="border-bottom:1px solid var(--line)"><strong>Расписание</strong><div class="subtle" style="margin-top:4px">{{ lessons|length }} {{ 'занятие' if lessons|length == 1 else 'занятий' }}</div></div>
+    <div class="table-scroll"><table><thead><tr><th>Занятие</th><th>Дата и время</th><th>Руководитель</th><th>Место</th><th>Лимит</th><th>Статус</th><th></th></tr></thead><tbody>
+    {% for lesson in lessons %}
+    <tr>
+        <td><div class="name-cell">{{ lesson.title }}</div><div class="subtle">{{ lesson.description or 'Без описания' }}</div></td>
+        <td><strong>{{ lesson.formatted_date }}</strong><div class="subtle">{{ lesson.formatted_time }} · {{ lesson.duration_minutes }} мин.</div></td>
+        <td>{{ lesson.teacher or '—' }}</td>
+        <td>{{ lesson.room or '—' }}</td>
+        <td>{{ 'Без лимита' if lesson.capacity == 0 else lesson.capacity }}</td>
+        <td><span class="badge {% if lesson.status == 'scheduled' %}badge-active{% elif lesson.status == 'completed' %}badge-approved{% else %}badge-rejected{% endif %}">{% if lesson.status == 'scheduled' %}Запланировано{% elif lesson.status == 'completed' %}Завершено{% else %}Отменено{% endif %}</span></td>
+        <td><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-soft" href="{{ url_for('directions.edit_lesson', did=direction.id, lid=lesson.id) }}">Изменить</a><form method="POST" action="{{ url_for('directions.publish_lesson', did=direction.id, lid=lesson.id) }}"><button class="btn btn-primary" type="submit">В чат</button></form><form method="POST" action="{{ url_for('directions.delete_lesson', did=direction.id, lid=lesson.id) }}" data-confirm="Удалить это занятие?"><button class="btn btn-danger" type="submit">Удалить</button></form></div></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7"><div class="empty"><div class="empty-icon">◷</div><h3>Расписание пока пусто</h3><p>Добавьте первое занятие через форму выше.</p></div></td></tr>
+    {% endfor %}
+    </tbody></table></div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+.timeline-mini{display:grid;gap:15px;margin-top:18px}.timeline-mini-item{display:grid;grid-template-columns:10px 1fr;gap:12px;align-items:start}.timeline-dot{width:10px;height:10px;border-radius:50%;background:#62a6ff;box-shadow:0 0 18px rgba(98,166,255,.5);margin-top:5px}.timeline-mini-item strong{font-size:13px}.timeline-mini-item p{margin:4px 0 0;color:#8fa2bd;font-size:11px;line-height:1.5}
+</style>
+{% endblock %}

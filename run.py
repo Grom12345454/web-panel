@@ -3,6 +3,7 @@ import asyncio
 import logging
 from web_app import create_app
 from database import init_db
+from config import settings
 
 logging.basicConfig(
     level=logging.INFO,
@@ -11,10 +12,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def run_bot_in_thread(app):
-    """Запускает бота в отдельном потоке"""
     bot_func = None
     
-    # 1. Пробуем найти run_bot в bot.py (ваша текущая структура)
     try:
         from bot import run_bot
         bot_func = run_bot
@@ -58,8 +57,11 @@ if __name__ == "__main__":
     print("\n" + "="*50)
     print(" ЗАПУСК СИСТЕМЫ УПРАВЛЕНИЯ ВУЗОМ")
     print("="*50)
-    print(f"📍 Веб-панель: http://127.0.0.1:5000/login")
-    print(f"🤖 Бот: @vlad456_bot")
+    print(f"📍 Веб-панель: http://{settings.WEB_HOST}:{settings.WEB_PORT}/auth/login")
+    if settings.BOT_TOKEN:
+        print("🤖 Telegram-бот: токен найден, запуск выполняется в фоне")
+    else:
+        print("⚠️ Telegram-бот: BOT_TOKEN не задан — веб-панель запустится без бота")
     print("="*50 + "\n")
     
     bot_thread = threading.Thread(
@@ -74,8 +76,8 @@ if __name__ == "__main__":
     time.sleep(2)
     
     app.run(
-        debug=True, 
-        host="127.0.0.1", 
-        port=5000, 
+        debug=settings.DEBUG,
+        host=settings.WEB_HOST,
+        port=settings.WEB_PORT,
         use_reloader=False
     )
