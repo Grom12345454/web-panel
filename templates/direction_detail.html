@@ -42,7 +42,7 @@
       <div><h3 style="margin:0;font-size:18px">Чаты направления</h3><p class="subtle" style="margin-top:6px">Сюда автоматически дублируются новые занятия и мероприятия.</p></div>
       <div class="metric-value" style="font-size:28px">{{ direction.chats|length }}</div>
     </div>
-    <div class="card-actions"><a class="btn btn-primary" href="#direction-chats">Управлять чатами</a></div>
+    <div class="card-actions"><a class="btn btn-primary" href="#direction-chats">Управлять чатами</a><a class="btn btn-soft" href="{{ url_for('directions.chat_message', did=direction.id) }}">💬 Написать в чат</a></div>
   </div>
 </div>
 

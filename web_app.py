@@ -1,13 +1,14 @@
 from functools import wraps
 import html
 from datetime import datetime
-import requests, threading, json, os, logging, queue, io, uuid
+import requests, threading, json, os, logging, queue, io, uuid, time, hmac, hashlib, urllib.parse
 from flask import Blueprint, Flask, flash, redirect, render_template, request, session, url_for, jsonify, send_file
 from sqlalchemy import func
 from config import settings
 from database import (
     db, verify_password, Student, User, Direction, EventQuota, EventDay, DayParticipation,
     DirectionQuestion, StudentLeadership, DirectionStatus, NotificationTemplate, DirectionChat, TelegramChatCandidate,
+    EducationType, StudentInviteLink, ChatMessageLog,
     student_directions, UserRole, StudentQuotaStat, Lesson,
     get_direction_quota_ids, get_quota_directions, set_quota_directions, get_quota_chat_targets, set_quota_chat_targets,
 )
@@ -289,6 +290,7 @@ admin_bp = Blueprint("admin", __name__)
 directions_bp = Blueprint("directions", __name__, url_prefix="/directions")
 quotas_bp = Blueprint("quotas", __name__, url_prefix="/quotas")
 stats_bp = Blueprint("stats", __name__, url_prefix="/stats")
+student_app_bp = Blueprint("student_app", __name__)
 
 def login_required(f):
     @wraps(f)
@@ -343,6 +345,8 @@ def add_student(current_user):
     group = request.form.get("group", "").strip()
     phone = request.form.get("phone", "").strip()
     email = request.form.get("email", "").strip()
+    education_type = request.form.get("education_type", "institute")
+    if education_type not in {"college", "institute"}: education_type = "institute"
     tg_raw = request.form.get("tg_id", "").strip()
     direction_ids = request.form.getlist("direction_ids", type=int)
     status = request.form.get("status", DirectionStatus.ACTIVE.value)
@@ -356,7 +360,7 @@ def add_student(current_user):
         if Student.query.filter_by(tg_id=tg_id).first():
             flash("Такой Telegram ID уже привязан к другому студенту.", "danger")
             return redirect(url_for("admin.students_management"))
-        student = Student(full_name=full_name, group=group, phone=phone, email=email, tg_id=tg_id)
+        student = Student(full_name=full_name, group=group, phone=phone, email=email, education_type=education_type, tg_id=tg_id)
         db.session.add(student)
         db.session.flush()
         clean_dids = []
@@ -384,6 +388,9 @@ def edit_student(sid, current_user):
         student.group = request.form.get("group", "").strip()
         student.phone = request.form.get("phone", "").strip()
         student.email = request.form.get("email", "").strip()
+        education_type = request.form.get("education_type", student.education_type or "institute")
+        if education_type not in {"college", "institute"}: education_type = student.education_type or "institute"
+        student.education_type = education_type
         tg_raw = request.form.get("tg_id", "").strip()
         if not student.full_name:
             flash("ФИО студента обязательно.", "danger")
@@ -415,6 +422,7 @@ def delete_student(sid, current_user):
         DayParticipation.query.filter_by(student_id=sid).delete(synchronize_session=False)
         StudentQuotaStat.query.filter_by(student_id=sid).delete(synchronize_session=False)
         StudentLeadership.query.filter_by(student_id=sid).delete(synchronize_session=False)
+        StudentInviteLink.query.filter_by(student_id=sid).delete(synchronize_session=False)
         db.session.execute(student_directions.delete().where(student_directions.c.student_id == sid))
         db.session.delete(student)
         db.session.commit()
@@ -460,28 +468,13 @@ def students_management(current_user):
 @directions_bp.route("/<int:did>/approve/<int:sid>", methods=["POST"])
 @login_required
 def approve_student(did, sid, current_user):
-    link = db.session.execute(student_directions.select().where(
-        (student_directions.c.student_id == sid) & (student_directions.c.direction_id == did)
-    )).fetchone()
-    
-    if link:
-        db.session.execute(student_directions.update().where(
-            (student_directions.c.student_id == sid) & (student_directions.c.direction_id == did)
-        ).values(status=DirectionStatus.APPROVED.value))
-        db.session.commit()
-        
+    from services.applications import set_application_status
+    ok, msg, invite_count = set_application_status(sid, did, DirectionStatus.APPROVED.value)
+    if ok:
         student = Student.query.get(sid)
-        direction = Direction.query.get(did)
-        send_notification_by_template(student, "direction_approved", 
-            {"direction": f"{direction.icon} {direction.name}"})
-        invite_count = send_direction_invites(student, direction)
-        if invite_count:
-            logger.info("Отправлено %s invite-ссылок студенту %s для направления %s", invite_count, student.id, direction.id)
-        
         flash(f"Заявка {student.full_name} одобрена. Invite-ссылки отправлены: {invite_count}", "success")
     else:
-        flash("Связь студента с направлением не найдена", "danger")
-        
+        flash(msg, "danger")
     return redirect(url_for("directions.direction_detail", did=did))
 
 # ✅ ИСПРАВЛЕННАЯ АКТИВАЦИЯ СТУДЕНТА (переводит в ACTIVE)
@@ -513,27 +506,11 @@ def activate_student(did, sid, current_user):
 @directions_bp.route("/<int:did>/reject/<int:sid>", methods=["POST"])
 @login_required
 def reject_student(did, sid, current_user):
-    link = db.session.execute(student_directions.select().where(
-        (student_directions.c.student_id == sid) & (student_directions.c.direction_id == did)
-    )).fetchone()
-    
-    if link:
-        db.session.execute(student_directions.update().where(
-            (student_directions.c.student_id == sid) & (student_directions.c.direction_id == did)
-        ).values(status=DirectionStatus.REJECTED.value))
-        db.session.commit()
-        
-        student = Student.query.get(sid)
-        direction = Direction.query.get(did)
-        send_notification_by_template(student, "direction_rejected", 
-            {"direction": f"{direction.icon} {direction.name}"})
-        removed_count = remove_student_from_direction_chats(student, direction)
-        
-        flash(f"Заявка {student.full_name} отклонена. Удалено из чатов: {removed_count}", "warning")
-    else:
-        flash("Связь студента с направлением не найдена", "danger")
-        
+    from services.applications import set_application_status
+    ok, msg, _ = set_application_status(sid, did, DirectionStatus.REJECTED.value)
+    flash("Заявка отклонена." if ok else msg, "success" if ok else "danger")
     return redirect(url_for("directions.direction_detail", did=did))
+
 
 @admin_bp.route("/leadership", methods=["GET", "POST"], endpoint="manage_leadership")
 @login_required
@@ -549,13 +526,16 @@ def manage_leadership(current_user):
             sid = request.form.get("student_id", type=int)
             did = request.form.get("direction_id", type=int)
             pos = request.form.get("position_name", "").strip()
+            education_type = request.form.get("education_type", "institute")
+            if education_type not in {"college", "institute", "all"}: education_type = "institute"
             
             if sid and did and pos:
                 existing = StudentLeadership.query.filter_by(student_id=sid, direction_id=did).first()
                 if existing:
                     existing.position_name = pos
+                    existing.education_type = education_type
                 else:
-                    db.session.add(StudentLeadership(student_id=sid, direction_id=did, position_name=pos))
+                    db.session.add(StudentLeadership(student_id=sid, direction_id=did, position_name=pos, education_type=education_type))
                 
                 link_exists = db.session.execute(
                     student_directions.select().where(
@@ -579,7 +559,8 @@ def manage_leadership(current_user):
                 send_notification_by_template(
                     student, 
                     "leadership_assign", 
-                    {"position": pos, "direction": f"{direction.icon} {direction.name}"}
+                    {"position": pos, "direction": f"{direction.icon} {direction.name}",
+                     "education_type": "Колледж" if education_type == "college" else "Институт" if education_type == "institute" else "Все"}
                 )
                 
                 logger.info(f"Admin {current_user.id} assigned leader: Student {sid}, Dir {did}, Pos '{pos}'")
@@ -609,10 +590,7 @@ def manage_leadership(current_user):
     students = Student.query.all()
     directions = Direction.query.all()
     
-    return render_template("leadership.html", 
-                         leaders=leaders, 
-                         students=students, 
-                         directions=directions)
+    return render_template("leadership.html", leaders=leaders, students=students, directions=directions)
 
 @stats_bp.route("/students/summary")
 @login_required
@@ -949,6 +927,36 @@ def test_chat(did, cid, current_user):
 def directions_list(current_user):
     return render_template("directions.html", directions=Direction.query.all())
 
+
+@directions_bp.route("/<int:did>/chat-message", methods=["GET", "POST"], endpoint="chat_message")
+@login_required
+def chat_message(did, current_user):
+    direction = Direction.query.get_or_404(did)
+    chats = DirectionChat.query.filter_by(direction_id=did, is_active=True).order_by(DirectionChat.title).all()
+    if request.method == "POST":
+        message_text = request.form.get("message", "").strip()
+        selected = [str(x).strip() for x in request.form.getlist("chat_ids") if str(x).strip()]
+        if not message_text:
+            flash("Введите текст сообщения.", "danger")
+            return redirect(url_for("directions.chat_message", did=did))
+        target_chats = [c for c in chats if str(c.chat_id) in selected]
+        if not target_chats:
+            flash("Выберите хотя бы один активный чат для отправки.", "danger")
+            return redirect(url_for("directions.chat_message", did=did))
+        from services.telegram import send_tg, resolve_chat_id
+        delivered = 0
+        safe = html.escape(message_text).replace("\n", "<br>")
+        payload = f"💬 <b>Сообщение от University Control</b>\n\n{safe}"
+        for chat in target_chats:
+            resolved = resolve_chat_id(chat.chat_id)
+            ok = bool(resolved and send_tg(resolved, payload))
+            db.session.add(ChatMessageLog(direction_id=did, chat_id=str(chat.chat_id), sender_user_id=current_user.id, message_text=message_text, success=ok, error=None if ok else "Telegram не принял сообщение"))
+            if ok: delivered += 1
+        db.session.commit()
+        flash(f"Сообщение отправлено через бота: {delivered}/{len(target_chats)} чатов.", "success" if delivered == len(target_chats) else "warning")
+        return redirect(url_for("directions.chat_message", did=did))
+    return render_template("direction_chat.html", direction=direction, chats=chats)
+
 @directions_bp.route("/<int:did>")
 @login_required
 def direction_detail(did, current_user):
@@ -1152,6 +1160,7 @@ def remove_student(did, sid, current_user):
     db.session.execute(student_directions.delete().where(
         (student_directions.c.student_id == sid) & (student_directions.c.direction_id == did)
     ))
+    StudentInviteLink.query.filter_by(student_id=sid, direction_id=did).delete(synchronize_session=False)
     db.session.commit()
     removed_count = remove_student_from_direction_chats(student, direction)
     flash(f"{student.full_name} удалён из «{direction.name}». Удалено из чатов: {removed_count}", "success")
@@ -1411,6 +1420,74 @@ def mark_att(pid, st, current_user):
     p = DayParticipation.query.get_or_404(pid); p.status = st; db.session.commit()
     flash("Статус обновлен", "success"); return redirect(url_for("quotas.quota_participants", qid=p.day.quota_id))
 
+
+
+def validate_telegram_init_data(init_data: str, max_age=86400):
+    if not init_data or not settings.BOT_TOKEN:
+        return None
+    try:
+        values=dict(urllib.parse.parse_qsl(init_data,keep_blank_values=True))
+        received_hash=values.pop("hash",None)
+        if not received_hash: return None
+        data_check_string="\n".join(f"{k}={values[k]}" for k in sorted(values))
+        secret_key=hmac.new(b"WebAppData",settings.BOT_TOKEN.encode(),hashlib.sha256).digest()
+        calc=hmac.new(secret_key,data_check_string.encode(),hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(calc,received_hash): return None
+        auth_date=int(values.get("auth_date","0"))
+        if not auth_date or time.time()-auth_date>max_age: return None
+        user=json.loads(values.get("user","{}"))
+        if not user.get("id"): return None
+        return user
+    except Exception:
+        logger.exception("Telegram Mini App initData validation failed")
+        return None
+
+def _student_overall_status(student):
+    rows=db.session.execute(student_directions.select().where(student_directions.c.student_id==student.id)).fetchall()
+    statuses=[r.status for r in rows]
+    if any(x==DirectionStatus.ACTIVE.value for x in statuses): return "Активный участник","active"
+    if any(x in {DirectionStatus.PENDING.value,DirectionStatus.INTERVIEW.value,DirectionStatus.APPROVED.value} for x in statuses): return "Заявки рассматриваются","review"
+    if statuses and all(x==DirectionStatus.REJECTED.value for x in statuses): return "Нужна новая заявка","rejected"
+    return "Не поданы заявки","empty"
+
+@student_app_bp.route("/student-app")
+def student_app():
+    return render_template("student_app.html")
+
+@student_app_bp.route("/student-app/api/me")
+def student_app_me():
+    user=validate_telegram_init_data(request.headers.get("X-Telegram-Init-Data", ""))
+    if not user: return jsonify({"ok":False,"error":"Недействительные данные Telegram"}),401
+    student=Student.query.filter_by(tg_id=int(user["id"])).first()
+    if not student: return jsonify({"ok":False,"error":"Профиль студента ещё не создан"}),404
+    rows=db.session.execute(student_directions.select().where(student_directions.c.student_id==student.id)).fetchall()
+    direction_ids=[r.direction_id for r in rows]
+    directions={d.id:d for d in Direction.query.filter(Direction.id.in_(direction_ids)).all()} if direction_ids else {}
+    from services.telegram import create_direction_invite_links
+    dir_payload=[]
+    for row in rows:
+        d=directions.get(row.direction_id)
+        if not d: continue
+        invites=StudentInviteLink.query.filter_by(student_id=student.id,direction_id=d.id).all()
+        if row.status in {DirectionStatus.APPROVED.value,DirectionStatus.ACTIVE.value} and not invites:
+            try:
+                fresh=create_direction_invite_links(d.id,student.full_name)
+                for item in fresh:
+                    db.session.add(StudentInviteLink(student_id=student.id,direction_id=d.id,chat_id=str(item['chat_id']),title=item['title'],invite_link=item['link']))
+                db.session.commit(); invites=StudentInviteLink.query.filter_by(student_id=student.id,direction_id=d.id).all()
+            except Exception: logger.exception("Could not create cached student invites")
+        dir_payload.append({"id":d.id,"name":d.name,"icon":d.icon,"status":row.status,"education_scope":d.education_scope,"invites":[{"title":i.title,"link":i.invite_link} for i in invites]})
+    active_ids={r.direction_id for r in rows if r.status==DirectionStatus.ACTIVE.value}
+    quotas=EventQuota.query.filter_by(is_closed=False).all()
+    visible_events=[]
+    for q in quotas:
+        if any(d.id in active_ids for d in q.directions): visible_events.append({"title":q.event_title,"description":q.event_description,"location":q.location,"time":q.time_range,"days":[{"date":x.date.strftime('%d.%m.%Y'),"places":x.available_places()} for x in q.days]})
+    from database import Lesson
+    lessons=Lesson.query.filter(Lesson.direction_id.in_(active_ids)).order_by(Lesson.starts_at.asc()).limit(20).all() if active_ids else []
+    status_label,status_code=_student_overall_status(student)
+    return jsonify({"ok":True,"student":{"id":student.id,"full_name":student.full_name,"group":student.group,"phone":student.phone,"education_type":student.education_type,"education_label":"Колледж" if student.education_type=='college' else 'Институт'},"overall":{"label":status_label,"code":status_code},"directions":dir_payload,"events":visible_events[:20],"lessons":[{"title":x.title,"date":x.formatted_date,"time":x.formatted_time,"room":x.room,"teacher":x.teacher} for x in lessons]})
+
+
 def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = settings.PEOPLE_DATABASE_URI
@@ -1429,4 +1506,5 @@ def create_app():
     app.register_blueprint(auth_bp); app.register_blueprint(admin_bp)
     app.register_blueprint(directions_bp); app.register_blueprint(quotas_bp)
     app.register_blueprint(stats_bp)
+    app.register_blueprint(student_app_bp)
     return app

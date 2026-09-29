@@ -1,9 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Руководство | University Control{% endblock %}
 {% block content %}
-<div class="section-title" style="margin-top:0"><div><div class="eyebrow">ADMIN / LEADERSHIP</div><h2 style="font-size:30px;margin-top:7px">Руководители направлений</h2><p>Назначение, замена и снятие с должности через единую панель.</p></div><a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← Дашборд</a></div>
+<div class="section-title" style="margin-top:0"><div><div class="eyebrow">ADMIN / LEADERSHIP</div><h2 style="font-size:32px;margin-top:7px">Руководство</h2><p>Назначайте руководителей отдельно на колледж, институт или оба контура.</p></div><a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← Дашборд</a></div>
 <div class="grid-2">
-<div class="card card-pad"><div class="eyebrow">CURRENT TEAM</div><h3 style="font-size:17px;margin:8px 0 14px">Текущие назначения</h3>{% for leader in leaders %}<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.09)"><div class="avatar">{{ (leader.student.full_name or 'A')[0] }}</div><div style="flex:1"><div class="name-cell">{{ leader.student.full_name }}</div><div class="subtle">{{ leader.direction.icon or '✦' }} {{ leader.direction.name }} · {{ leader.position_name }}</div></div><form method="POST"><input type="hidden" name="action" value="remove"><input type="hidden" name="leadership_id" value="{{ leader.id }}"><input class="input" name="removal_reason" placeholder="Причина" style="width:140px;padding:8px"><button class="btn btn-danger" type="submit" style="margin-left:6px">Снять</button></form></div>{% else %}<div class="empty"><div class="empty-icon">♙</div><h3>Назначений пока нет</h3><p>Создайте первое назначение справа.</p></div>{% endfor %}</div>
-<div class="card card-pad"><div class="eyebrow">ASSIGN ROLE</div><h3 style="font-size:17px;margin:8px 0 14px">Назначить руководителя</h3><form method="POST"><input type="hidden" name="action" value="assign"><div class="field" style="margin-bottom:12px"><label class="label">Студент</label><select class="select" name="student_id" required>{% for s in students %}<option value="{{ s.id }}">{{ s.full_name }} · {{ s.group or 'без группы' }}</option>{% endfor %}</select></div><div class="field" style="margin-bottom:12px"><label class="label">Направление</label><select class="select" name="direction_id" required>{% for d in directions %}<option value="{{ d.id }}">{{ d.icon or '✦' }} {{ d.name }}</option>{% endfor %}</select></div><div class="field"><label class="label">Должность</label><input class="input" name="position_name" placeholder="Например: руководитель направления" required></div><div class="form-foot"><button class="btn btn-primary" type="submit">Назначить руководителя</button></div></form></div>
+<div class="card card-pad tilt-card">
+  <div class="eyebrow">CURRENT TEAM</div><h3 style="font-size:18px;margin:8px 0 14px">Текущие назначения</h3>
+  {% for leader in leaders %}
+  <div class="leader-row">
+    <div class="avatar">{{ (leader.student.full_name or 'A')[0] }}</div>
+    <div style="flex:1;min-width:0"><div class="name-cell">{{ leader.student.full_name }}</div><div class="subtle">{{ leader.direction.icon or '✦' }} {{ leader.direction.name }} · {{ leader.position_name }}</div></div>
+    <span class="contour-pill">{% if leader.education_type=='college' %}🏫 Колледж{% elif leader.education_type=='institute' %}🎓 Институт{% else %}◈ Оба контура{% endif %}</span>
+    <form method="POST"><input type="hidden" name="action" value="remove"><input type="hidden" name="leadership_id" value="{{ leader.id }}"><input class="input" name="removal_reason" placeholder="Причина" style="width:145px;padding:8px"><button class="btn btn-danger" type="submit">Снять</button></form>
+  </div>
+  {% else %}<div class="empty"><div class="empty-icon">♙</div><h3>Назначений пока нет</h3><p>Создайте первое назначение справа.</p></div>{% endfor %}
+</div>
+<div class="card card-pad tilt-card">
+  <div class="eyebrow">ASSIGN ROLE</div><h3 style="font-size:18px;margin:8px 0 14px">Назначить руководителя</h3>
+  <form method="POST">
+    <input type="hidden" name="action" value="assign">
+    <div class="field" style="margin-bottom:12px"><label class="label">Студент / Telegram-профиль</label><select class="select" name="student_id" required><option value="">Выберите студента</option>{% for s in students %}<option value="{{ s.id }}">{{ s.full_name }} · {{ 'Колледж' if s.education_type=='college' else 'Институт' }} · {{ s.group or 'без группы' }}</option>{% endfor %}</select></div>
+    <div class="field" style="margin-bottom:12px"><label class="label">Направление</label><select class="select" name="direction_id" required>{% for d in directions %}<option value="{{ d.id }}">{{ d.icon or '✦' }} {{ d.name }}</option>{% endfor %}</select></div>
+    <div class="field" style="margin-bottom:12px"><label class="label">Контур руководства</label><select class="select" name="education_type" required><option value="college">🏫 Колледж</option><option value="institute" selected>🎓 Институт</option><option value="all">◈ Колледж + Институт</option></select></div>
+    <div class="field"><label class="label">Должность</label><input class="input" name="position_name" placeholder="Руководитель направления" required></div>
+    <div class="form-foot"><span class="subtle">Заявки будут приходить этому руководителю в Telegram.</span><button class="btn btn-primary" type="submit">Назначить</button></div>
+  </form>
+</div>
 </div>
 {% endblock %}

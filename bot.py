@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.types import MenuButtonDefault
+from aiogram.types import MenuButtonDefault, MenuButtonWebApp, WebAppInfo
 
 from config import settings
 from database import db, Student, TelegramChatCandidate
@@ -21,7 +21,10 @@ bot_instance = None
 async def configure_bot(bot: Bot):
     # User-facing navigation is intentionally card-based; no command menu is exposed.
     await bot.delete_my_commands()
-    await bot.set_chat_menu_button(menu_button=MenuButtonDefault())
+    if settings.WEBAPP_URL:
+        await bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Кабинет", web_app=WebAppInfo(url=settings.WEBAPP_URL)))
+    else:
+        await bot.set_chat_menu_button(menu_button=MenuButtonDefault())
     await bot.set_my_description(
         "University Control — заявки, общий статус, профиль и мероприятия в одном профессиональном Telegram-интерфейсе."
     )

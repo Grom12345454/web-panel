@@ -30,10 +30,6 @@
         {% if session.user_role == 'super_admin' %}
         <a class="nav-link {% if ep == 'admin.manage_leadership' %}active{% endif %}" href="{{ url_for('admin.manage_leadership') }}">♙ <span>Руководство</span></a>
         {% endif %}
-
-        <div class="nav-title" style="margin-top:16px">Система</div>
-        <a class="nav-link" href="#" onclick="return false">◌ <span>Live-состояние</span><span style="margin-left:auto;width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 12px #4ade80"></span></a>
-
         <div class="sidebar-foot">
             <div class="user-chip">
                 <div class="avatar">A</div>

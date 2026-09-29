@@ -5,13 +5,15 @@ from datetime import datetime
 
 from aiogram import Router, types, F
 from aiogram.filters import CommandStart
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database import (
     db, Student, Direction, student_directions, StudentLeadership,
     EventQuota, DayParticipation, DirectionStatus,
 )
+from config import settings
+
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -54,8 +56,10 @@ def home_inline(is_leader: bool = False, registered: bool = True):
         ],
         [InlineKeyboardButton(text="❓  Помощь", callback_data="menu_help")],
     ]
+    if settings.WEBAPP_URL and registered:
+        rows.insert(2, [InlineKeyboardButton(text="📱  Кабинет студента", web_app=WebAppInfo(url=settings.WEBAPP_URL))])
     if is_leader and registered:
-        rows.insert(2, [
+        rows.insert(3 if settings.WEBAPP_URL else 2, [
             InlineKeyboardButton(text="👥  Управление студентами", callback_data="menu_leadership"),
         ])
     return InlineKeyboardMarkup(inline_keyboard=rows)
@@ -378,6 +382,7 @@ async def menu_profile(callback: types.CallbackQuery):
         await callback.message.edit_text(
             "👤 <b>Профиль</b>\n\n"
             f"<b>{html.escape(student.full_name)}</b>\n"
+            f"🎓 Контур: {'Колледж' if student.education_type=='college' else 'Институт'}\n"
             f"🎓 Группа: {html.escape(student.group or '—')}\n"
             f"📞 Телефон: {html.escape(student.phone or '—')}\n"
             f"✉️ Email: {html.escape(student.email or '—')}",
@@ -451,6 +456,13 @@ async def choose_direction(callback: types.CallbackQuery):
         ))
         db.session.commit()
 
+        try:
+            from services.applications import notify_leaders_about_application
+            notified = notify_leaders_about_application(student, direction)
+            logger.info("Application notification: student=%s direction=%s leaders_notified=%s", student.id, direction.id, notified)
+        except Exception:
+            logger.exception("Не удалось уведомить руководство о новой заявке")
+
         await callback.answer("Заявка отправлена")
         await callback.message.edit_text(
             f"✅ <b>Заявка принята в обработку</b>\n\n"
@@ -490,15 +502,23 @@ async def remove_direction(callback: types.CallbackQuery):
         if not link:
             await callback.answer("Заявка уже удалена", show_alert=True)
             return
-        if link.status not in {DirectionStatus.PENDING.value, DirectionStatus.REJECTED.value}:
-            await callback.answer("Одобренную или активную заявку отозвать нельзя", show_alert=True)
+        if link.status not in {DirectionStatus.PENDING.value, DirectionStatus.INTERVIEW.value, DirectionStatus.APPROVED.value, DirectionStatus.ACTIVE.value, DirectionStatus.REJECTED.value}:
+            await callback.answer("Эту заявку нельзя отозвать", show_alert=True)
             return
         db.session.execute(student_directions.delete().where(
             (student_directions.c.student_id == student.id) &
             (student_directions.c.direction_id == dir_id)
         ))
+        from database import StudentInviteLink, Direction
+        StudentInviteLink.query.filter_by(student_id=student.id, direction_id=dir_id).delete(synchronize_session=False)
         db.session.commit()
-        await callback.answer("Заявка отозвана")
+        if link.status in {DirectionStatus.APPROVED.value, DirectionStatus.ACTIVE.value}:
+            try:
+                from services.telegram import remove_student_from_direction_chats
+                remove_student_from_direction_chats(student, Direction.query.get(dir_id))
+            except Exception:
+                logger.exception("Не удалось удалить студента из Telegram-чатов после отзыва")
+        await callback.answer("Направление удалено")
         await show_my_status(callback, student)
     except Exception:
         logger.exception("Direction removal failed")

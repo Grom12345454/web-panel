@@ -44,9 +44,11 @@ class Settings:
     DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
     WEB_HOST = os.getenv("WEB_HOST", "127.0.0.1")
     WEB_PORT = int(os.getenv("WEB_PORT", "5000"))
+    WEBAPP_URL = os.getenv("WEBAPP_URL", "")
 
 
 class RegState:
+    EDUCATION_TYPE = "reg_education_type"
     NAME = "reg_name"
     GROUP = "reg_group"
     PHONE = "reg_phone"
