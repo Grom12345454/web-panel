@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Статистика · {{ direction.name }}{% endblock %}
+{% block content %}
+<div class="section-title" style="margin-top:0"><div><div class="eyebrow">ANALYTICS / DIRECTION</div><h2 style="font-size:30px;margin-top:7px">{{ direction.icon or '✦' }} {{ direction.name }}</h2><p>Воронка заявок и состояние мероприятий.</p></div><a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=direction.id) }}">← Назад</a></div>
+<div class="grid-4">
+<div class="card stat-card card-pad" style="--accent:#62a6ff"><div class="stat-top"><span>Всего связей</span></div><div class="stat-number">{{ stats.total }}</div></div>
+<div class="card stat-card card-pad" style="--accent:#ffca66"><div class="stat-top"><span>Ожидают</span></div><div class="stat-number">{{ stats.pending }}</div></div>
+<div class="card stat-card card-pad" style="--accent:#42d392"><div class="stat-top"><span>Активны</span></div><div class="stat-number">{{ stats.active }}</div></div>
+<div class="card stat-card card-pad" style="--accent:#ff7183"><div class="stat-top"><span>Отклонены</span></div><div class="stat-number">{{ stats.rejected }}</div></div>
+</div>
+<div class="grid-2" style="margin-top:18px"><div class="card card-pad"><div class="eyebrow">APPLICATION FUNNEL</div><h3 style="margin:8px 0 15px;font-size:17px">Статусы участников</h3>{% set total = stats.total or 1 %}{% for label, value, color in [('Ожидают',stats.pending,'#ffca66'),('Собеседование',stats.interview,'#62a6ff'),('Одобрены',stats.approved,'#9b8cff'),('Активны',stats.active,'#42d392'),('Отклонены',stats.rejected,'#ff7183')] %}<div style="margin-top:12px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#8fa2bd"><span>{{ label }}</span><strong style="color:#dce7f7">{{ value }}</strong></div><div class="progress" style="margin-top:6px"><span style="width:{{ (value/total*100)|round(0,'common') }}%;background:{{ color }};box-shadow:none"></span></div></div>{% endfor %}</div>
+<div class="card card-pad"><div class="eyebrow">EVENT ACTIVITY</div><h3 style="margin:8px 0 15px;font-size:17px">Мероприятия</h3><div class="kpi-row"><div class="kpi"><strong>{{ event_stats.total_quotas }}</strong><span>мероприятий</span></div><div class="kpi"><strong>{{ event_stats.registered }}</strong><span>записей</span></div><div class="kpi"><strong>{{ event_stats.attended }}</strong><span>посещений</span></div><div class="kpi"><strong>{{ event_stats.absent }}</strong><span>неявок</span></div></div></div></div>
+{% endblock %}

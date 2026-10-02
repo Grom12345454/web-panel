@@ -1,8 +1,0 @@
-<!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AI Analysis — Wireshark AI</title><link rel="stylesheet" href="assets.css"></head>
-<body><div class="app"><aside class="sidebar" id="sidebar"></aside><main class="main">
-<header class="top"><div><div class="crumb">WIRESHARK AI / ANALYTICS</div><h1 class="title">AI Analysis</h1><div class="subline">Qwen2.5 анализирует реальные события из JSONL; при недоступности Ollama используется rule-engine fallback.</div></div><div class="topActions"><span class="clock" id="clock"></span><button class="btn primary" id="refreshAI">ANALYZE NOW</button></div></header>
-<section class="grid two"><div class="card"><div class="cardHead"><h3>Threat analysis</h3><span id="aiProvider">LOADING</span></div><div class="pad"><div class="rowCard"><div><b>Summary</b><small id="aiSummary">Анализ...</small></div></div></div><div class="list" id="aiList"></div></div>
-<div class="card"><div class="cardHead"><h3>Top detection rules</h3><span>REAL LOGS</span></div><div class="pad" id="topRules"></div></div></section>
-<div class="sectionGap"></div><section class="card"><div class="cardHead"><h3>Defensive recommendations</h3><span>ANALYST ASSIST</span></div><div class="pad"><ul id="recommendations" class="recommendations"></ul></div></section>
-</main></div><div class="toast" id="toast"></div><script src="layout.js"></script><script src="app.js"></script><script src="ai.js"></script></body></html>

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Дашборд | University Control{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-grid">
+        <div>
+            <div class="eyebrow">OVERVIEW / LIVE</div>
+            <h1>Центр управления<br>воспитательной системой.</h1>
+            <p>Все ключевые процессы в одном пространстве: заявки студентов, направления, мероприятия, руководители и аналитика посещаемости.</p>
+            <div class="hero-meta">
+                <span class="hero-badge">✦ Единый контур данных</span>
+                <span class="hero-badge">⚡ Telegram + Web</span>
+                <span class="hero-badge">◌ Real-time сценарии</span>
+            </div>
+        </div>
+        <div class="hero-orbit">
+            <div class="orbit">
+                <span class="orbit-dot dot-a"></span><span class="orbit-dot dot-b"></span><span class="orbit-dot dot-c"></span>
+                <div class="orbit-core">U</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="grid-4" style="margin-top:16px">
+    <div class="card stat-card card-pad tilt-card" data-tilt style="--accent:#62a6ff"><div class="stat-top"><span>Всего студентов</span><span class="stat-icon">◎</span></div><div class="stat-number">{{ stats.total_students }}</div><div class="stat-foot">зарегистрировано в системе</div></div>
+    <div class="card stat-card card-pad tilt-card" data-tilt style="--accent:#ffca66"><div class="stat-top"><span>Ожидают решения</span><span class="stat-icon">⌁</span></div><div class="stat-number">{{ stats.pending_apps }}</div><div class="stat-foot">заявок в работе</div></div>
+    <div class="card stat-card card-pad tilt-card" data-tilt style="--accent:#42d392"><div class="stat-top"><span>Активных участников</span><span class="stat-icon">✦</span></div><div class="stat-number">{{ stats.active_members }}</div><div class="stat-foot">студентов в активном статусе</div></div>
+    <div class="card stat-card card-pad tilt-card" data-tilt style="--accent:#9b8cff"><div class="stat-top"><span>Свободных мест</span><span class="stat-icon">◫</span></div><div class="stat-number">{{ stats.free_places }}</div><div class="stat-foot">по активным мероприятиям</div></div>
+</div>
+
+<div class="section-title">
+    <div><h2>Направления</h2><p>Быстрый доступ к участникам, вопросам и аналитике</p></div>
+    <a href="{{ url_for('directions.directions_list') }}" class="btn btn-soft">Все направления →</a>
+</div>
+
+<div class="grid-3">
+{% for d in direction_stats %}
+<article class="card direction-card card-pad tilt-card" data-tilt>
+    <div class="direction-card-top"><div class="dir-icon">{{ d.icon or '✦' }}</div><div class="dir-code">{{ d.code }}</div></div>
+    <h3>{{ d.name }}</h3>
+    <p>{{ d.description or 'Вектор воспитательной деятельности и развития студентов.' }}</p>
+    <div class="direction-meta"><div class="metric"><div class="metric-label">Участники</div><div class="metric-value">{{ d.count }}</div></div><div class="metric"><div class="metric-label">Анкета</div><div class="metric-value">{% if d.has_questions %}✓{% else %}—{% endif %}</div></div></div>
+    <div class="card-actions"><a class="btn btn-primary" style="flex:1" href="{{ url_for('directions.direction_detail', did=d.id) }}">Открыть направление</a><a class="btn btn-soft" href="{{ url_for('stats.direction_statistics', did=d.id) }}">↗</a></div>
+</article>
+{% else %}
+<div class="card empty" style="grid-column:1/-1"><div class="empty-icon">◌</div><h3>Направления ещё не созданы</h3><p>После добавления они появятся здесь автоматически.</p></div>
+{% endfor %}
+</div>
+
+{% if session.user_role == 'super_admin' %}
+<div class="callout" style="margin-top:18px"><h3>♙ Административный контур</h3><p>Назначение руководителей и контроль состава направления выполняются из отдельного защищённого раздела.</p><div style="margin-top:10px"><a class="btn btn-soft" href="{{ url_for('admin.manage_leadership') }}">Перейти к руководству →</a></div></div>
+{% endif %}
+{% endblock %}

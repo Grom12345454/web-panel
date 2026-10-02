@@ -1,0 +1,13 @@
+# Web Framework & Database
+flask==3.0.3
+flask-sqlalchemy==3.1.1
+requests==2.32.3
+reportlab>=4.2,<5
+
+# Telegram Bot
+aiogram==3.13.0
+
+# Config & Security
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+bcrypt==4.2.0

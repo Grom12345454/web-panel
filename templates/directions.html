@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Направления | University Control{% endblock %}
+{% block content %}
+<div class="section-title" style="margin-top:0"><div><div class="eyebrow">CATALOG / DIRECTIONS</div><h2 style="font-size:32px;margin-top:7px">Направления воспитательной работы</h2><p>Участники, мероприятия и анкеты в одном пространстве.</p></div><a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← Дашборд</a></div>
+<div class="grid-3">
+{% for d in directions %}
+<article class="card direction-card card-pad tilt-card" data-tilt>
+    <div class="direction-card-top"><div class="dir-icon">{{ d.icon or '✦' }}</div><div class="dir-code">{{ d.code }}</div></div>
+    <h3>{{ d.name }}</h3><p>{{ d.description or 'Вектор воспитательной деятельности' }}</p>
+    <div class="direction-meta"><div class="metric"><div class="metric-label">Участники</div><div class="metric-value">{{ d.students|length }}</div></div><div class="metric"><div class="metric-label">Мероприятия</div><div class="metric-value">{{ d.quotas|length }}</div></div><div class="metric"><div class="metric-label">Занятия</div><div class="metric-value">{{ d.lessons|length }}</div></div></div>
+    <div class="card-actions"><a class="btn btn-primary" style="flex:1" href="{{ url_for('directions.direction_detail', did=d.id) }}">Подробнее</a><a class="btn btn-soft" href="{{ url_for('directions.lessons', did=d.id) }}">◷ Занятия</a><a class="btn btn-soft" href="{{ url_for('directions.manage_questions', did=d.id) }}">? Вопросы</a></div>
+</article>
+{% else %}
+<div class="card empty" style="grid-column:1/-1"><div class="empty-icon">◌</div><h3>Пока нет направлений</h3><p>Добавьте данные в БД — UI подхватит их автоматически.</p></div>
+{% endfor %}
+</div>
+{% endblock %}
