@@ -1,83 +1,120 @@
-# University Control v4
+# Wireshark AI Admin v8
 
-Полноценная система управления студенческими направлениями с веб-панелью, Telegram-ботом и отдельным Telegram Mini App только для студентов.
+Production-oriented SOC dashboard for real JSONL network/security logs. `blocks.json` is not used.
 
-## Что добавлено
+## What changed
 
-- Выбор учебного контура при регистрации: **Колледж** или **Институт**.
-- Первая заявка по-прежнему идёт в **Студсовет**; после неё доступны другие направления.
-- Руководитель назначается на конкретное направление и контур: колледж, институт или оба.
-- Новая заявка автоматически приходит назначенному руководству в Telegram-боте с кнопками **Одобрить / Отклонить**.
-- При одобрении бот создаёт персональные invite-ссылки на активные Telegram-чаты направления и отправляет их студенту.
-- Запрос на вступление по такой ссылке автоматически одобряется, если студент принят в направление.
-- При отклонении/удалении студент удаляется из подключённых чатов направления, если бот имеет необходимые права.
-- С веб-панели можно написать сообщение в один, несколько или все активные чаты направления — сообщение отправляет бот.
-- Для квоты **Студсовета** сохраняется специальное правило: она идёт во **все активные чаты Студсовета** и не дублируется в другие направления сама по себе.
-- Количество дат квоты не ограничено.
-- База `database.py` разобрана на пакет `database/`: отдельные модули core/events/lessons/stats/system/helpers.
-- Telegram Mini App содержит только студентский кабинет: профиль, общий статус, направления, ссылки-приглашения, мероприятия и занятия.
-- Веб-интерфейс обновлён 3D/glass стилем, с адаптивной мобильной версией.
+- Real log source via `LOG_FILE` environment variable.
+- `log_ingest.py` can tail JSONL, syslog-like and access-log text files.
+- Qwen2.5 integration through local Ollama (`qwen2.5:7b` by default).
+- Rule-engine fallback when Qwen/Ollama is unavailable.
+- Defensive firewall page with TCP/UDP port and protocol policy.
+- Firewall uses nftables and supports **preview before apply**.
+- Management SSH port is protected from accidental blocking.
+- Anti-malware policy page with human-review gate.
+- Production deployment: systemd + Nginx + optional HTTPS + optional Ollama.
+- API mutations can be protected with `ADMIN_TOKEN`.
+- No Node.js dependency; backend uses Python standard library.
 
-## Структура
+## Local development
 
-```text
-university_control_v4/
-├── database/
-│   ├── base.py
-│   ├── core.py
-│   ├── events.py
-│   ├── lessons.py
-│   ├── stats.py
-│   ├── system.py
-│   └── helpers.py
-├── services/
-│   ├── applications.py
-│   └── telegram.py
-├── handlers/
-├── templates/
-├── static/
-├── data/
-├── bot.py
-├── web_app.py
-├── run.py
-└── config.py
+```bash
+python3 log_generator.py -n 200 -i 0.1 --clear
+DEMO_MODE=true python3 server.py
 ```
 
-Все файлы проекта находятся в одной корневой папке проекта; базы данных остаются в `data/`.
+Open `http://127.0.0.1:8787`.
 
-## Базы данных
+## Real logs
 
-- `data/people.sqlite3` — студенты, направления, заявки, пользователи панели, руководство, чаты.
-- `data/events.sqlite3` — квоты, даты, записи на мероприятия.
-- `data/lessons.sqlite3` — занятия и расписание.
-- `data/stats.sqlite3` — агрегированная статистика.
-- `data/system.sqlite3` — шаблоны уведомлений, обнаруженные чаты, сообщения из панели, invite-ссылки студентов.
+Point the application at a real JSONL file:
 
-При запуске существующая `university.db` может быть мигрирована в разделённую структуру; новые поля для колледжа/института добавляются автоматически.
-
-## Telegram Mini App
-
-В `.env` укажите: `WEBAPP_URL=https://ваш-домен/student-app`. Telegram Mini Apps должны использовать HTTPS URL; `initData` проверяется на сервере по HMAC перед выдачей данных студента.
-
-Кнопка **Кабинет** ставится в меню бота автоматически, когда `WEBAPP_URL` задан. Также зарегистрированная студентка/студент видит кнопку **Кабинет студента** в основном меню бота.
-
-## Запуск
-
-```powershell
-pip install -r requirements.txt
-Copy-Item .env.example .env
-# заполните BOT_TOKEN, SECRET_KEY и WEBAPP_URL
-python run.py
+```bash
+LOG_FILE=/var/log/wireshark-ai/security-events.jsonl ADMIN_TOKEN='change-me' python3 server.py
 ```
 
-Панель: `http://127.0.0.1:5000/auth/login`
+For a separate source such as Suricata/SIEM/nginx:
 
-Первоначальный вход: `admin@uni.local` / `admin123`
+```bash
+LOG_FILE=/var/log/wireshark-ai/security-events.jsonl \
+python3 log_ingest.py /var/log/suricata/eve.json --follow
+```
 
-После первого входа пароль рекомендуется изменить в коде/пользовательской системе перед эксплуатацией.
+The dashboard reads `/api/logs`, so historical events come from the configured file rather than a hard-coded block list.
 
-## Telegram-права
+## Qwen2.5
 
-Для персональных invite-ссылок и автоматического одобрения запросов бот должен быть администратором чатов с правом приглашать пользователей и обрабатывать заявки на вступление.
+Install Ollama separately, then:
 
-Для автоматического удаления студента бот должен иметь права, позволяющие ограничивать/банить участников; после удаления система снимает бан, чтобы будущая новая invite-ссылка снова могла использоваться.
+```bash
+./install_qwen.sh
+```
+
+Default model: `qwen2.5:7b`.
+
+The AI page calls `/api/analysis`. The server sends a compact sample of recent real events to the local Ollama endpoint. If Ollama is down, the server returns a deterministic rule-engine analysis instead of inventing AI results.
+
+## Production deployment
+
+Debian/Ubuntu:
+
+```bash
+sudo DOMAIN=soc.example.com \
+  LOG_SOURCE=/var/log/suricata/eve.json \
+  ENABLE_TLS=1 \
+  INSTALL_OLLAMA=1 \
+  QWEN_MODEL=qwen2.5:7b \
+  ./deploy.sh
+```
+
+The script creates:
+
+- `/opt/wireshark-ai-admin`
+- `wireshark-ai.service`
+- optional `wireshark-ai-ingest.service`
+- Nginx reverse proxy
+- `/etc/wireshark-ai.env`
+- generated admin token
+
+Paste the generated token into **Settings → Admin token**.
+
+## Firewall
+
+Use **Firewall → PREVIEW** first. Then save the policy and press **APPLY**. The server invokes nftables only when explicitly requested by the administrator.
+
+The policy is stored in `config/security.json`. It is intentionally not named `blocks.json` and is not a log substitute.
+
+## Security notes
+
+- Put the UI behind HTTPS and preferably a VPN/zero-trust gateway.
+- Keep `ADMIN_TOKEN` private.
+- Do not expose Ollama directly to the Internet.
+- Review real log permissions before running the ingestion service.
+- Keep the human review gate enabled for automated response.
+- Test firewall changes on a console/out-of-band channel before applying them to a remote host.
+
+## Ubuntu Server one-command deployment
+
+For Ubuntu Server, use the included `install_ubuntu.sh` rather than running the installer from an arbitrary working directory.
+
+Minimal:
+
+```bash
+sudo ./install_ubuntu.sh
+```
+
+With a real Suricata log and HTTPS:
+
+```bash
+sudo DOMAIN=soc.example.com \
+  LOG_SOURCE=/var/log/suricata/eve.json \
+  LOG_GROUP=adm \
+  ENABLE_TLS=1 \
+  INSTALL_OLLAMA=1 \
+  QWEN_MODEL=qwen2.5:7b \
+  ./install_ubuntu.sh
+```
+
+The script installs Python, Nginx, nftables, systemd units, a dedicated service account, the dashboard, optional real-log ingestion, optional Ollama/Qwen2.5, and optional Let's Encrypt TLS.
+
+The application binds to `127.0.0.1`; Nginx is the public entry point. The generated admin token is printed once at the end and is also stored in `/etc/wireshark-ai.env` with mode 0600.

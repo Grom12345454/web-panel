@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Firewall — Wireshark AI</title><link rel="stylesheet" href="assets.css"></head>
+<body><div class="app"><aside class="sidebar" id="sidebar"></aside><main class="main">
+<header class="top"><div><div class="crumb">WIRESHARK AI / FIREWALL</div><h1 class="title">Network Policy</h1><div class="subline">Настройка защитной политики портов и протоколов. Сначала preview, затем Apply.</div></div><div class="topActions"><span class="clock" id="clock"></span><button class="btn primary" id="saveFirewall">SAVE</button></div></header>
+<section class="grid two"><div class="card"><div class="cardHead"><h3>Blocked TCP ports</h3><span>INPUT</span></div><div class="pad form"><div class="field"><label>Ports</label><input id="tcpPorts" placeholder="21,23,445,3389"></div><small>Порт SSH управления не принимается в список блокировки.</small></div></div>
+<div class="card"><div class="cardHead"><h3>Blocked UDP ports</h3><span>INPUT</span></div><div class="pad form"><div class="field"><label>Ports</label><input id="udpPorts" placeholder="1900,5353"></div></div></div></section>
+<div class="sectionGap"></div><section class="grid two"><div class="card"><div class="cardHead"><h3>Protocols</h3><span>NETWORK LAYER</span></div><div class="pad form"><div class="field"><label>Protocols</label><input id="protocols" placeholder="icmp,telnet"></div><div class="field"><label>Management SSH port</label><input id="sshPort" type="number" value="22"></div></div></div>
+<div class="card"><div class="cardHead"><h3>Rules preview</h3><span id="firewallState">NOT APPLIED</span></div><div class="pad"><pre class="codeBlock" id="rulesPreview">Нажмите PREVIEW</pre><div class="toolbar"><button class="btn" id="previewFirewall">PREVIEW</button><button class="btn primary" id="applyFirewall">APPLY</button></div></div></div></section>
+</main></div><div class="toast" id="toast"></div><script src="layout.js"></script><script src="app.js"></script><script src="firewall.js"></script></body></html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Traffic — Wireshark AI</title>
+  <link rel="stylesheet" href="assets.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main">
+      <header class="top">
+        <div>
+          <div class="crumb">WIRESHARK AI / NETWORK</div>
+          <h1 class="title">Traffic</h1>
+          <div class="subline">Пакеты, протоколы и связи без лишнего визуального шума.</div>
+        </div>
+        <div class="topActions">
+          <span class="clock" id="clock"></span>
+          <button class="btn" id="saveView">SAVE VIEW</button>
+        </div>
+      </header>
+
+      <section class="grid stats">
+        <div class="card stat">
+          <div class="label">Observed packets</div>
+          <div class="value blue" id="total">0</div>
+          <div class="delta">current session</div>
+        </div>
+        <div class="card stat">
+          <div class="label">HTTPS</div>
+          <div class="value" id="https">0</div>
+          <div class="delta">encrypted flows</div>
+        </div>
+        <div class="card stat">
+          <div class="label">DNS</div>
+          <div class="value purple" id="dns">0</div>
+          <div class="delta">lookups</div>
+        </div>
+        <div class="card stat">
+          <div class="label">Threat</div>
+          <div class="value danger" id="threat">0</div>
+          <div class="delta">priority</div>
+        </div>
+      </section>
+
+      <div class="sectionGap"></div>
+
+      <section class="card">
+        <div class="cardHead">
+          <h3>Live packet stream</h3>
+          <span id="streamState">CONNECTING…</span>
+        </div>
+
+        <div class="pad">
+          <div class="toolbar">
+            <input class="search" id="search" placeholder="Источник, назначение, домен, порт…">
+            <select class="select" id="proto">
+              <option value="all">All protocols</option>
+              <option>HTTPS</option>
+              <option>HTTP</option>
+              <option>DNS</option>
+              <option>SMB</option>
+            </select>
+            <select class="select" id="severity">
+              <option value="all">All severity</option>
+              <option value="safe">Normal</option>
+              <option value="warn">Suspicious</option>
+              <option value="danger">Threat</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Source IP</th>
+                <th>Website / Host</th>
+                <th>Destination IP</th>
+                <th>Protocol</th>
+                <th>Port</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawerShade" id="drawerShade"></div>
+  <aside class="drawer" id="drawer"></aside>
+  <div class="toast" id="toast"></div>
+
+  <script src="layout.js"></script>
+  <script src="app.js"></script>
+  <script src="traffic.js"></script>
+</body>
+</html>
