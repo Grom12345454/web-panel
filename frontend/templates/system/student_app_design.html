@@ -1,0 +1,89 @@
+{% extends "shared/base.html" %}
+{% block title %}Дизайн сайта и Student App | Управление студенческим советом{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student-app-theme-designer.css', v=asset_version('css/student-app-theme-designer.css')) }}">
+<script src="{{ url_for('static', filename='js/student-app-theme-designer.js', v=asset_version('js/student-app-theme-designer.js')) }}" defer></script>
+{% endblock %}
+{% block content %}
+<div class="theme-page">
+  <header class="theme-page-header">
+    <div class="theme-heading-main">
+      <h1>Дизайн и оформление</h1>
+      <p>Тема оформления синхронизируется между внутренней веб-панелью и отдельным Student App — кабинетом студента, который открывается внутри ботов Telegram, VK и MAX. Интерфейсы остаются раздельными: верхняя панель сайта сохраняет нейтральный тёмный стиль, а праздничные акценты применяются к содержимому.</p>
+    </div>
+    <a class="btn btn-soft theme-dashboard-link" href="{{ url_for('admin.dashboard') }}">← Дашборд</a>
+  </header>
+
+  <div class="theme-workspace">
+    <form id="student-app-theme-form" method="POST" class="theme-editor" data-live-url="{{ url_for('admin.student_app_design_live') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      {% for group_id, group_title in [('season', 'Сезонные оформления'), ('holiday', 'Праздничные и государственные темы')] %}
+      <section class="theme-section theme-section--{{ group_id }}">
+        <div class="theme-section-heading">
+          <span class="theme-section-icon" aria-hidden="true">{{ '◈' if group_id == 'season' else '✦' }}</span>
+          <div>
+            <h2>{{ group_title }}</h2>
+            <p>{{ 'Живые сезонные палитры и мягкая цветовая анимация.' if group_id == 'season' else 'Праздничные палитры с собственным характером и узнаваемыми акцентами.' }}</p>
+          </div>
+          <span class="theme-section-count">{{ themes.values()|selectattr('group', 'equalto', group_id)|list|length }} тем</span>
+        </div>
+
+        <div class="{{ 'season-grid' if group_id == 'season' else 'holiday-grid' }}">
+          {% for key, theme in themes.items() if theme.group == group_id %}
+          <label class="theme-card theme-card--{{ group_id }} {% if selected_season == key %}is-selected{% endif %}"
+                 data-theme-key="{{ key }}"
+                 data-theme-title="{{ theme.label }}"
+                 data-theme-description="{{ theme.description }}"
+                 data-theme-emoji="{{ theme.emoji }}"
+                 data-theme-object="{{ theme.object }}"
+                 data-theme-css-vars='{{ theme.css_vars|tojson }}'
+                 style="--theme-accent:{{ theme.palette[0] }};--theme-secondary:{{ theme.palette[1] }};--theme-depth:{{ theme.palette[2] }}">
+            <input class="theme-radio" type="radio" name="season" value="{{ key }}" {% if selected_season == key %}checked{% endif %} required aria-label="Выбрать тему: {{ theme.label }}">
+            <div class="theme-cover theme-cover--{{ key }}" aria-hidden="true">
+              <span class="theme-cover-object">{{ theme.object }}</span>
+              <span class="theme-cover-symbol">{{ theme.emoji }}</span>
+              <span class="theme-cover-orbit"></span>
+              <span class="theme-cover-glow"></span><span class="theme-cover-satellite"></span><span class="theme-cover-stars"></span>
+            </div>
+            <div class="theme-card-content">
+              <span class="theme-radio-mark" aria-hidden="true"></span>
+              <div class="theme-card-text">
+                <strong class="theme-card-title">{{ theme.label }}</strong>
+                <p>{{ theme.description }}</p>
+              </div>
+              <span class="theme-selected-tag">Текущая тема</span>
+            </div>
+            <div class="theme-palette-swatches" aria-label="Цветовая палитра">
+              <span style="--swatch:{{ theme.palette[0] }}" title="Основной акцент"></span>
+              <span style="--swatch:{{ theme.palette[1] }}" title="Дополнительный акцент"></span>
+              <span style="--swatch:{{ theme.palette[2] }}" title="Глубокий фон"></span>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+      </section>
+      {% endfor %}
+
+      <div class="theme-form-actions">
+        <div class="theme-save-note"><span class="theme-save-check" aria-hidden="true">✦</span><span><strong id="theme-save-title">{{ selected_theme.label }}</strong><small id="theme-live-status" role="status">Выбор сохраняется мгновенно без перезагрузки. Student App и внутренние панели получат тему через синхронизацию.</small></span></div>
+        <div class="theme-action-buttons theme-action-buttons--single">
+          <button class="btn btn-primary theme-save-button" type="submit"><span>Применить тему</span><b aria-hidden="true">→</b></button>
+        </div>
+      </div>
+    </form>
+    <aside class="theme-preview-panel" id="theme-live-preview" aria-live="polite">
+      <div class="theme-preview-header"><div><span class="theme-eyebrow">LIVE SYSTEM PREVIEW</span><h2>Student App · интерфейс внутри бота</h2></div><span class="theme-live-dot"><i></i> LIVE</span></div>
+      <div class="theme-phone">
+        <div class="theme-phone-topbar"><span class="theme-brand-mark"><i></i><b></b></span><span class="theme-brand-copy"><strong>STUDENT COUNCIL</strong><small>ORBITAL CAMPUS · PERSONAL TERMINAL</small></span><span class="theme-phone-avatar">✦</span></div>
+        <div class="theme-phone-content">
+          <div class="theme-phone-greeting"><small>СИСТЕМА АКТИВНА</small><h3 id="theme-preview-label">{{ selected_theme.label }}</h3><p id="theme-preview-description">{{ selected_theme.description }}</p></div>
+          <div class="theme-phone-hero"><span class="theme-preview-hero-label" id="theme-preview-season-title">{{ selected_theme.label }}</span><span class="theme-preview-hero-symbol" id="theme-preview-emoji">{{ selected_theme.emoji }}</span><span class="theme-preview-hero-object" id="theme-preview-object">{{ selected_theme.object }}</span><span class="theme-preview-hero-orbit"></span><p>Курс на новые возможности. Все разделы кампуса — в одном интерфейсе.</p></div>
+          <div class="theme-phone-stats"><div><span>◈</span><b>Календарь</b></div><div><span>⌁</span><b>Направления</b></div><div><span>✧</span><b>Профиль</b></div></div>
+        </div>
+      </div>
+      <p class="theme-preview-footnote">Выберите тему слева — предпросмотр обновится сразу. После сохранения оформление появится в кабинете студента при открытии из Telegram, VK или MAX.</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

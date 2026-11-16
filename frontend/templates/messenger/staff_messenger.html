@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111b">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Внутренний мессенджер сотрудников StudSovet.">
+  <title>{% if native_desktop %}StudSovet Messenger{% else %}Внутренний чат сотрудников · StudSovet{% endif %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.bundle.css', v=asset_version('css/site.bundle.css')) }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/staff-messenger.css', v=asset_version('css/staff-messenger.css')) }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/messenger-workspace.css', v=asset_version('css/messenger-workspace.css')) }}">
+</head>
+<body class="uc-body role-{{ session.user_role or 'guest' }} messenger-standalone{% if desktop_mode %} messenger-desktop-mode{% endif %}{% if native_desktop %} messenger-native-desktop{% endif %}{% if theme_change_animation %} theme-changing{% endif %}"
+      data-theme="{{ active_visual_theme|default('autumn') }}"
+      data-season="{{ active_visual_theme|default('autumn') }}"
+      data-page="staff-messenger-standalone"
+      data-authenticated="1"
+      style="--office-accent:{{ active_visual_theme_config.palette[0]|default('#FFB26B') }};--office-secondary:{{ active_visual_theme_config.palette[1]|default('#EE637D') }};--office-depth:{{ active_visual_theme_config.palette[2]|default('#100D1A') }};--office-accent-rgb:{{ active_visual_theme_accent_rgb|default('255,178,107') }};--office-secondary-rgb:{{ active_visual_theme_secondary_rgb|default('238,99,125') }};--season-accent:{{ active_visual_theme_config.palette[0]|default('#FFB26B') }};--season-secondary:{{ active_visual_theme_config.palette[1]|default('#EE637D') }}">
+  <div class="portal-theme-atmosphere messenger-theme-atmosphere" aria-hidden="true">
+    <span class="holiday-smoke holiday-smoke--white"></span>
+    <span class="holiday-smoke holiday-smoke--blue"></span>
+    <span class="holiday-smoke holiday-smoke--red"></span>
+    <span class="holiday-particle"></span><span class="holiday-particle"></span>
+    <span class="holiday-particle"></span><span class="holiday-particle"></span>
+  </div>
+  <a class="skip-link" href="#messenger-main">Перейти к переписке</a>
+  <div class="messenger-workspace-frame">
+    <header class="messenger-workspace-topbar">
+      {% if native_desktop %}
+      <div class="messenger-workspace-brand" aria-label="StudSovet Messenger">
+        <span class="messenger-workspace-mark" aria-hidden="true"><img src="{{ url_for('static', filename='favicon.ico') }}" alt=""></span>
+        <span><strong>StudSovet Messenger</strong></span>
+      </div>
+      {% else %}
+      <a class="messenger-workspace-brand" href="{{ url_for('admin.dashboard') }}" aria-label="Вернуться на сайт StudSovet">
+        <span class="messenger-workspace-mark" aria-hidden="true"><img src="{{ url_for('static', filename='favicon.ico') }}" alt=""></span>
+        <span><strong>StudSovet Messenger</strong></span>
+      </a>
+      {% endif %}
+      <div class="messenger-workspace-account">
+        <span class="messenger-workspace-user">{{ current_profile.full_name if current_profile else 'Пользователь' }}{% if current_profile and current_profile.position %} · {{ current_profile.position }}{% endif %}</span>
+        <button type="button" class="messenger-notification-enable" data-enable-notifications>Включить уведомления</button>
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="messenger-workspace-logout" title="Выйти из аккаунта">Выйти</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="messenger-workspace-content" id="messenger-main"><!-- Общая переписка команды — основной общий чат сотрудников. -->
+      <section class="staff-messenger-page" data-staff-messenger data-conversation-id="{{ selected.id if selected else '' }}" data-can-write="{{ '1' if can_write else '0' }}" data-desktop-app="{{ '1' if desktop_mode else '0' }}" data-native-desktop="{{ '1' if native_desktop else '0' }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <header class="section-title staff-messenger-heading">
+          <div>
+            <div class="eyebrow">КОМАНДНАЯ РАБОТА / КОММУНИКАЦИИ</div>
+            <h1>Внутренний чат</h1>
+            <p>{% if native_desktop %}Самостоятельное приложение для рабочих переписок сотрудников StudSovet.{% else %}Отдельное рабочее пространство для переписок сотрудников StudSovet.{% endif %}</p>
+          </div>
+          <div class="staff-messenger-head-actions">
+            {% if can_start_chats %}<button class="btn btn-primary" type="button" data-open-new-chat>＋ Новый диалог</button>{% endif %}
+          </div>
+        </header>
+
+        <div class="staff-messenger-shell">
+          <aside class="staff-messenger-sidebar card" aria-label="Боковая панель чатов">
+            <div class="messenger-sidebar-head">
+              <div><div class="eyebrow">ВАШЕ ПРОСТРАНСТВО</div><h2>Сообщения</h2></div>
+              {% if unread_total %}<span class="messenger-total-unread" aria-label="Непрочитанные сообщения">{{ unread_total }}</span>{% endif %}
+            </div>
+            <nav class="messenger-workspace-filters" aria-label="Фильтр диалогов">
+              <button type="button" class="is-active" data-chat-filter="all" aria-pressed="true"><span aria-hidden="true">▤</span> Все диалоги</button>
+              <button type="button" data-chat-filter="direct" aria-pressed="false"><span aria-hidden="true">◉</span> Личные</button>
+              <button type="button" data-chat-filter="group" aria-pressed="false"><span aria-hidden="true">▦</span> Групповые</button>
+              <button type="button" data-chat-filter="channel" aria-pressed="false"><span aria-hidden="true">#</span> Каналы</button>
+              <button type="button" data-chat-filter="general" aria-pressed="false"><span aria-hidden="true">◎</span> Основной</button>
+            </nav>
+      <label class="messenger-search-wrap">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" id="messenger-search" placeholder="Поиск в переписке…" autocomplete="off" {% if not selected %}disabled{% endif %}>
+      </label>
+      <div class="messenger-search-results" id="messenger-search-results" hidden></div>
+      <nav class="messenger-conversation-list" aria-label="Список переписок">
+        {% for item in conversations %}
+        <a class="messenger-conversation {% if selected and item.id == selected.id %}is-selected{% endif %}"
+           data-conversation-kind="{{ item.kind }}"
+           href="{{ url_for('staff_messenger.index', conversation=item.id) }}"
+           {% if selected and item.id == selected.id %}aria-current="page"{% endif %}>
+          <span class="messenger-avatar {{ 'messenger-avatar--group' if item.kind != 'direct' else '' }}">{{ item.avatar_initials if item.kind == 'direct' else ('◎' if item.kind == 'general' else ('#' if item.kind == 'channel' else '▦')) }}</span>
+          <span class="messenger-conversation-copy">
+            <span class="messenger-conversation-title">{{ item.title }}</span>
+            {% if item.kind == 'direct' and item.peer %}
+              <span class="messenger-conversation-position">{{ item.peer.position }}</span>
+            {% else %}
+              <span class="messenger-conversation-position">{{ 'Основной канал' if item.kind == 'general' else ('Канал · чтение/запись по правам' if item.kind == 'channel' else 'Групповой чат') }} · {{ item.member_profiles|length }} участников</span>
+            {% endif %}
+            <span class="messenger-conversation-preview">{% if item.kind != 'direct' and item.last_sender %}<b class="messenger-preview-author">{{ item.last_sender }}</b>{% if item.last_sender_position %}<small class="messenger-preview-position"> · {{ item.last_sender_position }}</small>{% endif %}<span class="messenger-preview-separator">: </span>{% endif %}{{ item.preview }}</span>
+          </span>
+          <span class="messenger-conversation-meta">
+            {% if item.is_pinned %}<span class="messenger-pin-indicator" title="Закреплено">◆</span>{% endif %}
+            <time>{{ item.updated_at.split(' ')[1] if item.updated_at else '' }}</time>
+            {% if item.unread %}<b class="messenger-unread-count">{{ item.unread }}</b>{% endif %}
+          </span>
+        </a>
+        {% else %}
+        <div class="messenger-empty-list"><strong>Переписок пока нет</strong><span>Начните с общего чата сотрудников.</span></div>
+        {% endfor %}
+        <div class="messenger-filter-empty" id="messenger-filter-empty" hidden>В этой категории пока нет переписок.</div>
+      </nav>
+      <div class="messenger-sidebar-foot"><span class="messenger-lock">⌑</span> Переписки защищены авторизацией и проверкой участников.</div>
+    </aside>
+
+    <section class="staff-messenger-main card" aria-label="Открытая переписка">
+      {% if selected %}
+      <header class="messenger-thread-head">
+        <div class="messenger-thread-identity">
+          <span class="messenger-avatar messenger-avatar--large {{ 'messenger-avatar--group' if selected.kind != 'direct' else '' }}">{{ '◎' if selected.kind == 'general' else ('#' if selected.kind == 'channel' else ('▦' if selected.kind == 'group' else (selected.avatar_initials or selected.title[:1]|upper))) }}</span>
+          <div class="messenger-thread-title-block">
+            <h2>{{ selected.title }}</h2>
+            {% if selected.kind == 'direct' and selected.peer %}
+              <p class="messenger-thread-position">{{ selected.peer.position }}</p>
+            {% else %}
+              <p>{% if selected.kind == 'general' %}Основной канал сотрудников · общая переписка команды · {{ selected.members|length }} участников{% else %}{{ selected.subtitle }}{% endif %}</p>
+            {% endif %}
+            {% if selected.kind == 'group' %}
+            <div class="messenger-member-strip" aria-label="Участники группового чата">
+              {% for member in selected.member_profiles[:4] %}
+                <span class="messenger-member-chip" title="{{ member.full_name }} — {{ member.position }}"><b>{{ member.full_name }}</b><small>{{ member.position }}</small></span>
+              {% endfor %}
+              {% if selected.member_profiles|length > 4 %}<span class="messenger-member-more">+{{ selected.member_profiles|length - 4 }}</span>{% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="messenger-thread-tools">
+          <span class="messenger-encryption-label"><span>●</span> Внутренний раздел</span>
+          <button type="button" class="messenger-tool-button" data-conversation-action="{{ 'unpin' if selected.is_pinned else 'pin' }}" title="{{ 'Открепить' if selected.is_pinned else 'Закрепить' }}">{{ 'Открепить' if selected.is_pinned else 'Закрепить' }}</button>
+          {% if is_super_admin and selected.kind == 'channel' %}<button type="button" class="messenger-tool-button" data-open-channel-permissions>Права публикации</button>{% endif %}
+          {% if is_super_admin and selected.kind != 'general' %}<button type="button" class="messenger-tool-button is-danger" data-conversation-action="archive">Удалить {{ 'канал' if selected.kind == 'channel' else 'чат' }}</button>{% else %}<button type="button" class="messenger-tool-button" data-conversation-action="hide">Убрать у себя</button>{% endif %}
+        </div>
+      </header>
+      <div class="messenger-thread-info">{% if selected.kind == 'channel' and not can_write %}Канал доступен в режиме чтения. Писать могут только сотрудники, которым администратор выдал это право.{% elif selected.kind == 'channel' %}Вы можете публиковать сообщения в этом канале.{% elif selected.kind == 'general' %}Основной канал команды. Новые сообщения сопровождаются уведомлениями.{% else %}История сообщений доступна участникам переписки. Файлы защищены проверкой доступа.{% endif %}</div>
+      <div class="messenger-thread-body" id="messenger-thread-body" aria-live="polite" aria-relevant="additions">
+        <div class="messenger-date-divider"><span>История переписки</span></div>
+        {% for message in messages %}
+        <article class="messenger-message {% if message.mine %}is-own{% endif %}" data-message-id="{{ message.id }}">
+          <div class="messenger-message-avatar">{{ message.sender_initials }}</div>
+          <div class="messenger-message-content">
+            <div class="messenger-message-meta">
+              <span class="messenger-message-author"><strong>{{ message.sender }}</strong>{% if message.sender_position %}<small class="messenger-message-position">{{ message.sender_position }}</small>{% endif %}</span>
+              <time>{{ message.created_at }}</time>
+            </div>
+            {% if message.reply %}<div class="messenger-reply-preview"><b>{{ message.reply.sender }}</b>{% if message.reply.sender_position %}<small>{{ message.reply.sender_position }}</small>{% endif %}<span>{{ message.reply.body }}</span></div>{% endif %}
+            {% if message.body %}<div class="messenger-message-body">{{ message.body }}</div>{% endif %}
+            {% if message.attachments %}<div class="messenger-attachments">{% for attachment in message.attachments %}<a class="messenger-attachment" href="{{ attachment.url }}"><span>▤</span><span><b>{{ attachment.name }}</b><small>{{ (attachment.size / 1024)|round(1) }} КБ</small></span></a>{% endfor %}</div>{% endif %}
+            <div class="messenger-message-bottom">
+              <div class="messenger-reactions">{% for reaction in message.reactions %}<button type="button" class="messenger-reaction {% if reaction.mine %}is-active{% endif %}" data-reaction="{{ reaction.emoji }}" data-message-id="{{ message.id }}" {% if not can_write %}disabled{% endif %}>{{ reaction.emoji }} <small>{{ reaction.count }}</small></button>{% endfor %}</div>
+              <div class="messenger-message-actions">{% if can_write %}<button type="button" data-reply-id="{{ message.id }}" data-reply-sender="{{ message.sender }}" data-reply-position="{{ message.sender_position }}" data-reply-body="{{ message.body|e }}">Ответить</button><span class="messenger-react-picker">{% for emoji in ['👍','❤️','✅','👀'] %}<button type="button" data-reaction="{{ emoji }}" data-message-id="{{ message.id }}" aria-label="Реакция {{ emoji }}">{{ emoji }}</button>{% endfor %}</span>{% endif %}{% if message.can_delete %}<button type="button" class="messenger-delete-message" data-delete-message="{{ message.id }}">Удалить</button>{% endif %}{% if message.mine %}<span class="messenger-read-state">{% if message.recipient_count and message.read_count == message.recipient_count %}✓✓ Прочитано{% else %}✓ Доставлено{% endif %}</span>{% endif %}</div>
+            </div>
+          </div>
+        </article>
+        {% else %}<div class="messenger-empty-thread" id="messenger-empty-thread"><span>✦</span><h3>Начните разговор</h3><p>Напишите первое сообщение — оно появится здесь.</p></div>{% endfor %}
+      </div>
+      <div class="messenger-typing" id="messenger-typing" aria-live="polite"></div>
+      {% if can_write %}
+      <form class="messenger-composer" id="messenger-composer" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="reply_to" id="messenger-reply-to" value="">
+        <div class="messenger-replying" id="messenger-replying" hidden><span><b id="messenger-replying-sender"></b><em id="messenger-replying-position"></em><small id="messenger-replying-body"></small></span><button type="button" id="messenger-cancel-reply" aria-label="Отменить ответ">×</button></div>
+        <div class="messenger-draft-attachments" id="messenger-draft-attachments" aria-live="polite" hidden></div>
+        <div class="messenger-composer-row">
+          <button class="messenger-attach-button" type="button" id="messenger-attach-trigger" aria-label="Прикрепить файл" title="Прикрепить фото или документ">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.4 11.1 12 20.5a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+          </button>
+          <div class="messenger-emoji-control">
+            <button class="messenger-emoji-button" type="button" id="messenger-emoji-toggle" aria-label="Вставить эмодзи" aria-expanded="false" aria-controls="messenger-emoji-menu" title="Эмодзи">☺</button>
+            <div class="messenger-emoji-menu" id="messenger-emoji-menu" hidden aria-label="Часто используемые эмодзи">
+              {% for emoji in ['😀','🙂','😂','👍','❤️','🔥','✅','👀','🎉','🙏','🤝','✨'] %}<button type="button" data-insert-emoji="{{ emoji }}" aria-label="Вставить {{ emoji }}">{{ emoji }}</button>{% endfor %}
+            </div>
+          </div>
+          <textarea name="body" id="messenger-message-input" rows="1" maxlength="5000" placeholder="Написать сообщение…" aria-label="Текст сообщения" aria-describedby="messenger-composer-hint"></textarea>
+          <button class="messenger-send-button" type="submit" aria-label="Отправить сообщение" title="Отправить сообщение" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+            <span class="messenger-sr-only">Отправить</span>
+          </button>
+        </div>
+        <div class="messenger-composer-foot"><span id="messenger-composer-hint"><kbd>Enter</kbd> отправить <span aria-hidden="true">·</span> <kbd>Shift</kbd>+<kbd>Enter</kbd> перенос строки</span><span class="messenger-composer-foot-meta"><span id="messenger-char-count" aria-live="polite">0 / 5&nbsp;000</span><span id="messenger-file-label">До 4 файлов · до 8 МБ</span></span><input type="file" id="messenger-attachments" name="attachments" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,.docx,.xlsx,.pptx,.txt,.csv" hidden></div>
+      </form>
+      {% else %}<div class="messenger-readonly-note">{% if selected.kind == 'channel' %}У вас права только на чтение этого канала. Обратитесь к главному администратору, чтобы получить право публикации.{% elif is_observer %}Режим наблюдателя: доступен просмотр истории всех переписок, отправка сообщений и реакции отключены.{% else %}У вас права только на чтение этой переписки.{% endif %}</div>{% endif %}
+      {% else %}
+      <div class="messenger-empty-thread messenger-no-selection"><span>✦</span><h3>Выберите переписку</h3><p>Откройте общий чат или начните личный диалог с сотрудником.</p>{% if can_start_chats %}<button type="button" class="btn btn-primary" data-open-new-chat>＋ Новый диалог</button>{% endif %}</div>
+      {% endif %}
+    </section>
+  </div>
+</section>
+
+{% if can_start_chats %}
+<dialog class="messenger-dialog" id="messenger-new-dialog">
+  <form method="dialog" class="messenger-dialog-card" id="messenger-new-form">
+    <header><div><div class="eyebrow">НОВАЯ ПЕРЕПИСКА</div><h2>Создать диалог</h2></div><button type="button" class="messenger-close-dialog" data-close-new-chat>×</button></header>
+    <label for="messenger-new-kind">Тип переписки</label>
+    <select id="messenger-new-kind" class="input"><option value="direct">Личный диалог</option>{% if can_create_group %}<option value="group">Общая группа</option>{% endif %}{% if can_create_channel %}<option value="channel">Канал с правами доступа</option>{% endif %}</select>
+    <div id="messenger-group-title-wrap" hidden><label for="messenger-new-title">Название группы / канала</label><input id="messenger-new-title" class="input" maxlength="160" placeholder="Например, Новости совета"></div>
+    <label>Участники</label>
+    <div class="messenger-contact-list">
+      {% for contact in contacts %}
+      <label class="messenger-contact-option"><input type="checkbox" name="participants" value="{{ contact.id }}"><span class="messenger-contact-avatar">{{ (contact.full_name or contact.email)[:1]|upper }}</span><span><b>{{ contact.full_name or contact.email }}</b><small>{{ contact.position or ('Главный администратор' if contact.role == 'super_admin' else ('Наблюдатель' if contact.role == 'observer' else 'Сотрудник')) }}</small></span></label>
+      {% else %}<p class="subtle">Нет доступных сотрудников для новой переписки.</p>{% endfor %}
+    </div>
+    <div id="messenger-channel-writers-wrap" hidden>
+      <label>Кому разрешено писать в канал</label>
+      <div class="messenger-contact-list messenger-channel-writer-list">
+        {% for contact in contacts %}
+        <label class="messenger-contact-option"><input type="checkbox" name="channel_writers" value="{{ contact.id }}"><span class="messenger-contact-avatar">✎</span><span><b>{{ contact.full_name or contact.email }}</b><small>Разрешить публикацию сообщений</small></span></label>
+        {% endfor %}
+      </div>
+      <p class="messenger-dialog-hint">Отметьте сотрудников, которым разрешена публикация. Это могут быть сотрудники любого направления. Остальные участники смогут читать историю. Главный администратор сохраняет право публикации.</p>
+    </div>
+    <p class="messenger-dialog-hint" id="messenger-selection-hint">Для личного диалога выберите одного сотрудника.</p>
+    <footer><button type="button" class="btn btn-soft" data-close-new-chat>Отмена</button><button type="submit" class="btn btn-primary">Открыть переписку</button></footer>
+  </form>
+</dialog>
+{% endif %}
+{% if is_super_admin and selected and selected.kind == 'channel' %}
+<dialog class="messenger-dialog" id="messenger-channel-permissions-dialog">
+  <form method="dialog" class="messenger-dialog-card" id="messenger-channel-permissions-form">
+    <header><div><div class="eyebrow">УПРАВЛЕНИЕ КАНАЛОМ</div><h2>Кто может публиковать</h2></div><button type="button" class="messenger-close-dialog" data-close-channel-permissions>×</button></header>
+    <p class="messenger-dialog-hint">Отметь сотрудников, которым разрешено отправлять сообщения. Остальные участники смогут читать канал.</p>
+    <div class="messenger-contact-list messenger-channel-writer-list">
+      {% for item in channel_permissions %}
+      {% if item.profile.id != current_profile.id %}
+      <label class="messenger-contact-option"><input type="checkbox" name="channel_permission_writer" value="{{ item.profile.id }}" {% if item.can_post %}checked{% endif %}><span class="messenger-contact-avatar">✎</span><span><b>{{ item.profile.full_name }}</b><small>{{ item.profile.position }}</small></span></label>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <footer><button type="button" class="btn btn-soft" data-close-channel-permissions>Отмена</button><button type="submit" class="btn btn-primary">Сохранить права</button></footer>
+  </form>
+</dialog>
+{% endif %}
+    </main>
+  </div>
+  <script defer src="{{ url_for('static', filename='js/site.bundle.js', v=asset_version('js/site.bundle.js')) }}"></script>
+  <script defer src="{{ url_for('static', filename='js/staff-messenger.js', v=asset_version('js/staff-messenger.js')) }}"></script>
+</body>
+</html>

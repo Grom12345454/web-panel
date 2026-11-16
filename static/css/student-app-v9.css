@@ -1,0 +1,103 @@
+/* Student App UI system v9. Palette-aware, responsive, and Telegram WebView friendly. */
+:root {
+  color-scheme: dark;
+  --student-radius-sm: 10px;
+  --student-radius-md: 15px;
+  --student-radius-lg: 21px;
+  --student-shadow: 0 16px 42px rgba(0, 5, 14, .22);
+  --student-focus: 0 0 0 3px rgba(var(--season-accent-rgb, 114, 193, 222), .19);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { min-height: 100%; scroll-behavior: smooth; }
+body.student-app-body {
+  min-width: 320px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body.student-app-body :where(a, button, input, select, textarea) { -webkit-tap-highlight-color: transparent; }
+body.student-app-body :where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--season-accent, #8ccde6);
+  outline-offset: 3px;
+}
+body.student-app-body :where(button, input, select, textarea) { font: inherit; }
+body.student-app-body :where(img, canvas, video, svg) { max-width: 100%; }
+body.student-app-body .app { width: min(900px, 100%); padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)); }
+body.student-app-body .loading { min-height: 160px; display: grid; place-items: center; }
+body.student-app-body .hero { isolation: isolate; border-radius: var(--student-radius-lg); }
+body.student-app-body .glass,
+body.student-app-body .card,
+body.student-app-body .stat,
+body.student-app-body .event {
+  border-radius: var(--student-radius-md);
+  box-shadow: var(--student-shadow), inset 0 1px 0 rgba(255,255,255,.045);
+}
+body.student-app-body .card,
+body.student-app-body .event { overflow-wrap: anywhere; }
+body.student-app-body .card { padding: clamp(14px, 3vw, 21px); }
+body.student-app-body .section-title { scroll-margin-top: 74px; }
+body.student-app-body .section-title h2 { line-height: 1.25; }
+body.student-app-body .nav { scrollbar-width: thin; scrollbar-color: rgba(var(--season-accent-rgb, 114,193,222), .3) transparent; }
+body.student-app-body .nav button {
+  min-height: 42px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+body.student-app-body .nav button.active {
+  border-color: rgba(var(--season-border-rgb, 150,200,225), .32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+body.student-app-body .nav button:active { transform: scale(.985); }
+body.student-app-body .btn { min-height: 40px; max-width: 100%; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
+body.student-app-body .btn:disabled { opacity: .5; cursor: not-allowed; }
+body.student-app-body .actions { align-items: stretch; }
+body.student-app-body .actions > .btn { flex: 0 1 auto; }
+body.student-app-body .input,
+body.student-app-body .select,
+body.student-app-body textarea,
+body.student-app-body input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+  width: 100%; min-width: 0; max-width: 100%; min-height: 44px; border-radius: 11px;
+}
+body.student-app-body textarea { resize: vertical; }
+body.student-app-body input[type="checkbox"],
+body.student-app-body input[type="radio"] { accent-color: var(--season-accent, #72bdd8); }
+body.student-app-body .field { min-width: 0; }
+body.student-app-body .field label { line-height: 1.4; }
+body.student-app-body .dir-option { min-width: 0; align-items: flex-start; }
+body.student-app-body .dir-option > * { min-width: 0; }
+body.student-app-body .dir-option .btn { align-self: center; }
+body.student-app-body .meta span { overflow-wrap: anywhere; }
+body.student-app-body .toast { width: min(440px, calc(100vw - 28px)); text-align: center; line-height: 1.45; }
+body.student-app-body .empty { border: 1px dashed rgba(var(--season-border-rgb, 150,200,225), .18); border-radius: var(--student-radius-md); }
+body.student-app-body .registration { min-height: min(75vh, 760px); }
+body.student-app-body .registration .card { width: min(520px, 100%); }
+body.student-app-body .event-modal,
+body.student-app-body .event-modal-backdrop { overscroll-behavior: contain; }
+body.student-app-body .event-modal { max-height: calc(100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; }
+body.student-app-body [hidden] { display: none !important; }
+
+@media (hover: hover) and (pointer: fine) {
+  body.student-app-body .card:hover,
+  body.student-app-body .event:hover { border-color: rgba(var(--season-border-rgb, 150,200,225), .25); }
+}
+@media (max-width: 640px) {
+  body.student-app-body { padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px)); }
+  body.student-app-body .title { font-size: clamp(24px, 7vw, 30px); }
+  body.student-app-body .hero { padding: 18px; }
+  body.student-app-body .nav { position: sticky; top: calc(4px + env(safe-area-inset-top, 0px)); margin-inline: -1px; }
+  body.student-app-body .nav button { min-width: 92px; flex: 0 0 auto; padding-inline: 11px; }
+  body.student-app-body .grid { grid-template-columns: minmax(0, 1fr); }
+  body.student-app-body .dir-option { flex-wrap: wrap; }
+  body.student-app-body .dir-option .btn { width: 100%; }
+  body.student-app-body .top { align-items: flex-start; }
+  body.student-app-body .section-title { align-items: flex-start; flex-direction: column; gap: 5px; }
+  body.student-app-body .event-modal { padding: 20px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body *, body.student-app-body *::before, body.student-app-body *::after {
+    animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important; transition-duration: .01ms !important;
+  }
+}

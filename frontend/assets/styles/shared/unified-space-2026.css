@@ -1,0 +1,517 @@
+/* Unified spacecraft visual language — every route shares one continuous dark cosmos.
+   Keep this file last in both bundles so it wins over the legacy design layers. */
+:root {
+  --space-bg: #050b14;
+  --space-panel: rgba(10, 24, 39, .88);
+  --space-panel-strong: #0b1a2a;
+  --space-line: rgba(120, 199, 223, .18);
+  --space-glow: rgba(80, 209, 222, .12);
+  --space-ink: #edf8ff;
+  --space-muted: #91a8bb;
+  --page-accent: #83e6e1;
+}
+
+/* A subtle route identity without turning pages into unrelated themes. */
+body[data-page^="events-"], body[data-page^="announcement"] { --page-accent: #81e3d3; }
+body[data-page^="calendar-"] { --page-accent: #84caff; }
+body[data-page^="directions-"] { --page-accent: #91e5ca; }
+body[data-page^="students-"] { --page-accent: #b4c5ff; }
+body[data-page^="statistics-"] { --page-accent: #c1b2ff; }
+body[data-page^="orders-"] { --page-accent: #f0c486; }
+body[data-page^="leadership-"] { --page-accent: #85dce9; }
+body[data-page^="system-"] { --page-accent: #d2a9ff; }
+body[data-page^="staff-"] { --page-accent: #9ee4c8; }
+body[data-page^="activity-"] { --page-accent: #e6bd86; }
+body[data-page="student-app"] { --page-accent: #83e6e1; }
+
+html:has(body.uc-body), html:has(body.student-app-body) { background: var(--space-bg) !important; }
+body.uc-body:not(.is-login-page), body.student-app-body {
+  background:
+    radial-gradient(ellipse at 78% -15%, rgba(36, 120, 168, .13), transparent 38%),
+    radial-gradient(ellipse at 9% 34%, rgba(34, 93, 139, .075), transparent 32%),
+    linear-gradient(145deg, #07111e, #050b14 52%, #07111c) !important;
+}
+body.uc-body:not(.is-login-page) .app-shell > .main { background: transparent !important; }
+body.uc-body:not(.is-login-page) .topbar {
+  border-bottom-color: color-mix(in srgb, var(--page-accent) 22%, transparent) !important;
+  background: rgba(5, 13, 23, .92) !important;
+}
+body.uc-body .top-title-accent { color: var(--page-accent) !important; }
+body.uc-body:not(.is-login-page) .nav-link.active,
+body.uc-body:not(.is-login-page) .nav-sub-link.active {
+  border-color: color-mix(in srgb, var(--page-accent) 30%, transparent) !important;
+  box-shadow: inset 2px 0 var(--page-accent) !important;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--page-accent) 13%, transparent), rgba(68, 113, 178, .045)) !important;
+}
+body.uc-body:not(.is-login-page) .page {
+  position: relative;
+  background: transparent !important;
+}
+body.uc-body:not(.is-login-page) .page > :is(h1, .page-heading, .section-heading) { text-wrap: balance; }
+body.uc-body:not(.is-login-page) :is(.card, .stat-card, .direction-card, .table-wrap, .panel, .mission-panel, .mission-kpi, .galaxy-tool, .galaxy-direction, .galaxy-ops-hub, .form-card, .empty-state, .calendar-shell, .notification-card) {
+  border-color: var(--space-line) !important;
+  background-color: rgba(9, 23, 38, .84);
+}
+body.uc-body:not(.is-login-page) .page :is(input, select, textarea) {
+  border-color: rgba(128, 193, 216, .22);
+  background-color: rgba(4, 14, 25, .78);
+  color: var(--space-ink);
+}
+body.uc-body:not(.is-login-page) .page :is(input, select, textarea):focus {
+  border-color: color-mix(in srgb, var(--page-accent) 72%, #fff 0%) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--page-accent) 12%, transparent) !important;
+  outline: 0;
+}
+body.uc-body:not(.is-login-page) .page :is(button, .btn, .button, input[type="submit"]) { transition: transform .16s ease, border-color .16s ease, background-color .16s ease; }
+@media (hover: hover) and (pointer: fine) {
+  body.uc-body:not(.is-login-page) .page :is(button, .btn, .button, input[type="submit"]):hover { border-color: color-mix(in srgb, var(--page-accent) 40%, transparent); }
+}
+
+/* LOGIN: no split-screen. The planet, copy and secure sign-in card live in one scene. */
+html:has(body.uc-body.is-login-page), body.uc-body.is-login-page { background: #050b14 !important; }
+body.uc-body.is-login-page { min-height: 100dvh; overflow-x: hidden; }
+body.uc-body.is-login-page #login-content { width: 100%; min-height: 100dvh; margin: 0; }
+body.uc-body.is-login-page .premium-login {
+  position: relative; display: block !important; isolation: isolate; width: 100%; min-height: 100dvh; height: auto;
+  overflow: hidden; background:
+    radial-gradient(ellipse at 38% 43%, rgba(23, 122, 158, .17), transparent 30%),
+    radial-gradient(ellipse at 83% 85%, rgba(52, 78, 154, .12), transparent 34%),
+    linear-gradient(140deg, #071421 0%, #050c16 55%, #071522 100%) !important;
+}
+body.uc-body.is-login-page .premium-story {
+  position: relative; display: flex; flex-direction: column; isolation: isolate; width: 100%; min-width: 0;
+  min-height: 100dvh; height: auto; overflow: hidden; padding: clamp(22px, 2.7vw, 44px) clamp(22px, 4.3vw, 70px) 24px;
+  border: 0 !important; background: transparent !important; color: var(--space-ink);
+}
+body.uc-body.is-login-page .premium-story::before {
+  opacity: .26; background-image: linear-gradient(rgba(120, 194, 218, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(120, 194, 218, .045) 1px, transparent 1px);
+  background-size: 64px 64px; mask-image: radial-gradient(ellipse at 40% 45%, #000 0%, transparent 74%);
+}
+body.uc-body.is-login-page .premium-story::after { height: 33%; background: linear-gradient(transparent, rgba(3, 8, 15, .66)); }
+body.uc-body.is-login-page .premium-story-top { width: 100%; }
+body.uc-body.is-login-page .premium-visual {
+  position: absolute; z-index: 0; inset: 6% 27% 15% 2%; width: auto; min-height: 0; overflow: visible; contain: layout paint; pointer-events: none;
+}
+body.uc-body.is-login-page .premium-visual::before { width: min(63%, 590px); border-color: rgba(123, 211, 229, .16); box-shadow: 0 0 0 28px rgba(72, 166, 208, .022), 0 0 0 66px rgba(72, 166, 208, .015); }
+body.uc-body.is-login-page .premium-visual::after { opacity: .09; }
+body.uc-body.is-login-page .premium-visual-orbit--one { width: 83%; height: 39%; border-color: rgba(111, 213, 226, .23); }
+body.uc-body.is-login-page .premium-visual-orbit--two { width: 70%; height: 52%; border-color: rgba(137, 161, 232, .17); }
+body.uc-body.is-login-page .premium-planet-fallback { position: absolute; inset: 0; }
+body.uc-body.is-login-page .premium-fallback-planet {
+  left: 50%; top: 48%; width: clamp(210px, 26vw, 390px); aspect-ratio: 1;
+  background:
+    radial-gradient(ellipse at 25% 21%, rgba(165, 255, 232, .94), transparent 12%),
+    radial-gradient(ellipse at 36% 25%, #51bac4 0%, #146b9a 30%, #0b335d 61%, #071426 83%);
+  box-shadow: inset -38px -22px 54px rgba(1, 6, 17, .8), inset 13px 9px 25px rgba(102, 230, 229, .17), 0 0 80px rgba(46, 177, 217, .16);
+}
+body.uc-body.is-login-page .premium-fallback-ring { left: 50%; top: 49%; width: min(78%, 620px); height: 33%; border-color: rgba(134, 221, 234, .72); }
+body.uc-body.is-login-page .premium-fallback-ring--back { z-index: -1; opacity: .42; transform: translate(-50%, -50%) rotate(-21deg) rotateX(64deg); }
+body.uc-body.is-login-page .premium-fallback-ring--front { z-index: 2; opacity: .7; border-width: 2px; transform: translate(-50%, -50%) rotate(-21deg) rotateX(64deg); clip-path: inset(50% 0 0); }
+body.uc-body.is-login-page .premium-fallback-moon { left: 74%; top: 27%; width: 19px; }
+body.uc-body.is-login-page .premium-visual-caption { left: 8%; bottom: 4%; }
+body.uc-body.is-login-page .premium-coordinate--top { top: 14%; right: 9%; }
+body.uc-body.is-login-page .premium-coordinate--bottom { right: 9%; bottom: 4%; }
+body.uc-body.is-login-page .premium-story-bottom {
+  position: relative; z-index: 2; width: min(48%, 660px); max-width: 660px; margin-top: auto; padding-top: clamp(230px, 35vh, 355px);
+}
+body.uc-body.is-login-page .premium-story-bottom h1 { font-size: clamp(44px, 5.2vw, 78px); }
+body.uc-body.is-login-page .premium-story-description { max-width: 410px; }
+body.uc-body.is-login-page .premium-story-footer { width: min(52%, 680px); }
+body.uc-body.is-login-page .premium-auth {
+  position: absolute; z-index: 8; top: 50%; right: clamp(22px, 5.2vw, 90px); transform: translateY(-50%);
+  display: flex; justify-content: center; align-items: center; width: min(40vw, 490px); min-width: 390px; min-height: 0; height: auto;
+  padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgba(129, 201, 224, .23); border-radius: 24px;
+  background: linear-gradient(145deg, rgba(10, 25, 41, .90), rgba(6, 16, 28, .91)); color: var(--space-ink);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .35), inset 0 1px rgba(235, 250, 255, .06);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+body.uc-body.is-login-page .premium-auth::before { inset: 8px; border-color: rgba(122, 200, 224, .075); border-radius: 17px; }
+body.uc-body.is-login-page .premium-auth-inner { width: 100%; max-width: 440px; padding: 0; }
+body.uc-body.is-login-page .premium-auth-topline { margin-bottom: clamp(18px, 2.4vh, 27px); }
+body.uc-body.is-login-page .premium-mobile-brand { display: none; }
+body.uc-body.is-login-page .premium-welcome-mark { width: 38px; height: 38px; }
+body.uc-body.is-login-page .premium-kicker { margin-top: 17px; }
+body.uc-body.is-login-page .premium-welcome h2 { font-size: clamp(34px, 3.1vw, 46px); }
+body.uc-body.is-login-page .premium-auth-steps { margin: 21px 0 19px; }
+body.uc-body.is-login-page .premium-form { gap: 15px; }
+body.uc-body.is-login-page .premium-input { min-height: 49px; }
+body.uc-body.is-login-page .premium-input input { min-height: 47px; }
+body.uc-body.is-login-page .premium-submit { min-height: 50px; }
+body.uc-body.is-login-page .premium-verify-note { margin-top: 14px; padding: 11px 0; }
+body.uc-body.is-login-page .premium-auth-footer { margin-top: 13px; }
+body.uc-body.is-login-page .premium-auth-footer p { margin-top: 12px; }
+body.uc-body.is-login-page .premium-auth-bottom { width: 100%; margin-top: 16px; font-size: 6px; }
+
+/* Responsive: same continuous cosmos, with the login card layered beneath the planet scene. */
+@media (max-width: 1000px) and (min-width: 761px) {
+  body.uc-body.is-login-page .premium-visual { right: 43%; }
+  body.uc-body.is-login-page .premium-story-bottom { width: 48%; padding-top: 31vh; }
+  body.uc-body.is-login-page .premium-auth { right: 20px; width: min(46vw, 450px); min-width: 360px; padding: 23px; }
+  body.uc-body.is-login-page .premium-welcome h2 { font-size: 36px; }
+  body.uc-body.is-login-page .premium-auth-intro { font-size: 11px; }
+  body.uc-body.is-login-page .premium-verify-note p { font-size: 9px; }
+}
+@media (max-height: 780px) and (min-width: 761px) {
+  body.uc-body.is-login-page .premium-auth { top: 14px; transform: none; max-height: calc(100dvh - 28px); overflow-y: auto; scrollbar-width: thin; }
+  body.uc-body.is-login-page .premium-auth-inner { padding: 0; }
+  body.uc-body.is-login-page .premium-auth-topline { margin-bottom: 16px; }
+  body.uc-body.is-login-page .premium-welcome-mark { width: 34px; height: 34px; }
+  body.uc-body.is-login-page .premium-kicker { margin-top: 12px; }
+  body.uc-body.is-login-page .premium-auth-steps { margin: 15px 0 14px; padding-bottom: 11px; }
+  body.uc-body.is-login-page .premium-form { gap: 11px; }
+  body.uc-body.is-login-page .premium-verify-note { margin-top: 10px; padding: 9px 0; }
+  body.uc-body.is-login-page .premium-auth-footer p { margin-top: 8px; }
+  body.uc-body.is-login-page .premium-auth-bottom { margin-top: 10px; }
+}
+@media (max-width: 760px) {
+  body.uc-body.is-login-page .premium-login { display: flex !important; flex-direction: column; min-height: 100dvh; overflow: hidden; }
+  body.uc-body.is-login-page .premium-story { min-height: 550px; min-height: min(650px, 79svh); padding: 20px 20px 15px; }
+  body.uc-body.is-login-page .premium-story-top { min-height: 38px; }
+  body.uc-body.is-login-page .premium-edition { font-size: 7px; }
+  body.uc-body.is-login-page .premium-visual { inset: 45px -11% 105px; min-height: 0; overflow: visible; }
+  body.uc-body.is-login-page .premium-visual::before { width: min(70%, 330px); }
+  body.uc-body.is-login-page .premium-fallback-planet { width: clamp(180px, 49vw, 275px); }
+  body.uc-body.is-login-page .premium-fallback-ring { width: 93%; height: 31%; }
+  body.uc-body.is-login-page .premium-visual-caption { left: 8%; bottom: 1%; font-size: 6px; }
+  body.uc-body.is-login-page .premium-coordinate--top { top: 9%; right: 10%; }
+  body.uc-body.is-login-page .premium-coordinate--bottom { right: 7%; bottom: 1%; }
+  body.uc-body.is-login-page .premium-story-bottom { width: min(100%, 520px); padding-top: 265px; }
+  body.uc-body.is-login-page .premium-story-bottom h1 { font-size: clamp(38px, 9.4vw, 54px); }
+  body.uc-body.is-login-page .premium-story-description { max-width: 390px; font-size: 11px; margin-top: 10px; }
+  body.uc-body.is-login-page .premium-feature-list { gap: 14px; margin-top: 14px; padding-top: 11px; }
+  body.uc-body.is-login-page .premium-story-footer { width: 100%; margin-top: 13px; padding-top: 10px; }
+  body.uc-body.is-login-page .premium-auth {
+    position: relative; top: auto; right: auto; transform: none; align-self: center; width: calc(100% - 28px); min-width: 0; max-width: 500px;
+    margin: -24px auto 24px; padding: 23px 21px 20px; border-radius: 21px;
+  }
+  body.uc-body.is-login-page .premium-auth-inner { max-width: 460px; }
+  body.uc-body.is-login-page .premium-auth-topline { margin-bottom: 24px; }
+  body.uc-body.is-login-page .premium-mobile-brand { display: inline; }
+  body.uc-body.is-login-page .premium-welcome h2 { font-size: clamp(34px, 8vw, 44px); }
+  body.uc-body.is-login-page .premium-auth-bottom { margin-top: 14px; }
+}
+@media (max-width: 390px) {
+  body.uc-body.is-login-page .premium-story { min-height: 535px; padding-inline: 16px; }
+  body.uc-body.is-login-page .premium-story-bottom { padding-top: 250px; }
+  body.uc-body.is-login-page .premium-auth { width: calc(100% - 20px); padding-inline: 16px; }
+  body.uc-body.is-login-page .premium-field > label span { display: none; }
+}
+
+/* New document / new tab entrance — transform + opacity only, no layout-heavy flight video. */
+.ship-page-enter { animation: ship-page-enter .58s cubic-bezier(.18, .78, .25, 1) both; }
+@keyframes ship-page-enter { from { opacity: .01; transform: translate3d(0, 10px, 0) scale(.995); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+@keyframes planet-arrival { from { opacity: .15; transform: translate3d(-3%, 7%, 0) scale(.94); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body.is-login-page .premium-fallback-ring { transform: translate(-50%, -50%); }
+}
+
+/* LEONOV FLIGHT-DECK POLISH — viewport/zoom resilience and light staged entry. */
+:root {
+  --leonov-metal: #9fb6c4;
+  --leonov-steel: rgba(148, 187, 205, .25);
+  --leonov-glass: rgba(9, 25, 39, .94);
+  --leonov-amber: #d6b37a;
+}
+
+/* Layered technical surfaces: a practical spacecraft console, not a glossy game UI. */
+body.uc-body.is-login-page .premium-auth,
+body.student-app-body .app > .hero,
+body.student-app-body :is(.command-hero, .command-next-card, .mission-today-tile, .mission-today-card, .account-tile, .student-announcement, .glass.card, .registration .card) {
+  border-color: var(--leonov-steel) !important;
+  box-shadow: inset 0 1px rgba(231, 246, 255, .055), inset 0 0 0 1px rgba(3, 10, 19, .45), 0 16px 38px rgba(0, 4, 12, .20) !important;
+}
+body.uc-body.is-login-page .premium-auth {
+  background:
+    linear-gradient(90deg, transparent 0 17px, rgba(139, 197, 216, .13) 17px 18px, transparent 18px),
+    linear-gradient(180deg, rgba(17, 37, 53, .97), rgba(5, 17, 29, .97)) !important;
+}
+body.uc-body.is-login-page .premium-auth::before {
+  inset: 8px !important;
+  border: 1px solid rgba(150, 194, 211, .10) !important;
+  border-radius: 12px !important;
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+body.uc-body.is-login-page .premium-access i,
+body.uc-body.is-login-page .premium-story-footer i { background: var(--leonov-amber) !important; box-shadow: 0 0 10px rgba(214, 179, 122, .26) !important; }
+body.uc-body.is-login-page .premium-welcome-mark { border-radius: 8px !important; }
+body.uc-body.is-login-page .premium-input { border-radius: 8px !important; }
+body.uc-body.is-login-page .premium-submit { border-radius: 8px !important; background: linear-gradient(105deg, #1b4c5b, #103343 62%, #102638) !important; }
+body.uc-body.is-login-page .premium-submit i { border-radius: 6px !important; }
+body.student-app-body .app > .hero,
+body.student-app-body :is(.command-hero, .command-next-card, .mission-today-tile, .account-tile, .student-announcement, .glass.card, .registration .card) { border-radius: 13px !important; }
+body.student-app-body .app > .hero::before,
+body.student-app-body :is(.command-hero, .command-next-card, .mission-today-tile, .account-tile, .student-announcement)::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 18px; right: 18px; height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(160, 204, 219, .32), transparent);
+}
+body.student-app-body .command-kicker,
+body.student-app-body .command-card-label,
+body.student-app-body .command-next-index,
+body.student-app-body .eyebrow { letter-spacing: .12em; }
+body.student-app-body .mission-bottom-nav { border-radius: 12px !important; }
+body.student-app-body .app > .nav button.active { box-shadow: inset 0 0 0 1px rgba(155, 207, 220, .12), inset 0 1px rgba(255,255,255,.04) !important; }
+
+/* Universal sizing: zoom changes the CSS viewport, so all important tracks may shrink. */
+html:has(body.uc-body), html:has(body.student-app-body) { overflow-x: clip; }
+body.uc-body, body.student-app-body { width: 100%; max-width: 100%; min-width: 0; }
+body.uc-body *, body.student-app-body * { min-width: 0; }
+body.uc-body img, body.uc-body video, body.uc-body canvas,
+body.student-app-body img, body.student-app-body video, body.student-app-body canvas { max-width: 100%; }
+body.uc-body .app-shell, body.uc-body .app-shell > .main, body.uc-body .page,
+body.student-app-body #app, body.student-app-body .student-main { min-width: 0; max-width: 100%; }
+body.uc-body:not(.is-login-page) .page :is(.table-wrap, .table-responsive, .table-container, .data-table-wrap) { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+body.uc-body:not(.is-login-page) .page table { max-width: 100%; }
+body.uc-body:not(.is-login-page) .page :is(.card, .panel, .form-card, .calendar-shell, .notification-card, .table-wrap) { min-width: 0; }
+body.student-app-body .student-main :is(section, article, .card, .glass, .command-dashboard, .command-metrics, .command-next-row, .mission-today-grid, .student-announcements-list) { min-width: 0; max-width: 100%; }
+body.student-app-body .student-main :is(input, select, textarea, button) { max-width: 100%; }
+body.student-app-body .student-main :is(.table-wrap, .table-responsive, .table-container) { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+
+/* Desktop: the same full-bleed cosmos behind the planet and a floating flight console. */
+@media (min-width: 981px) {
+  body.uc-body.is-login-page .premium-login { min-height: 100svh; overflow-x: clip; overflow-y: visible; }
+  body.uc-body.is-login-page .premium-story { min-height: max(100svh, 650px); padding: clamp(18px, 2.4vw, 38px) clamp(20px, 3.5vw, 62px) 20px; }
+  body.uc-body.is-login-page .premium-visual { inset: 5% 32% 16% 0; }
+  body.uc-body.is-login-page .premium-story-bottom { width: min(47%, 640px); padding-top: clamp(210px, 30vh, 325px); }
+  body.uc-body.is-login-page .premium-story-bottom h1 { font-size: clamp(38px, 4.6vw, 70px); }
+  body.uc-body.is-login-page .premium-auth {
+    top: 50%; right: clamp(16px, 3.8vw, 64px); width: clamp(330px, 35vw, 470px); min-width: 0;
+    max-height: calc(100svh - 32px); overflow-y: auto; overscroll-behavior: contain;
+    padding: clamp(20px, 2.1vw, 32px); scrollbar-width: thin; scrollbar-color: rgba(124, 185, 205, .28) transparent;
+  }
+}
+@media (min-width: 981px) and (max-height: 760px) {
+  body.uc-body.is-login-page .premium-story { min-height: 760px; }
+  body.uc-body.is-login-page .premium-story-bottom { padding-top: 205px; }
+  body.uc-body.is-login-page .premium-auth { top: 12px; transform: none; max-height: calc(100svh - 24px); padding: 18px 22px; }
+  body.uc-body.is-login-page .premium-auth-topline { margin-bottom: 13px; }
+  body.uc-body.is-login-page .premium-welcome-mark { width: 32px; height: 32px; }
+  body.uc-body.is-login-page .premium-kicker { margin-top: 9px; }
+  body.uc-body.is-login-page .premium-welcome h2 { font-size: clamp(30px, 2.5vw, 38px); }
+  body.uc-body.is-login-page .premium-auth-steps { margin: 13px 0; padding-bottom: 10px; }
+  body.uc-body.is-login-page .premium-form { gap: 10px; }
+  body.uc-body.is-login-page .premium-input, body.uc-body.is-login-page .premium-input input { min-height: 42px; }
+  body.uc-body.is-login-page .premium-submit { min-height: 44px; }
+  body.uc-body.is-login-page .premium-verify-note { margin-top: 8px; padding: 8px 0; }
+  body.uc-body.is-login-page .premium-auth-footer p { margin-top: 8px; }
+  body.uc-body.is-login-page .premium-auth-bottom { margin-top: 8px; }
+}
+
+/* Tablet and high browser zoom: stack vertically, but keep one continuous scene. */
+@media (max-width: 980px) {
+  body.uc-body.is-login-page .premium-login {
+    display: flex !important; flex-direction: column; gap: 0;
+    min-height: 100svh; height: auto; overflow-x: clip; overflow-y: visible;
+  }
+  body.uc-body.is-login-page .premium-story {
+    flex: none; width: 100%; min-width: 0; min-height: 0; height: auto;
+    overflow: visible; padding: 20px clamp(16px, 4vw, 34px) 16px;
+    border: 0 !important; background: transparent !important;
+  }
+  body.uc-body.is-login-page .premium-story-top { min-height: 36px; }
+  body.uc-body.is-login-page .premium-visual {
+    inset: 48px auto auto 50%; right: auto; bottom: auto;
+    width: min(86vw, 540px); height: clamp(220px, 37vw, 320px); min-height: 0;
+    transform: translateX(-50%); overflow: visible;
+  }
+  body.uc-body.is-login-page .premium-visual::before { width: min(62%, 320px); }
+  body.uc-body.is-login-page .premium-fallback-planet { width: clamp(190px, 34vw, 285px); }
+  body.uc-body.is-login-page .premium-fallback-ring { width: min(100%, 470px); }
+  body.uc-body.is-login-page .premium-coordinate--top { top: 7%; right: 4%; }
+  body.uc-body.is-login-page .premium-coordinate--bottom { right: 5%; bottom: 0; }
+  body.uc-body.is-login-page .premium-visual-caption { left: 3%; bottom: 0; }
+  body.uc-body.is-login-page .premium-story-bottom {
+    width: 100%; max-width: 610px; margin: 0; padding-top: clamp(235px, 42vw, 320px);
+  }
+  body.uc-body.is-login-page .premium-story-bottom h1 { font-size: clamp(36px, 6vw, 56px); }
+  body.uc-body.is-login-page .premium-story-description { max-width: 480px; }
+  body.uc-body.is-login-page .premium-story-footer { width: 100%; margin-top: 15px; }
+  body.uc-body.is-login-page .premium-auth {
+    position: relative; top: auto; right: auto; transform: none;
+    width: min(calc(100% - 32px), 520px); min-width: 0; max-width: 520px;
+    max-height: none; overflow: visible; margin: 0 auto clamp(24px, 4vh, 40px);
+    padding: clamp(20px, 4vw, 30px); align-self: center;
+  }
+  body.uc-body.is-login-page .premium-auth-inner { width: 100%; max-width: none; }
+  body.uc-body.is-login-page .premium-mobile-brand { display: inline; }
+  body.uc-body.is-login-page .premium-auth-topline { gap: 8px; margin-bottom: 20px; }
+  body.uc-body.is-login-page .premium-auth-bottom { width: 100%; margin-top: 14px; }
+  body.student-app-body .app { padding-inline: clamp(12px, 2.5vw, 24px) !important; }
+  body.student-app-body .student-orbit-scene { opacity: .17; }
+  body.student-app-body .student-orbit-scene ,
+  body.student-app-body .student-orbit-scene { right: -12%; width: min(85vw, 760px) !important; max-height: 72svh; }
+}
+@media (max-width: 620px) {
+  body.uc-body.is-login-page .premium-story { padding: 18px 16px 14px; }
+  body.uc-body.is-login-page .premium-edition { font-size: 7px; }
+  body.uc-body.is-login-page .premium-visual { top: 45px; width: min(94vw, 480px); height: clamp(215px, 58vw, 280px); }
+  body.uc-body.is-login-page .premium-visual::before { width: min(66%, 280px); }
+  body.uc-body.is-login-page .premium-fallback-planet { width: clamp(178px, 52vw, 248px); }
+  body.uc-body.is-login-page .premium-fallback-ring { width: min(100%, 390px); height: 32%; }
+  body.uc-body.is-login-page .premium-story-bottom { padding-top: clamp(230px, 64vw, 280px); }
+  body.uc-body.is-login-page .premium-story-bottom h1 { font-size: clamp(32px, 8.1vw, 46px); line-height: 1.02; }
+  body.uc-body.is-login-page .premium-story-description { font-size: 12px; line-height: 1.55; }
+  body.uc-body.is-login-page .premium-feature-list { flex-wrap: wrap; gap: 9px 16px; }
+  body.uc-body.is-login-page .premium-visual-caption { max-width: 54%; font-size: 6px; }
+  body.uc-body.is-login-page .premium-coordinate--top { font-size: 6px; }
+  body.uc-body.is-login-page .premium-coordinate--bottom { font-size: 6px; }
+  body.uc-body.is-login-page .premium-auth { width: calc(100% - 24px); padding: 21px 18px 18px; margin-bottom: 18px; border-radius: 14px; }
+  body.uc-body.is-login-page .premium-auth-topline { align-items: flex-start; margin-bottom: 17px; }
+  body.uc-body.is-login-page .premium-mobile-brand { font-size: 7px; }
+  body.uc-body.is-login-page .premium-access { font-size: 7px; }
+  body.uc-body.is-login-page .premium-welcome h2 { font-size: clamp(30px, 7.7vw, 40px); }
+  body.uc-body.is-login-page .premium-auth-steps { gap: 7px; margin: 18px 0; }
+  body.uc-body.is-login-page .premium-auth-steps span { font-size: 9px; }
+  body.uc-body.is-login-page .premium-field > label { gap: 8px; font-size: 10px; }
+  body.uc-body.is-login-page .premium-field > label span { font-size: 7px; }
+  body.uc-body.is-login-page .premium-input { min-height: 46px; gap: 8px; padding-inline: 10px; }
+  body.uc-body.is-login-page .premium-input input { min-height: 44px; font-size: 13px; }
+  body.uc-body.is-login-page .premium-submit { min-height: 47px; }
+  body.uc-body.is-login-page .premium-verify-note { gap: 9px; }
+  body.uc-body.is-login-page .premium-verify-note p { line-height: 1.55; }
+  body.student-app-body .app { padding: 10px 10px calc(90px + env(safe-area-inset-bottom, 0px)) !important; }
+  body.student-app-body .app > .hero { padding: 15px 14px !important; }
+  body.student-app-body .app > .hero .title { font-size: clamp(21px, 6.2vw, 26px) !important; }
+  body.student-app-body .app > .nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.student-app-body .app > .nav button { width: 100%; min-width: 0; padding: 9px 7px; font-size: 11px; }
+  body.student-app-body .student-main { padding-top: 12px; }
+  body.student-app-body .command-hero { padding: 20px 16px !important; min-height: 0 !important; }
+  body.student-app-body .command-hero-copy { max-width: 100%; }
+  body.student-app-body .command-hero h1 { font-size: clamp(28px, 8vw, 38px) !important; overflow-wrap: anywhere; }
+  body.student-app-body .command-hero-actions { display: flex; flex-direction: column; align-items: stretch; width: min(100%, 300px); }
+  body.student-app-body .command-hero-actions .btn { width: 100%; min-width: 0; }
+  body.student-app-body .command-metrics { grid-template-columns: minmax(0, 1fr) !important; }
+  body.student-app-body .command-next-row { grid-template-columns: minmax(0, 1fr) !important; }
+  body.student-app-body .student-orbit-scene { opacity: .09; }
+  body.student-app-body .student-orbit-scene ,
+  body.student-app-body .student-orbit-scene { top: 8%; right: -25%; width: 105vw !important; height: 55svh !important; opacity: .72; }
+  body.student-app-body .mission-bottom-nav { left: 8px; right: 8px; bottom: calc(7px + env(safe-area-inset-bottom, 0px)); }
+  body.student-app-body .mission-bottom-nav button { min-width: 0; padding-inline: 4px !important; }
+  body.student-app-body .mission-bottom-nav small { font-size: 9px; }
+}
+@media (max-width: 360px) {
+  body.uc-body.is-login-page .premium-mobile-brand { display: none; }
+  body.uc-body.is-login-page .premium-access { margin-left: auto; }
+  body.uc-body.is-login-page .premium-story-bottom { padding-top: 228px; }
+  body.uc-body.is-login-page .premium-story-bottom h1 { font-size: 31px; }
+  body.uc-body.is-login-page .premium-auth { padding-inline: 14px; }
+  body.uc-body.is-login-page .premium-auth-steps span { font-size: 8px; }
+  body.student-app-body .app { padding-inline: 8px !important; }
+  body.student-app-body .app > .nav button { font-size: 10px; }
+}
+
+/* Respect short landscape windows and large desktop zoom without clipping the form. */
+@media (orientation: landscape) and (max-height: 520px) {
+  body.uc-body.is-login-page .premium-login { min-height: 100svh; }
+  body.uc-body.is-login-page .premium-story { min-height: 560px; }
+  body.uc-body.is-login-page .premium-auth { margin-block: 12px; }
+  body.uc-body.is-login-page .premium-welcome h2 { font-size: 30px; }
+  body.student-app-body .app { padding-top: 10px !important; }
+  body.student-app-body .student-orbit-scene { opacity: .08; }
+}
+
+/* Staggered block arrival. Animations are attached once by page-entry-motion.js. */
+.ship-entry-block {
+  animation: ship-block-arrival var(--ship-enter-duration, 680ms) cubic-bezier(.18, .8, .22, 1) var(--ship-enter-delay, 0ms) both;
+  will-change: opacity, translate;
+}
+@keyframes ship-block-arrival {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes ship-scene-arrival {
+  from { opacity: .25; scale: .965; }
+  to { opacity: 1; scale: 1; }
+}
+body.uc-body.is-login-page .premium-visual.ship-entry-block { animation-name: ship-scene-arrival; animation-duration: 840ms; }
+body.student-app-body .student-orbit-scene.ship-entry-block { animation-name: student-ship-arrival; animation-duration: 900ms; }
+@media (prefers-reduced-motion: reduce) {
+  .ship-entry-block, body.uc-body.is-login-page .premium-visual.ship-entry-block,
+  body.student-app-body .student-orbit-scene.ship-entry-block { animation: none !important; will-change: auto; opacity: 1; translate: none; scale: 1; }
+}
+
+/* Flight-deck engineering labels for the Leonov-inspired visual language. */
+.leonov-flight-label {
+  position: absolute; z-index: 4; top: 10%; left: 8%; display: inline-flex; align-items: center; gap: 7px;
+  max-width: calc(100% - 24px); color: rgba(169, 201, 214, .78); font-size: 7px; font-weight: 750;
+  letter-spacing: .17em; line-height: 1.5; text-transform: uppercase; text-wrap: balance;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .45); pointer-events: none;
+}
+.leonov-flight-label i { color: var(--leonov-amber); font-style: normal; opacity: .9; }
+.leonov-flight-label__dot { width: 5px; height: 5px; flex: 0 0 auto; border-radius: 2px; background: #83d9d2; box-shadow: 0 0 9px rgba(131, 217, 210, .24); }
+body.uc-body.is-login-page .leonov-flight-label { top: 14%; left: 7%; }
+body.student-app-body .leonov-flight-label { top: 12%; left: clamp(16px, 3vw, 48px); max-width: 250px; }
+@media (max-width: 980px) {
+  body.uc-body.is-login-page .leonov-flight-label { top: 17%; left: 5%; }
+  body.student-app-body .leonov-flight-label { top: 8%; left: 16px; }
+}
+@media (max-width: 620px) {
+  .leonov-flight-label { font-size: 6px; letter-spacing: .12em; gap: 5px; }
+  body.uc-body.is-login-page .leonov-flight-label { top: 15%; left: 4%; max-width: 58%; }
+  body.student-app-body .leonov-flight-label { top: 10%; left: 12px; max-width: 210px; }
+}
+@keyframes student-ship-arrival {
+  from { scale: .965; filter: brightness(.72); }
+  to { scale: 1; filter: brightness(1); }
+}
+body.student-app-body .student-orbit-scene.ship-entry-block { animation-name: student-ship-arrival; animation-duration: 900ms; }
+
+/* Final viewport corrections validated against narrow phone and compact laptop sizes. */
+@media (min-width: 981px) and (min-height: 761px) {
+  body.uc-body.is-login-page .premium-auth { transform: translateY(-50%); }
+}
+html:has(body.student-app-body), body.student-app-body { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+body.student-app-body .app,
+body.student-app-body #app { width: 100% !important; max-width: none !important; margin: 0 !important; }
+body.student-app-body .app > .hero,
+body.student-app-body .app > .nav,
+body.student-app-body .app > .student-main,
+body.student-app-body .app > .mission-bottom-nav { max-width: none !important; }
+@media (max-width: 620px) {
+  body.student-app-body .app > .mission-bottom-nav {
+    width: auto !important; left: 8px !important; right: 8px !important;
+    max-width: none !important; margin-inline: 0 !important;
+  }
+}
+
+/* v13: the selected design palette drives the whole staff website as well as Student App. */
+body.uc-body[data-theme] {
+  background-color: var(--office-depth, #100d1a);
+  transition: background-color .35s ease, color .25s ease;
+}
+body.uc-body[data-theme] .space-nebula,
+body.uc-body[data-theme] .ambient-a {
+  background: radial-gradient(ellipse at 30% 35%, color-mix(in srgb, var(--office-accent, #ffb26b) 24%, transparent), transparent 68%);
+}
+body.uc-body[data-theme] .ambient-b {
+  background: radial-gradient(ellipse at 65% 45%, color-mix(in srgb, var(--office-secondary, #ee637d) 20%, transparent), transparent 70%);
+}
+body.uc-body[data-theme] :is(.btn-primary, .btn.primary, .button-primary, .badge-active, .nav-item.is-active) {
+  --theme-live-accent: var(--office-accent, #ffb26b);
+}
+body.uc-body[data-theme] :is(.btn-primary, .btn.primary, .button-primary) {
+  border-color: color-mix(in srgb, var(--office-accent, #ffb26b) 65%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body[data-theme] { transition: none; }
+}
+
+
+/* v26: flag-colour motion for Russian national holiday themes across the website. */
+body.uc-body:is([data-season="russia_day"],[data-season="flag_day"],[data-season="unity_day"],[data-season="national_unity_day"],[data-season="constitution_day"],[data-season="national_day"]) {
+ --office-accent:#eaf2ff; --office-secondary:#e84660;
+}
+body.uc-body:is([data-season="russia_day"],[data-season="flag_day"],[data-season="unity_day"],[data-season="national_unity_day"],[data-season="constitution_day"],[data-season="national_day"]) .galaxy-hero,
+body.uc-body:is([data-season="russia_day"],[data-season="flag_day"],[data-season="unity_day"],[data-season="national_unity_day"],[data-season="constitution_day"],[data-season="national_day"]) .mission-hero-20 {
+ background-image:linear-gradient(115deg,rgba(248,251,255,.07),rgba(57,120,237,.12) 52%,rgba(232,62,88,.12)),radial-gradient(ellipse at 82% 20%,rgba(57,120,237,.2),transparent 42%);
+ border-color:rgba(142,190,255,.34);
+}
+body.uc-body:is([data-season="russia_day"],[data-season="flag_day"],[data-season="unity_day"],[data-season="national_unity_day"],[data-season="constitution_day"],[data-season="national_day"]) .galaxy-hero::after {
+ content:""; position:absolute; inset:auto 5% 0; height:4px; border-radius:10px 10px 0 0;
+ background:linear-gradient(90deg,#f8fbff 0 33.333%,#3978ed 33.333% 66.666%,#e83e58 66.666%); opacity:.9;
+ animation:rf-site-stripe 8s ease-in-out infinite alternate;
+}
+@keyframes rf-site-stripe{from{filter:brightness(.8);transform:scaleX(.78);transform-origin:left}to{filter:brightness(1.2);transform:scaleX(1);transform-origin:left}}
+@media(prefers-reduced-motion:reduce){body.uc-body:is([data-season="russia_day"],[data-season="flag_day"],[data-season="unity_day"],[data-season="national_unity_day"],[data-season="constitution_day"],[data-season="national_day"]) .galaxy-hero::after{animation:none}}

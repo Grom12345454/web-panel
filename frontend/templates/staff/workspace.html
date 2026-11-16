@@ -1,0 +1,43 @@
+{% extends 'shared/base.html' %}
+{% block title %}{{ 'Панель управления' if is_chief_admin else 'Моё направление' }} | Студсовет{% endblock %}
+{% block content %}
+<div class="galaxy-dashboard staff-dashboard" data-role-scoped-dashboard>
+  {% set dashboard_hero = {
+    'kicker': 'ГЛАВНЫЙ АДМИНИСТРАТОР · ВЫБРАННОЕ НАПРАВЛЕНИЕ' if is_chief_admin else ('СОТРУДНИК · ВСЕ НАПРАВЛЕНИЯ' if is_global_employee else 'РАБОЧЕЕ ПРОСТРАНСТВО'),
+    'title': 'Центр',
+    'accent': 'управления',
+    'description': (('Выбранное направление: ' ~ selected_direction.name ~ '. Это обзор одного раздела; главный администратор сохраняет полный доступ ко всем направлениям и функциям сайта.') if is_chief_admin else (('Выбранное направление: ' ~ selected_direction.name ~ '. Вы можете переключаться между всеми направлениями, где главный администратор выдал вам права.') if is_global_employee else ('Ваше направление: ' ~ selected_direction.name ~ '. Открывайте нужные рабочие разделы через боковую панель.'))) if selected_direction else 'Рабочие инструменты и данные отображаются в соответствии с назначенными вам правами доступа.',
+    'caption': 'ГЛОБАЛЬНЫЕ ПРАВА НА ВЕСЬ САЙТ · ОТКРЫТ ОБЗОР ВЫБРАННОГО НАПРАВЛЕНИЯ' if is_chief_admin else ('ПРАВА СОТРУДНИКА ВО ВСЕХ НАЗНАЧЕННЫХ НАПРАВЛЕНИЯХ' if is_global_employee else 'ДОСТУП ПО ПРАВАМ • ДАННЫЕ ТОЛЬКО ОДНОГО НАЗНАЧЕННОГО НАПРАВЛЕНИЯ'),
+    'actions': []
+  } %}
+  {% include 'dashboard/_dashboard_hero.html' %}
+
+  {% if directions %}
+  {% if directions|length > 1 %}
+  <nav class="staff-dashboard-directions" aria-label="Выбор доступного направления">
+    <span class="staff-dashboard-directions-label">{{ 'ВСЕ НАПРАВЛЕНИЯ' if (is_chief_admin or is_global_employee) else 'МОЁ НАПРАВЛЕНИЕ' }}</span>
+    {% for direction in directions %}
+    <a class="staff-dashboard-direction-pill{% if direction.id == selected %} is-current{% endif %}" href="{{ url_for('staff.workspace', direction=direction.id) }}" {% if direction.id == selected %}aria-current="page"{% endif %}>
+      <span aria-hidden="true">◈</span>{{ direction.name }}
+    </a>
+    {% endfor %}
+    {% if selected_direction %}<a class="staff-dashboard-direction-pill" href="{{ url_for('directions.direction_detail', did=selected_direction.id) }}">Страница направления →</a>{% endif %}
+  </nav>
+  {% elif selected_direction %}
+  <div class="staff-dashboard-current-direction"><span aria-hidden="true">◈</span><strong>{{ selected_direction.name }}</strong><span>{{ 'Полный доступ' if is_chief_admin else ('Права сотрудника' if is_global_employee else 'Единственное доступное направление') }}</span><a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=selected_direction.id) }}">Страница направления →</a></div>
+  {% endif %}
+
+  <section class="mission-panel staff-dashboard-section staff-dashboard-sidebar-hint" aria-label="Доступные рабочие разделы">
+    <div class="mission-clear-state">
+      <span aria-hidden="true">☰</span>
+      <div>
+        <strong>Рабочие разделы находятся в боковой панели</strong>
+        <p>Откройте слева «Работа со студентами», «Уведомления» или «Календарь» (занятия и мероприятия). Список разделов и доступные действия соответствуют вашим разрешениям.</p>
+      </div>
+    </div>
+  </section>
+  {% else %}
+  <section class="mission-panel staff-dashboard-section"><div class="mission-clear-state"><span aria-hidden="true">◎</span><div><strong>{{ 'Рабочее направление не выбрано' if is_chief_admin else ('Нет доступных направлений' if is_global_employee else 'Направления не назначены') }}</strong><p>{{ 'Откройте «Сотрудники и доступы» и выберите начальное направление для своей панели.' if is_chief_admin else ('Главный администратор ещё не выдал права ни на одно активное направление.' if is_global_employee else 'Для начала работы обратитесь к главному администратору: он назначит направление и разрешения.') }}</p></div></div></section>
+  {% endif %}
+</div>
+{% endblock %}

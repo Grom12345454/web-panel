@@ -1,0 +1,25 @@
+/* Galaxy V5 / events and lessons in one compact, accessible list. */
+.student-app-body .mission-list-schedule{max-width:1120px;margin-inline:auto;padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+.student-app-body .mission-list-toolbar{border:1px solid #365b79;border-radius:20px;padding:14px;display:grid;gap:12px;margin:14px 0 22px;background:linear-gradient(135deg,#142d4cdd,#0a1b35ea);box-shadow:0 16px 45px #0004}
+.student-app-body .mission-list-selector{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.student-app-body .mission-list-selector button{border:1px solid #426181;background:#102743;color:#bdd1eb;min-height:42px;border-radius:12px;padding:10px 15px;font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.student-app-body .mission-list-selector button.is-active{background:linear-gradient(135deg,#267da0,#4e58a5);color:#fff;border-color:#94e6ff;box-shadow:0 4px 18px #6bcbff25}
+.student-app-body .mission-list-selector button:hover{transform:translateY(-2px);border-color:#9ee7ff}
+.student-app-body .mission-list-feed{display:grid;gap:13px}
+.student-app-body .mission-list-card{display:grid;grid-template-columns:110px minmax(0,1fr) auto;align-items:center;gap:18px;padding:18px 20px!important;border-radius:20px!important;background:linear-gradient(135deg,#152c4b,#0c1d37)!important;border:1px solid #385879!important;box-shadow:0 12px 35px #02091435;animation:mission-card-appear .45s both}
+.student-app-body .mission-list-card:hover{transform:translateY(-3px);border-color:#77dfff!important;box-shadow:0 18px 46px #0209146b,0 0 0 1px #77dfff33}
+.student-app-body .mission-list-event{border-left:4px solid #ae9bff!important}
+.student-app-body .mission-list-lesson{border-left:4px solid #77dfff!important}
+.student-app-body .mission-list-card .mission-lesson-details{min-width:0}
+.student-app-body .mission-list-card .mission-lesson-details h3{font-size:clamp(17px,2vw,22px);margin:6px 0 5px;overflow-wrap:anywhere}
+.student-app-body .mission-list-kicker{color:#91daee;font-weight:750;font-size:11px;letter-spacing:.08em}
+.student-app-body .mission-list-event .mission-list-kicker{color:#c6b5ff}
+.student-app-body .mission-list-more{min-height:44px;white-space:nowrap;justify-self:end}
+.student-app-body .lesson-detail-dialog{max-width:min(96vw,740px)}
+.student-app-body .lesson-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:24px 0}
+.student-app-body .lesson-detail-grid>div{border:1px solid #375475;border-radius:13px;background:#122948;padding:13px 15px;min-width:0}
+.student-app-body .lesson-detail-grid dt{color:#9eb5cf;font-size:12px;margin-bottom:7px}
+.student-app-body .lesson-detail-grid dd{color:#f4f9ff;font-size:15px;font-weight:750;margin:0;overflow-wrap:anywhere}
+@keyframes mission-card-appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:720px){.student-app-body .mission-list-card{grid-template-columns:1fr;gap:10px;padding:16px!important}.student-app-body .mission-list-card .mission-lesson-date{display:flex;align-items:center;gap:12px}.student-app-body .mission-list-more{justify-self:stretch;width:100%;min-height:44px}.student-app-body .mission-list-selector button{flex:1;min-width:max-content;padding:9px 11px}.student-app-body .lesson-detail-grid{grid-template-columns:1fr}.student-app-body .mission-list-toolbar{padding:10px}}
+@media(prefers-reduced-motion:reduce){.student-app-body .mission-list-card{animation:none;transition:none}.student-app-body .mission-list-card:hover{transform:none}.student-app-body .mission-list-selector button{transition:none}}

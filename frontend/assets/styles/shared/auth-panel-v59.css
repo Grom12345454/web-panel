@@ -1,0 +1,187 @@
+/* v59 — refined authentication experience. Visual-only; server auth and CSRF remain unchanged. */
+body.uc-body.is-auth-page {
+  --auth-accent-rgb: var(--office-accent-rgb, 127, 228, 220);
+  --auth-secondary-rgb: var(--office-secondary-rgb, 87, 154, 220);
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 6%, rgba(var(--auth-accent-rgb), .12), transparent 72%),
+    radial-gradient(ellipse 62% 52% at 94% 96%, rgba(var(--auth-secondary-rgb), .11), transparent 72%),
+    #050d15 !important;
+}
+body.uc-body.is-auth-page > .auth-atmosphere {
+  background:
+    radial-gradient(ellipse 38% 52% at 2% 54%, rgba(var(--auth-accent-rgb), .14), transparent 74%),
+    radial-gradient(ellipse 36% 48% at 98% 32%, rgba(var(--auth-secondary-rgb), .13), transparent 74%);
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+  contain: paint;
+}
+body.uc-body.is-auth-page .auth-atmosphere::before,
+body.uc-body.is-auth-page .auth-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+body.uc-body.is-auth-page .auth-atmosphere::before {
+  background:
+    radial-gradient(ellipse 26% 32% at 17% 34%, rgba(var(--auth-accent-rgb), .42), transparent 76%),
+    radial-gradient(ellipse 30% 28% at 75% 62%, rgba(var(--auth-secondary-rgb), .34), transparent 77%),
+    radial-gradient(ellipse 23% 24% at 48% 86%, rgba(216, 238, 255, .10), transparent 78%);
+  filter: blur(clamp(22px, 4vw, 54px)) saturate(1.32);
+  opacity: .92;
+  mix-blend-mode: screen;
+  animation: auth-atmosphere-drift 30s ease-in-out infinite alternate;
+}
+body.uc-body.is-auth-page .auth-atmosphere::after {
+  inset: -25%;
+  background:
+    linear-gradient(118deg, transparent 36%, rgba(var(--auth-accent-rgb), .035) 46%, rgba(var(--auth-secondary-rgb), .10) 51%, transparent 63%),
+    radial-gradient(ellipse at 24% 70%, rgba(var(--auth-secondary-rgb), .12), transparent 42%),
+    radial-gradient(ellipse at 78% 24%, rgba(var(--auth-accent-rgb), .11), transparent 43%);
+  filter: blur(25px);
+  opacity: .76;
+  mix-blend-mode: screen;
+  animation: auth-atmosphere-glide 36s ease-in-out infinite alternate;
+}
+body.uc-body.is-auth-page .premium-login--single {
+  z-index: 1;
+  background: transparent !important;
+  animation: auth-panel-arrive .58s cubic-bezier(.2,.7,.2,1) both;
+}
+body.uc-body.is-auth-page .premium-auth--single {
+  border-color: rgba(var(--auth-accent-rgb), .34) !important;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(var(--auth-accent-rgb), .11), transparent 48%),
+    radial-gradient(ellipse at 100% 100%, rgba(var(--auth-secondary-rgb), .08), transparent 48%),
+    linear-gradient(155deg, rgba(18, 39, 54, .985), rgba(5, 17, 29, .99)) !important;
+  box-shadow:
+    0 32px 100px rgba(0, 0, 0, .48),
+    0 0 72px rgba(var(--auth-accent-rgb), .085),
+    inset 0 1px 0 rgba(235, 250, 255, .10),
+    inset 0 -1px 0 rgba(var(--auth-secondary-rgb), .08) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single::before {
+  border-color: rgba(var(--auth-accent-rgb), .13) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-welcome-mark {
+  border-color: rgba(var(--auth-accent-rgb), .42) !important;
+  background: linear-gradient(145deg, rgba(var(--auth-accent-rgb), .18), rgba(var(--auth-secondary-rgb), .12)) !important;
+  box-shadow: 0 0 28px rgba(var(--auth-accent-rgb), .12), inset 0 1px rgba(255,255,255,.12) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-kicker,
+body.uc-body.is-auth-page .premium-auth--single .premium-welcome h1 span,
+body.uc-body.is-auth-page .premium-auth--single .premium-access i {
+  color: rgb(var(--auth-accent-rgb)) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-access i {
+  background: rgb(var(--auth-accent-rgb)) !important;
+  box-shadow: 0 0 0 4px rgba(var(--auth-accent-rgb), .12), 0 0 16px rgba(var(--auth-accent-rgb), .5) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-input {
+  border-color: rgba(var(--auth-accent-rgb), .25) !important;
+  background: rgba(2, 10, 19, .72) !important;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-input:focus-within {
+  border-color: rgba(var(--auth-accent-rgb), .82) !important;
+  background: rgba(5, 18, 29, .96) !important;
+  box-shadow: 0 0 0 3px rgba(var(--auth-accent-rgb), .10), 0 0 26px rgba(var(--auth-accent-rgb), .12) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-submit {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(var(--auth-accent-rgb), .46) !important;
+  background: linear-gradient(112deg, rgba(var(--auth-accent-rgb), .24), rgba(var(--auth-secondary-rgb), .20)), linear-gradient(110deg, #164b59, #123a49) !important;
+  box-shadow: 0 10px 28px rgba(var(--auth-accent-rgb), .11), inset 0 1px rgba(255,255,255,.13) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-submit::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -45%;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.13), transparent);
+  transform: skewX(-18deg);
+  transition: transform .55s ease;
+  pointer-events: none;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-submit:hover::before {
+  transform: translateX(480%) skewX(-18deg);
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-submit:hover {
+  border-color: rgba(var(--auth-accent-rgb), .74) !important;
+  box-shadow: 0 13px 34px rgba(var(--auth-accent-rgb), .17), inset 0 1px rgba(255,255,255,.18) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-submit:disabled,
+body.uc-body.is-auth-page .premium-auth--single .premium-submit[aria-busy="true"] {
+  cursor: wait;
+  opacity: .78;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-submit[aria-busy="true"] > i svg { display: none; }
+body.uc-body.is-auth-page .premium-auth--single .premium-submit[aria-busy="true"] > i::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(7, 35, 42, .28);
+  border-top-color: #08262d;
+  border-radius: 50%;
+  animation: auth-submit-spin .8s linear infinite;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-alert {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16), inset 0 1px rgba(255,255,255,.035) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single .premium-verify-note {
+  border-color: rgba(var(--auth-accent-rgb), .20) !important;
+  background: linear-gradient(135deg, rgba(var(--auth-accent-rgb), .065), rgba(var(--auth-secondary-rgb), .045)), rgba(4, 15, 25, .32) !important;
+}
+body.uc-body.is-auth-page .premium-auth--single :is(input, button):focus-visible {
+  outline-color: rgb(var(--auth-accent-rgb)) !important;
+}
+@keyframes auth-atmosphere-drift {
+  from { transform: translate3d(-2%, 1%, 0) scale(.96) rotate(-3deg); }
+  to { transform: translate3d(2%, -1%, 0) scale(1.05) rotate(3deg); }
+}
+@keyframes auth-atmosphere-glide {
+  from { transform: translate3d(-2%, 1%, 0) rotate(-6deg); }
+  to { transform: translate3d(2%, -1%, 0) rotate(5deg); }
+}
+@keyframes auth-panel-arrive {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes auth-submit-spin { to { transform: rotate(360deg); } }
+@media (max-width: 520px) {
+  body.uc-body.is-auth-page .auth-atmosphere::before { filter: blur(22px) saturate(1.18); opacity: .58; }
+  body.uc-body.is-auth-page .premium-auth--single { box-shadow: 0 20px 60px rgba(0,0,0,.42), 0 0 38px rgba(var(--auth-accent-rgb), .07), inset 0 1px rgba(235,250,255,.08) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body.is-auth-page .premium-login--single,
+  body.uc-body.is-auth-page .auth-atmosphere::before,
+  body.uc-body.is-auth-page .auth-atmosphere::after,
+  body.uc-body.is-auth-page .premium-submit[aria-busy="true"] > i::after {
+    animation: none !important;
+  }
+  body.uc-body.is-auth-page .premium-auth--single * { transition: none !important; }
+}
+body.perf-page-hidden .auth-atmosphere::before,
+body.perf-page-hidden .auth-atmosphere::after { animation-play-state: paused !important; }
+@media (max-width: 350px) {
+  body.uc-body.is-auth-page .premium-auth--single .premium-welcome h1,
+  body.uc-body.is-auth-page .premium-auth--single .premium-verify-title {
+    font-size: clamp(25px, 8vw, 29px) !important;
+    letter-spacing: -.045em !important;
+  }
+}
+body.perf-economy .auth-atmosphere::before {
+  filter: blur(16px) saturate(1.1);
+  animation-duration: 38s;
+}
+body.perf-economy .auth-atmosphere::after { display: none; }
+body.perf-reduced-motion .auth-atmosphere::before,
+body.perf-reduced-motion .auth-atmosphere::after { animation: none !important; }

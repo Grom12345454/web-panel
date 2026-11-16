@@ -1,0 +1,243 @@
+/* Student App responsive profile · 2026
+   Layout follows viewport size, safe-area insets and input/browser capabilities.
+   It intentionally does not branch on Samsung/Xiaomi/Pixel model names. */
+:root {
+  --student-safe-top: env(safe-area-inset-top, 0px);
+  --student-safe-right: env(safe-area-inset-right, 0px);
+  --student-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --student-safe-left: env(safe-area-inset-left, 0px);
+  --student-visual-viewport-height: 100dvh;
+  --student-page-gutter: clamp(12px, 3vw, 24px);
+  --student-touch-target: 44px;
+}
+
+html.student-app-document {
+  min-height: 100%;
+  min-height: 100dvh;
+  -webkit-text-size-adjust: auto;
+  text-size-adjust: auto;
+}
+body.student-app-body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-block-start: calc(12px + var(--student-safe-top));
+  padding-inline-start: calc(12px + var(--student-safe-left));
+  padding-inline-end: calc(12px + var(--student-safe-right));
+  padding-block-end: calc(22px + var(--student-safe-bottom));
+  overflow-x: clip;
+  scroll-padding-block: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+body.student-app-body #app {
+  width: min(860px, 100%);
+  min-width: 0;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+body.student-app-body :is(button, .btn, [role="button"]) {
+  touch-action: manipulation;
+}
+body.student-app-body button {
+  min-height: var(--student-touch-target);
+}
+body.student-app-body :is(.nav button, .mission-bottom-nav button) {
+  min-height: 44px;
+}
+body.student-app-body :is(.input, .select, textarea) {
+  min-width: 0;
+  min-height: 46px;
+  font-size: 16px;
+  line-height: 1.4;
+  scroll-margin-block: 16px;
+}
+body.student-app-body :is([role="dialog"], .event-modal, .decline-modal, .student-notice-modal) {
+  max-height: min(92vh, calc(var(--student-visual-viewport-height, 100dvh) - 24px));
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+body.student-app-body :is(.event-modal-backdrop, .decline-modal-backdrop, .student-notice-backdrop) {
+  padding-block-start: calc(8px + var(--student-safe-top));
+  padding-block-end: calc(8px + var(--student-safe-bottom));
+}
+body.student-app-body .student-theme-atmosphere,
+body.student-app-body .student-entry-sky,
+body.student-app-body .cosmos-field,
+body.student-app-body .holiday-smoke {
+  pointer-events: none;
+}
+
+/* Compact handsets, including narrow Android WebViews and split-screen windows. */
+@media (max-width: 359px) {
+  :root { --student-page-gutter: 9px; --student-touch-target: 44px; }
+  body.student-app-body { padding-inline: calc(9px + var(--student-safe-left)) calc(9px + var(--student-safe-right)); }
+  body.student-app-body .hero { padding: 17px 14px; border-radius: 20px; }
+  body.student-app-body .title { font-size: 23px; overflow-wrap: anywhere; }
+  body.student-app-body .card { padding: 12px; border-radius: 16px; }
+  body.student-app-body .top { gap: 8px; }
+  body.student-app-body .nav { gap: 4px; }
+  body.student-app-body .nav button { min-width: 88px; padding-inline: 8px; font-size: 11px; }
+  body.student-app-body .grid { grid-template-columns: minmax(0, 1fr); }
+  body.student-app-body .dir-option { align-items: flex-start; flex-wrap: wrap; }
+  body.student-app-body .dir-option .btn { margin-inline-start: auto; }
+}
+
+/* Typical and large phones: iPhone, Galaxy, Redmi, Xiaomi and Pixel widths. */
+@media (min-width: 360px) and (max-width: 640px) {
+  body.student-app-body .app { width: 100%; }
+  body.student-app-body .hero { padding: clamp(17px, 4.5vw, 23px); }
+  body.student-app-body .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.student-app-body .dir-option { min-width: 0; }
+  body.student-app-body .dir-option .grow { min-width: 0; overflow-wrap: anywhere; }
+}
+
+/* Tablet portrait / compact foldables opened to a wider viewport. */
+@media (min-width: 641px) and (max-width: 900px) {
+  body.student-app-body { padding-inline: calc(18px + var(--student-safe-left)) calc(18px + var(--student-safe-right)); }
+  body.student-app-body #app { width: min(860px, 100%); }
+  body.student-app-body .card { padding: clamp(15px, 2.4vw, 22px); }
+}
+
+/* Large tablets and landscape phones: constrain line length, not device brand. */
+@media (min-width: 901px) {
+  body.student-app-body #app { width: min(900px, 100%); }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  body.student-app-body { padding-block-start: calc(8px + var(--student-safe-top)); }
+  body.student-app-body .hero { margin-bottom: 8px; }
+  body.student-app-body :is(.event-modal-backdrop, .decline-modal-backdrop, .student-notice-backdrop) { place-items: start center; }
+}
+
+/* Touch-only browsers do not get hover lift or tiny hit areas. */
+@media (hover: none), (pointer: coarse) {
+  body.student-app-body :is(button, .btn, [role="button"]) { cursor: default; }
+  body.student-app-body :is(.card, .event, .quick-action, .metric-tile):hover { transform: none; }
+}
+
+/* Foldable-aware enhancement: keep the app within a physical viewport segment. */
+@media (horizontal-viewport-segments: 2) {
+  body.student-app-body #app {
+    width: min(860px, calc(env(viewport-segment-width 0 0, 100vw) - 24px));
+    margin-inline-start: calc(env(viewport-segment-left 0 0, 0px) + 12px);
+    margin-inline-end: 0;
+  }
+}
+@media (vertical-viewport-segments: 2) {
+  body.student-app-body { min-height: 100vh; min-height: 100dvh; }
+  body.student-app-body #app { max-width: min(860px, 100%); }
+}
+
+/* Embedded Telegram / MAX / Android WebView viewport and safe-area handling. */
+body.student-app-body[data-runtime="telegram"],
+body.student-app-body[data-runtime="max"],
+body.student-app-body[data-runtime="webview"] {
+  scroll-padding-block-end: max(24px, var(--student-safe-bottom));
+}
+html.student-capability-visual-viewport body.student-app-body [role="dialog"] {
+  max-height: calc(var(--student-visual-viewport-height, 100dvh) - 20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body :is(button, .btn, .card, .event) { scroll-behavior: auto; }
+}
+@media (forced-colors: active) {
+  body.student-app-body :is(.card, .dir-option, .glass) { border: 1px solid CanvasText; }
+}
+
+
+/* Modern iOS Safari / Chrome dynamic browser chrome and keyboard viewport. */
+:root { --student-visual-viewport-width: 100vw; --student-visual-viewport-offset-top: 0px; }
+@supports (height: 100svh) {
+  html.student-app-document { min-height: 100svh; }
+  body.student-app-body { min-height: 100svh; }
+}
+@supports (height: 100dvh) {
+  html.student-app-document { min-height: 100dvh; }
+  body.student-app-body { min-height: 100dvh; }
+}
+body.student-app-body.student-keyboard-open { scroll-padding-block-end: max(20px, var(--student-safe-bottom)); }
+body.student-app-body :is(input, select, textarea) { scroll-margin-block: 18px; }
+body.student-app-body .mission-bottom-nav {
+  padding-block-end: max(8px, var(--student-safe-bottom));
+}
+
+/* Mini / compact iPhones and narrow split-screen windows. */
+@media (max-width: 389px) {
+  body.student-app-body .hero { gap: 10px; }
+  body.student-app-body .title { line-height: 1.12; letter-spacing: -.035em; }
+  body.student-app-body .grid { grid-template-columns: minmax(0, 1fr); }
+  body.student-app-body :is(.nav, .mission-bottom-nav) { max-width: 100%; }
+  body.student-app-body :is(.nav button, .mission-bottom-nav button) { min-width: 0; padding-inline: 7px; }
+  body.student-app-body :is(.event-modal, .decline-modal, .student-notice-modal) { width: min(100%, calc(100vw - 18px)); }
+}
+
+/* Large phones (Pro Max / Ultra class) use the extra width without stretching copy. */
+@media (min-width: 430px) and (max-width: 640px) {
+  body.student-app-body #app { max-width: 560px; }
+  body.student-app-body .grid { column-gap: 13px; row-gap: 13px; }
+  body.student-app-body .card { min-width: 0; }
+}
+
+/* iPad portrait/landscape and Android tablets keep a comfortable reading measure. */
+@media (min-width: 641px) and (max-width: 1180px) {
+  body.student-app-body #app { width: min(900px, 100%); }
+  body.student-app-body .section-title { gap: 14px; }
+  body.student-app-body :is(.card, .glass, .hero) { min-width: 0; }
+}
+
+/* Keyboard-open dialogs follow visualViewport rather than the hidden browser chrome. */
+html.student-capability-visual-viewport body.student-app-body.student-keyboard-open :is([role="dialog"], .event-modal, .decline-modal, .student-notice-modal) {
+  max-height: calc(var(--student-visual-viewport-height, 100dvh) - 16px);
+  transform: translateY(min(0px, var(--student-visual-viewport-offset-top, 0px)));
+}
+
+/* Avoid fixed backgrounds and hover transforms on touch-first devices. */
+@media (pointer: coarse) {
+  body.student-app-body { background-attachment: scroll; }
+  body.student-app-body :is(.btn, button, [role="button"]) { -webkit-user-select: none; user-select: none; }
+}
+
+/* A foldable's content stays inside the active panel, clear of its hinge. */
+@media (horizontal-viewport-segments: 2) {
+  body.student-app-body #app {
+    width: min(860px, calc(env(viewport-segment-width 0 0, 100vw) - 24px));
+    margin-inline-start: calc(env(viewport-segment-left 0 0, 0px) + 12px + var(--student-safe-left));
+  }
+}
+@media (vertical-viewport-segments: 2) {
+  body.student-app-body #app { max-height: min(100%, env(viewport-segment-height 0 0, 100dvh)); }
+}
+
+
+/* Final cascade bridge: the legacy cockpit shell uses !important full-bleed rules. */
+body.student-app-body .app {
+  padding-block-start: calc(12px + var(--student-safe-top)) !important;
+  padding-inline-start: calc(12px + var(--student-safe-left)) !important;
+  padding-inline-end: calc(12px + var(--student-safe-right)) !important;
+  padding-block-end: calc(26px + var(--student-safe-bottom)) !important;
+}
+@media (min-width: 641px) {
+  body.student-app-body .app > :is(.hero, .nav),
+  body.student-app-body .student-main,
+  body.student-app-body .mission-bottom-nav {
+    width: 100% !important;
+    max-width: min(1120px, calc(100vw - 48px)) !important;
+    margin-inline: auto !important;
+  }
+}
+@media (min-width: 641px) and (max-width: 900px) {
+  body.student-app-body .app > :is(.hero, .nav),
+  body.student-app-body .student-main,
+  body.student-app-body .mission-bottom-nav { max-width: calc(100vw - 40px) !important; }
+}
+@media (min-width: 430px) and (max-width: 640px) {
+  body.student-app-body .app { padding: calc(10px + var(--student-safe-top)) calc(14px + var(--student-safe-left)) calc(86px + var(--student-safe-bottom)) calc(14px + var(--student-safe-right)) !important; }
+}
+@media (max-width: 429px) {
+  body.student-app-body .app { padding: calc(9px + var(--student-safe-top)) calc(9px + var(--student-safe-left)) calc(84px + var(--student-safe-bottom)) calc(9px + var(--student-safe-right)) !important; }
+}
+@media (max-width: 620px) {
+  body.student-app-body .mission-bottom-nav {
+    bottom: 8px !important;
+    padding-block-end: max(8px, var(--student-safe-bottom)) !important;
+  }
+}

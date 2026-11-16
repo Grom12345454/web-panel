@@ -1,0 +1,12 @@
+/* Verified social profiles in staff cards, never a substitute for identity checks. */
+.student-social-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.student-social-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid #365f91;border-radius:9px;background:#123655;color:#b9e5ff;padding:4px 8px;font-size:11px;line-height:1.35;text-decoration:none;overflow-wrap:anywhere}
+.student-social-max{border-color:#6b4eaa;background:#312458;color:#e2ceff}
+.student-social-chip:hover,.student-messenger-field a:hover{border-color:#a2eaff;color:white;text-decoration:none}
+.student-messenger-field a{font-weight:750;color:#9fdbff;text-decoration:none;overflow-wrap:anywhere}
+.student-messenger-field.student-messenger-max{background:linear-gradient(140deg,#3e2a5730,#0000)}
+.galaxy-profile-linked{margin-top:22px;padding:14px;border:1px solid #ffffff26;border-radius:16px;background:#06182b66}
+.galaxy-profile-linked h3{margin:0 0 12px;color:#f1f7ff;font-size:17px}
+.galaxy-profile-linked-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #ffffff18;flex-wrap:wrap}
+.galaxy-profile-linked-row a{color:#9cdeff;text-decoration:none;font-weight:750}
+.galaxy-profile-linked-row strong{color:#ddc3ff}

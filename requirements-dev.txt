@@ -1,0 +1,3 @@
+-r requirements.txt
+-r requirements-security.txt
+pytest

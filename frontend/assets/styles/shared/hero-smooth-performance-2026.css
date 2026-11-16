@@ -1,0 +1,188 @@
+/* 26 Oct 2026 — contained hero artwork and composited, low-cost card motion.
+   This is the last stylesheet in both bundles, overriding legacy pointer-tilt
+   and overlapping hero media queries while preserving seasonal palettes. */
+
+/* Both welcome heroes have an explicit illustration column, rather than
+   absolute artwork below the fold. Keep the decoration within the outline. */
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(235px,.75fr) !important;
+  align-items:center !important;
+  column-gap:clamp(18px,3.2vw,42px) !important;
+  min-height:338px !important;
+  padding:clamp(25px,3.2vw,43px) !important;
+  overflow:hidden;
+  isolation:isolate;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-copy {
+  width:100%;max-width:unset !important;min-width:0;position:relative;z-index:3;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 h1 {
+  font-size:clamp(34px,3.6vw,54px) !important;
+  max-width:13ch;line-height:1.08 !important;
+  margin:0 0 17px !important;
+  overflow-wrap:normal;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-copy p {
+  max-width:48ch;margin:0;color:#c6d9ed;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-actions {
+  gap:10px;margin-top:22px;position:relative;z-index:4;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-visual {
+  position:relative !important;inset:auto !important;
+  display:block;justify-self:center;align-self:center;
+  width:min(100%,310px) !important;height:auto !important;
+  aspect-ratio:1;min-width:0;max-height:none;
+  opacity:1 !important;transform:none !important;
+  animation:none !important;filter:none !important;
+  pointer-events:none;z-index:1;
+}
+
+body.student-app-body .command-hero {
+  display:grid !important;
+  grid-template-columns:minmax(0,1.25fr) minmax(210px,.85fr) !important;
+  align-items:center !important;
+  column-gap:clamp(14px,3vw,42px) !important;
+  min-height:327px !important;
+  padding:clamp(25px,3.4vw,43px) !important;
+  overflow:hidden;isolation:isolate;
+}
+body.student-app-body .command-hero .command-hero-copy {
+  width:100%;max-width:unset !important;min-width:0;position:relative;z-index:3;
+}
+body.student-app-body .command-hero .command-hero-copy h1 {
+  font-size:clamp(32px,4vw,49px) !important;
+  line-height:1.1 !important;
+  margin:0 0 15px !important;
+  max-width:15ch;
+}
+body.student-app-body .command-hero .command-hero-copy>p {
+  max-width:45ch;margin:0 0 23px;
+}
+body.student-app-body .command-hero .command-hero-actions {
+  position:relative;z-index:4;gap:10px;
+}
+body.student-app-body .command-hero .command-world {
+  position:relative !important;inset:auto !important;
+  width:min(100%,300px) !important;height:auto !important;
+  aspect-ratio:1;
+  justify-self:center;align-self:center;
+  transform:none !important;animation:none !important;filter:none !important;
+  opacity:1 !important;pointer-events:none;z-index:1;
+}
+/* Large blur filters on constantly moving planets forced expensive re-rasterization. */
+body.uc-body .mission-hero-20 .galaxy-planet,
+body.uc-body .mission-hero-20 .galaxy-depth-aura,
+body.student-app-body .command-hero .command-world-planet,
+body.student-app-body .command-hero .command-world-halo {
+  animation:none !important;filter:none !important;
+}
+body.student-app-body .command-hero .command-depth-track,
+body.uc-body .mission-hero-20 .galaxy-depth-track,
+body.student-app-body .command-hero .command-world-orbit,
+body.uc-body .mission-hero-20 .galaxy-planet-ring {
+  animation:none !important;filter:none !important;
+}
+/* No full-surface sweeping gradients; star texture remains visible. */
+body.student-app-body .command-hero::before,
+body.uc-body .galaxy-dashboard .mission-hero-20::before,
+body.student-app-body .command-hero-stars,
+body.uc-body .mission-hero-20 .depth-hero-stars {
+  animation:none !important;
+}
+
+/* Only change transforms on hover: no geometry measurement, 3D rotation or
+   giant repainted shadows.  This also handles keyboard focus naturally. */
+body.uc-body .main :is(.card,.dashboard-card,.galaxy-tool,.mission-kpi,.galaxy-direction,.galaxy-stat),
+body.student-app-body :is(.command-next-card,.mission-today-tile,.event-preview,.command-metric,.glass.card,.account-tile) {
+  transform-style:flat !important;
+  backface-visibility:hidden;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  transition:transform 170ms cubic-bezier(.2,.76,.2,1),border-color 170ms ease !important;
+}
+/* Disable parent shadows changing on hover: they would repaint large areas. */
+body.uc-body .main :is(.card,.dashboard-card,.galaxy-tool,.mission-kpi,.galaxy-direction,.galaxy-stat):is(:hover,:focus-within),
+body.student-app-body :is(.command-next-card,.mission-today-tile,.event-preview,.command-metric,.glass.card,.account-tile):is(:hover,:focus-within) {
+  box-shadow:0 13px 33px rgba(0,7,27,.28),inset 0 1px rgba(233,251,255,.08) !important;
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  body.uc-body .main :is(.card,.dashboard-card,.galaxy-tool,.mission-kpi,.galaxy-direction,.galaxy-stat):is(:hover,:focus-visible),
+  body.student-app-body :is(.command-next-card,.mission-today-tile,.event-preview,.command-metric,.glass.card,.account-tile):is(:hover,:focus-visible) {
+    transform:translate3d(0,-3px,0) !important;
+  }
+}
+/* Explicitly neutralize legacy mouse-tracking reflection and tilt classes. */
+body.uc-body .main .depth-interacting,
+body.student-app-body .depth-interacting,
+body.uc-body .main .cosmos-tilt-active,
+body.student-app-body .cosmos-tilt-active {
+  background-position:center !important;
+}
+/* Fixed background is a visual layer, not a full-screen animated blur. */
+body.uc-body .cosmos-field__nebula,
+body.student-app-body .cosmos-field__nebula { animation:none !important; }
+body.uc-body .cosmos-field__stars,
+body.student-app-body .cosmos-field__stars {
+  animation:none !important;filter:none !important;transform:none !important;
+  transition:none !important;
+}
+html.cosmos-paused .cosmos-field__comet {animation-play-state:paused !important;}
+
+/* Small desktop / tablet: keep illustration in its own column. */
+@media (min-width:701px) and (max-width:1040px) {
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 {
+    grid-template-columns:minmax(0,1.3fr) minmax(170px,.7fr) !important;
+    min-height:302px !important;
+  }
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-visual {
+    width:min(100%,245px) !important;
+  }
+  body.student-app-body .command-hero {
+    grid-template-columns:minmax(0,1.3fr) minmax(180px,.7fr) !important;
+    min-height:306px !important;
+  }
+  body.student-app-body .command-hero .command-world {width:min(100%,245px) !important;}
+}
+/* Phones: illustration becomes a small, muted accent, leaving text/actions
+   fully readable. Never place a huge planet below the clipped bottom edge. */
+@media (max-width:700px) {
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20,
+  body.student-app-body .command-hero {
+    display:block !important;min-height:0 !important;
+    padding:clamp(22px,5vw,29px) !important;
+  }
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-copy,
+  body.student-app-body .command-hero .command-hero-copy {
+    position:relative;max-width:100% !important;z-index:3;
+  }
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 h1,
+  body.student-app-body .command-hero .command-hero-copy h1 {
+    font-size:clamp(30px,8vw,40px) !important;
+  }
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-visual,
+  body.student-app-body .command-hero .command-world {
+    position:absolute !important;
+    top:auto !important;left:auto !important;
+    bottom:12px !important;right:12px !important;
+    width:min(32%,135px) !important;
+    height:auto !important;opacity:.25 !important;
+    transform:none !important;
+  }
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-actions,
+  body.student-app-body .command-hero .command-hero-actions {
+    width:100%;position:relative;z-index:4;
+  }
+}
+@media (max-width:420px) {
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .mission-hero-20 .galaxy-hero-visual,
+  body.student-app-body .command-hero .command-world {opacity:.14 !important;}
+  body.student-app-body .command-hero .command-hero-actions {max-width:100%;}
+}
+@media (prefers-reduced-motion:reduce) {
+  body.uc-body .main :is(.card,.dashboard-card,.galaxy-tool,.mission-kpi,.galaxy-direction,.galaxy-stat),
+  body.student-app-body :is(.command-next-card,.mission-today-tile,.event-preview,.command-metric,.glass.card,.account-tile) {
+    transform:none !important;transition:none !important;
+  }
+}

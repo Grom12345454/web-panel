@@ -1,0 +1,38 @@
+{% extends 'shared/base.html' %}
+{% block title %}Подтверждение входа — Рабочее пространство{% endblock %}
+{% block login_content %}
+<main class="premium-login premium-login--single" id="login-content">
+  <section class="premium-auth premium-auth--single" aria-labelledby="premium-auth-title">
+    <div class="premium-auth-inner">
+      <div class="premium-auth-topline">
+        <span class="premium-access"><i aria-hidden="true"></i> ЗАЩИЩЁННЫЙ ДОСТУП</span>
+      </div>
+
+      <div class="premium-welcome">
+        <span class="premium-welcome-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5 20 8v8l-8 4.5L4 16V8l8-4.5Z"></path><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg></span>
+        <p class="premium-kicker">РАБОЧЕЕ ПРОСТРАНСТВО</p>
+        <h1 class="premium-verify-title" id="premium-auth-title">Подтвердите вход<span>.</span></h1>
+        <p class="premium-auth-intro">Введите одноразовый код из личного сообщения Telegram, чтобы безопасно продолжить работу.</p>
+      </div>
+
+      <div class="premium-auth-steps" aria-label="Этапы входа"><span><i>01</i> Учётная запись</span><b aria-hidden="true"></b><span class="is-current"><i>02</i> Подтверждение</span></div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<div class="premium-alert premium-alert--{{ cat|default('info') }}" role="alert">{{ msg }}</div>{% endfor %}
+      {% endwith %}
+
+      <form method="post" class="premium-form" autocomplete="one-time-code">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="premium-field">
+          <label for="otp-code">Код подтверждения <span>6 ЦИФР</span></label>
+          <div class="premium-input premium-input--otp"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="3"></rect><path d="M9 7h6M9 11h6M9 15h3"></path></svg><input id="otp-code" class="otp-input" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" autofocus required placeholder="000000" aria-describedby="otp-countdown"><span class="otp-countdown" id="otp-countdown">Осталось <strong id="otp-seconds" data-seconds="{{ remaining }}">{{ remaining }}</strong> сек.</span></div>
+        </div>
+        <button class="premium-submit" type="submit"><span>Подтвердить вход</span><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12h14M12.5 5.5 19 12l-6.5 6.5"></path></svg></i></button>
+      </form>
+
+      <div class="premium-auth-footer"><p><span aria-hidden="true">◇</span> Код действует 30 секунд. Никому не сообщайте его.</p><p class="premium-auth-back"><a href="{{ url_for('auth.login') }}">Вернуться к вводу логина и пароля</a></p></div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script defer src="{{ url_for('static', filename='js/otp.js', v=asset_version('js/otp.js')) }}"></script>{% endblock %}

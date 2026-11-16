@@ -1,0 +1,64 @@
+{
+  "name": "studsovet-messenger-desktop",
+  "version": "1.9.6",
+  "description": "Desktop-only Windows messenger client for StudSovet; no browser messenger interface",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build:win": "electron-builder --win nsis --x64",
+    "build:win:portable": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "45.3.1",
+    "electron-builder": "26.18.1"
+  },
+  "build": {
+    "appId": "ru.studsovet.messenger",
+    "productName": "StudSovet Messenger",
+    "artifactName": "StudSovet-Messenger-Setup-${version}.${ext}",
+    "asar": true,
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "setup.html",
+      "setup.css",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/messenger.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "StudSovet Messenger"
+    }
+  },
+  "author": "StudSovet",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "overrides": {
+    "@electron/universal": "3.0.4",
+    "app-builder-lib": {
+      "minimatch": "11.0.8"
+    }
+  }
+}

@@ -1,0 +1,124 @@
+/* Account connection — stable grid and accessible buttons at any viewport width. */
+body.student-app-body .accounts-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+  align-items:stretch;
+  margin:20px 0 26px;
+}
+body.student-app-body .account-tile {
+  min-width:0;
+  min-height:255px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:space-between;
+  gap:28px;
+  padding:23px 22px;
+  overflow:hidden;
+  position:relative;
+  isolation:isolate;
+  border-radius:22px;
+  box-sizing:border-box;
+  animation:account-enter .55s cubic-bezier(.21,.88,.24,1) both;
+}
+body.student-app-body .account-tile:nth-child(2){animation-delay:.08s}
+body.student-app-body .account-tile:nth-child(3){animation-delay:.16s}
+body.student-app-body .account-tile::before {
+  content:"";position:absolute;top:-85px;right:-90px;width:220px;height:220px;
+  border-radius:50%;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle,rgba(66,164,237,.18),transparent 72%);
+  opacity:.7;transition:transform .5s ease,opacity .5s ease;
+}
+body.student-app-body .account-tile-vk::before{background:radial-gradient(circle,rgba(67,137,255,.2),transparent 72%)}
+body.student-app-body .account-tile-max::before{background:radial-gradient(circle,rgba(158,109,250,.23),transparent 72%)}
+body.student-app-body .account-tile:hover::before{transform:translate(-17px,27px) scale(1.25);opacity:1}
+body.student-app-body .account-heading {
+  display:grid;grid-template-columns:46px minmax(0,1fr);
+  align-items:center;gap:11px 12px;min-width:0;
+}
+body.student-app-body .account-logo{width:46px;height:46px;min-width:0;box-shadow:0 9px 23px rgba(24,84,156,.2)}
+body.student-app-body .account-heading-text{min-width:0;overflow-wrap:break-word}
+body.student-app-body .account-heading-text h3{font-size:16px;line-height:1.2;margin:0 0 5px}
+body.student-app-body .account-heading-text .muted{font-size:12px;line-height:1.45}
+body.student-app-body .account-chip{grid-column:2;justify-self:start;max-width:100%;font-size:11px}
+body.student-app-body .account-controls{display:block;min-width:0;width:100%;flex:none}
+body.student-app-body .account-connect-form{display:flex;flex-direction:column;align-items:stretch;gap:9px;width:100%;min-width:0}
+body.student-app-body .account-handle-label{font-size:12px;margin:0;line-height:1.5;opacity:.95}
+body.student-app-body .account-handle-input {
+  box-sizing:border-box;display:block;width:100%;min-width:0;max-width:none;
+  height:44px;margin:0;border-radius:12px;padding:10px 13px;
+  color:#eef7ff;background:rgba(1,12,31,.65);border:1px solid rgba(143,192,246,.23);
+  font-size:14px;line-height:22px;
+}
+body.student-app-body .account-handle-input::placeholder{color:#859db9}
+body.student-app-body .account-connect-button,
+body.student-app-body .account-controls-connected>.btn {
+  box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+  flex:none;width:100%;min-width:0;max-width:100%;height:auto;min-height:44px;
+  padding:11px 14px;gap:9px;white-space:normal;overflow-wrap:normal;
+  word-break:normal;writing-mode:horizontal-tb;text-align:center;
+  font-family:inherit;font-weight:700;font-size:13px;line-height:1.35;letter-spacing:0;
+  border-radius:12px;
+}
+body.student-app-body .account-connect-button span{font-size:17px;line-height:1;transition:transform .2s ease}
+body.student-app-body .account-connect-button:not(:disabled):hover span{transform:translate(3px,-3px)}
+body.student-app-body .account-controls-connected .account-note{display:block;line-height:1.55}
+body.student-app-body .account-journey-step{overflow:hidden}
+body.student-app-body .account-journey-step>div{min-width:0;overflow-wrap:break-word}
+body.student-app-body .account-journey-step{animation:account-enter .5s ease both}
+body.student-app-body .account-journey-step:nth-child(2){animation-delay:.07s}
+body.student-app-body .account-journey-step:nth-child(3){animation-delay:.14s}
+@keyframes account-enter {from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes account-ring-drift {0%,100%{transform:rotate(28deg) rotateX(70deg) translate3d(0,0,0)}50%{transform:rotate(33deg) rotateX(70deg) translate3d(0,-8px,0)}}
+@keyframes account-planet-float{0%,100%{transform:rotate(-25deg) rotateX(17deg) translateY(0)}50%{transform:rotate(-23deg) rotateX(17deg) translateY(-13px)}}
+@media (prefers-reduced-motion:no-preference){
+  body.student-app-body .student-ring-outer{animation:account-ring-drift 16s ease-in-out infinite}
+  body.student-app-body .student-planet{animation:account-planet-float 12s ease-in-out infinite}
+  body.student-app-body .account-tile:focus-within{border-color:rgba(128,226,255,.55)!important;box-shadow:0 20px 52px rgba(5,20,50,.42),0 0 25px rgba(56,184,255,.12)!important}
+  body.student-app-body .account-connect-button:not(:disabled){transition:transform .2s ease,filter .2s ease,box-shadow .2s ease}
+  body.student-app-body .account-connect-button:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.12)}
+}
+@media (max-width:980px){body.student-app-body .accounts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){
+  body.student-app-body .accounts-grid{grid-template-columns:minmax(0,1fr);gap:12px}
+  body.student-app-body .account-tile{padding:20px;gap:22px;min-height:0}
+  body.student-app-body .account-heading{grid-template-columns:44px minmax(0,1fr)}
+  body.student-app-body .account-chip{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  body.student-app-body .account-tile,body.student-app-body .account-journey-step,
+  body.student-app-body .student-ring-outer,body.student-app-body .student-planet{
+    animation:none!important;transition:none!important;
+  }
+}
+
+/* Cosmic account bridge — the same orbital-cockpit language as the rest of Student App. */
+body.student-app-body .mission-connected-accounts{position:relative;margin:26px 0 36px;padding:clamp(16px,3vw,28px);border:1px solid rgba(120,192,230,.18);border-radius:26px;background:linear-gradient(145deg,rgba(8,26,46,.84),rgba(4,15,29,.72));box-shadow:0 24px 70px rgba(0,0,0,.18),inset 0 1px rgba(220,244,255,.035);overflow:hidden}
+body.student-app-body .mission-connected-accounts::before{content:"";position:absolute;right:-100px;top:-140px;width:300px;height:300px;border-radius:50%;border:1px solid rgba(115,219,233,.12);box-shadow:0 0 0 26px rgba(115,219,233,.025),0 0 0 56px rgba(115,219,233,.018);pointer-events:none}
+body.student-app-body .mission-connected-accounts>.section-title{position:relative;z-index:1;gap:14px;align-items:center;flex-wrap:wrap}
+body.student-app-body .mission-connected-accounts>.section-title h2{margin:3px 0 5px}
+body.student-app-body .mission-connected-accounts>.section-title>button{flex:none}
+body.student-app-body .account-logo{display:grid;place-items:center;border:1px solid rgba(161,216,248,.2);border-radius:14px;background:linear-gradient(145deg,rgba(67,151,208,.2),rgba(12,34,57,.8));color:#d7f5ff;font-weight:800;font-size:18px}
+body.student-app-body .account-logo-vk{background:linear-gradient(145deg,rgba(41,115,236,.3),rgba(9,28,57,.82));color:#b9d5ff}
+body.student-app-body .account-logo-max{background:linear-gradient(145deg,rgba(130,83,232,.3),rgba(27,17,62,.82));color:#e3d4ff}
+body.student-app-body .account-logo-telegram{background:linear-gradient(145deg,rgba(48,166,210,.29),rgba(10,38,62,.82));color:#b9f0ff}
+body.student-app-body .account-chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(139,183,211,.15);background:rgba(20,40,62,.7);color:#abc4d8}
+body.student-app-body .account-chip.success{border-color:rgba(88,220,189,.23);background:rgba(20,133,109,.15);color:#8cebd3}
+body.student-app-body .account-security-note{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;align-items:start;padding:16px 18px;border:1px solid rgba(98,202,221,.18);border-radius:16px;background:linear-gradient(105deg,rgba(25,111,139,.14),rgba(8,31,49,.4));margin:12px 0 20px}
+body.student-app-body .account-security-note>span{font-size:20px}
+body.student-app-body .account-security-note p{margin:5px 0 0;font-size:12px;line-height:1.65;color:#a9c3d7}
+body.student-app-body .account-code-result{display:grid;gap:10px;margin:18px 0;padding:18px;border:1px solid rgba(99,234,206,.35);border-radius:18px;background:linear-gradient(120deg,rgba(12,104,98,.2),rgba(6,26,44,.72));overflow-wrap:anywhere}
+body.student-app-body .account-code-result code{display:block;padding:15px;border-radius:12px;background:rgba(0,8,17,.62);color:#b6ffe9;font:700 18px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;text-align:center;user-select:all}
+body.student-app-body .account-code-result p{margin:0;color:#bbd2e1;font-size:13px;line-height:1.65}
+body.student-app-body .account-pending-wrap{margin-top:18px}
+body.student-app-body .account-pending .section-title{align-items:center;gap:12px;flex-wrap:wrap}
+body.student-app-body .account-pending .section-title h3{margin:0 0 4px;font-size:16px}
+body.student-app-body .account-pending .section-title span{font-size:12px;color:#9ebbd0}
+body.student-app-body .account-journey-step{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:10px 0;padding:15px 16px;border:1px solid rgba(130,186,218,.15);border-radius:16px;background:rgba(10,28,47,.64)}
+body.student-app-body .account-journey-step .actions{display:flex;flex-wrap:wrap;gap:8px;flex:none}
+body.student-app-body .account-footnote{position:relative;z-index:1;margin:16px 0 0;color:#8ba7bd;font-size:11px;line-height:1.6}
+body.student-app-body .account-empty{margin:12px 0;padding:16px;border:1px dashed rgba(131,185,211,.18);border-radius:14px;color:#9ab5c9;background:rgba(5,19,33,.32)}
+body.student-app-body .account-connect-button:disabled{opacity:.45;cursor:not-allowed;filter:saturate(.45)}
+@media(max-width:640px){body.student-app-body .mission-connected-accounts{padding:15px;border-radius:20px}body.student-app-body .account-journey-step{align-items:stretch;flex-direction:column}body.student-app-body .account-journey-step .actions{width:100%}body.student-app-body .account-journey-step .actions .btn{flex:1}body.student-app-body .account-code-result code{font-size:15px;letter-spacing:.05em}}
+@media(prefers-reduced-motion:reduce){body.student-app-body .mission-connected-accounts::before{display:none}body.student-app-body .account-code-result,body.student-app-body .account-journey-step{animation:none!important;transition:none!important}}

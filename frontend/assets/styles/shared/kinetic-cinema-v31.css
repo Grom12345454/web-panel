@@ -1,0 +1,118 @@
+/* V31 — Kinetic cinema layer shared by the staff site and Student App.
+   The interaction is deliberately subtle: spatial light, short 3D card response,
+   tactile buttons and clear focus states. Theme colours come from the active theme. */
+:root {
+  --v31-motion-ease: cubic-bezier(.18,.82,.22,1);
+  --v31-depth-shadow: 0 25px 68px rgba(0, 3, 18, .38), inset 0 1px rgba(255,255,255,.10), inset 0 -1px rgba(0,0,0,.20);
+}
+
+body.uc-body[data-theme],
+body.student-app-body[data-season] {
+  --v31-glow: var(--v29-accent, var(--office-accent, var(--season-accent, #7bdcff)));
+  --v31-glow-soft: color-mix(in srgb, var(--v31-glow) 20%, transparent);
+}
+
+/* Pointer-following light sits behind content inside the existing cosmic field. */
+.cosmos-field > .v31-light-halo {
+  position: absolute;
+  z-index: 1;
+  left: var(--v31-pointer-x, 50%);
+  top: var(--v31-pointer-y, 35%);
+  width: min(42vw, 610px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--v31-glow, #7bdcff) 18%, transparent) 0%, color-mix(in srgb, var(--v31-glow, #7bdcff) 7%, transparent) 34%, transparent 70%);
+  filter: blur(20px);
+  opacity: .68;
+  transform: translate3d(-50%, -50%, 0);
+  transition: opacity .35s ease, background .55s ease;
+  will-change: left, top;
+}
+.cosmos-field > .v31-light-halo.v31-light-halo--active { opacity: 1; }
+
+/* Add another layer of theme-aware nebula depth without replacing holiday overlays. */
+body.uc-body[data-theme] > .cosmos-field .cosmos-field__nebula,
+body.student-app-body[data-season] > .cosmos-field .cosmos-field__nebula {
+  background-image:
+    radial-gradient(ellipse 30% 35% at var(--v31-pointer-x, 64%) var(--v31-pointer-y, 25%), color-mix(in srgb, var(--v31-glow) 22%, transparent), transparent 76%),
+    radial-gradient(ellipse 40% 34% at 8% 80%, color-mix(in srgb, var(--v29-secondary, #a8a0ff) 12%, transparent), transparent 78%),
+    radial-gradient(ellipse 34% 29% at 79% 91%, color-mix(in srgb, var(--v31-glow) 9%, transparent), transparent 82%);
+  transition: background .65s ease, opacity .65s ease;
+}
+
+/* A small, GPU-only 3D response on real cards; pointer tracking is desktop-only. */
+body.uc-body .main .v31-depth-hover,
+body.student-app-body #app .v31-depth-hover {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transform: perspective(1150px) translate3d(0,-4px,8px) rotateX(var(--v31-rx, 0deg)) rotateY(var(--v31-ry, 0deg)) !important;
+  border-color: color-mix(in srgb, var(--v31-glow) 48%, rgba(185,220,255,.17)) !important;
+  box-shadow: var(--v31-depth-shadow), 0 0 34px color-mix(in srgb, var(--v31-glow) 12%, transparent) !important;
+  transition: transform .24s var(--v31-motion-ease), border-color .3s ease, box-shadow .3s ease !important;
+}
+
+/* Highlight the page's hero surfaces with a controlled, slow breathing glow. */
+body.uc-body[data-theme] .app-shell .main .page :is(.page-header, .page-intro, .mission-hero-20, .galaxy-hero, .hero, .dashboard-hero),
+body.student-app-body[data-season] :is(.command-hero, .app > .hero) {
+  box-shadow: var(--v29-surface-shadow, 0 24px 66px rgba(0,3,18,.34)),
+    inset 0 1px rgba(255,255,255,.12),
+    0 0 44px color-mix(in srgb, var(--v31-glow) 7%, transparent) !important;
+  transition: box-shadow .6s ease, border-color .6s ease, background .6s ease !important;
+}
+body.uc-body.theme-changing .app-shell .main .page :is(.page-header, .page-intro, .mission-hero-20, .galaxy-hero, .hero),
+body.student-app-body.theme-changing :is(.command-hero, .app > .hero) {
+  animation: v31-theme-impact .95s var(--v31-motion-ease) both;
+}
+@keyframes v31-theme-impact {
+  0% { filter: saturate(.88) brightness(.94); }
+  34% { filter: saturate(1.24) brightness(1.07); }
+  68% { filter: saturate(1.08) brightness(1.02); }
+  100% { filter: saturate(1) brightness(1); }
+}
+
+/* Buttons feel tactile instead of simply glowing when hovered. */
+body.uc-body[data-theme] .main :is(.btn-primary, .btn, button[type="submit"]),
+body.student-app-body[data-season] :is(.btn, .command-next-link, button[type="submit"]) {
+  transition: transform .22s var(--v31-motion-ease), filter .22s ease, box-shadow .25s ease, border-color .25s ease !important;
+  transform-origin: center;
+}
+body.uc-body[data-theme] .main :is(.btn-primary, .btn, button[type="submit"]):active,
+body.student-app-body[data-season] :is(.btn, .command-next-link, button[type="submit"]):active {
+  transform: translateY(1px) scale(.975) !important;
+  filter: brightness(.98) saturate(1.05);
+}
+body.uc-body[data-theme] .main :is(input, select, textarea):focus-visible,
+body.student-app-body[data-season] :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--v31-glow) 72%, white 8%);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--v31-glow) 14%, transparent), 0 0 26px color-mix(in srgb, var(--v31-glow) 10%, transparent) !important;
+}
+
+/* Keep interaction quick, reduce GPU work on phones, and respect motion preferences. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  body.uc-body .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .notification-card, .calendar-shell),
+  body.student-app-body #app :is(.command-next-card, .mission-today-tile, .command-metric, .account-tile, .student-announcement, .event-preview, .glass.card, .stat, .event, .dir-option) {
+    transition: transform .24s var(--v31-motion-ease), border-color .3s ease, box-shadow .3s ease;
+  }
+  body.uc-body .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .notification-card, .calendar-shell):not(.v31-depth-hover):hover,
+  body.student-app-body #app :is(.command-next-card, .mission-today-tile, .command-metric, .account-tile, .student-announcement, .event-preview, .glass.card, .stat, .event, .dir-option):not(.v31-depth-hover):hover {
+    border-color: color-mix(in srgb, var(--v31-glow) 31%, rgba(190,220,250,.13));
+  }
+}
+@media (max-width: 760px), (pointer: coarse) {
+  .cosmos-field > .v31-light-halo { width: 84vw; opacity: .2; filter: blur(28px); }
+  body.uc-body .main .v31-depth-hover,
+  body.student-app-body #app .v31-depth-hover { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cosmos-field > .v31-light-halo { display: none !important; }
+  body.uc-body .main .v31-depth-hover,
+  body.student-app-body #app .v31-depth-hover { transform: none !important; transition: none !important; }
+  body.uc-body[data-theme] *, body.student-app-body[data-season] * {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+@media (forced-colors: active) { .v31-light-halo { display: none !important; } }

@@ -1,0 +1,37 @@
+/* Operations dashboard — subdued console design, readable numbers and states. */
+.pro-runtime{max-width:1440px;margin:0 auto;color:#e7f2ff;padding-bottom:40px}
+.pro-runtime-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;flex-wrap:wrap;padding:clamp(20px,3vw,35px);border-radius:24px;background:radial-gradient(ellipse at 90% 5%,rgba(73,150,207,.22),transparent 51%),linear-gradient(112deg,#10243e,#0e1c35 68%,#171c40);border:1px solid rgba(130,205,248,.25);box-shadow:0 20px 65px rgba(1,8,27,.26)}
+.pro-runtime-eyebrow{display:inline-flex;align-items:center;gap:10px;color:#a6d5e9;font-weight:800;font-size:11px;letter-spacing:.17em}
+.pro-runtime-hero h1{margin:10px 0 12px;font-size:clamp(26px,3.2vw,44px);letter-spacing:-.05em;line-height:1.11}
+.pro-runtime-hero h1 span{color:#8de8ee}
+.pro-runtime-hero p{max-width:760px;color:#adc5d7;line-height:1.7;margin:0}
+.pro-runtime-actions{display:flex;flex-wrap:wrap;gap:9px}
+.pro-runtime-actions .btn{white-space:normal}
+.pro-runtime-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:18px 0 26px}
+.pro-runtime-summary>div{display:grid;gap:9px;padding:20px;border-radius:18px;background:linear-gradient(135deg,rgba(18,41,60,.91),rgba(16,27,47,.94));border:1px solid rgba(113,183,218,.24)}
+.pro-runtime-summary span{font-size:12px;color:#a9c8dd;font-weight:750}
+.pro-runtime-summary strong{font-size:clamp(27px,4vw,43px);line-height:1;font-variant-numeric:tabular-nums;color:#e9fcff}
+.pro-runtime-summary small{font-size:11px;color:#85a6bd}
+.pro-runtime-section-heading{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:15px;flex-wrap:wrap}
+.pro-runtime-section-heading h2{margin:0 0 4px;font-size:22px}
+.pro-runtime-section-heading p{margin:0;color:#9fb8ce;font-size:13px}
+.pro-runtime-section-heading [data-runtime-checked]{color:#8adccc;font-size:12px}
+.pro-runtime-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:15px}
+.pro-runtime-card{padding:23px;border-radius:18px;border:1px solid rgba(124,193,226,.23);background:linear-gradient(150deg,rgba(25,42,65,.94),rgba(13,24,41,.96));box-shadow:0 16px 35px rgba(3,8,23,.17)}
+.pro-runtime-card-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pro-runtime-worker-icon{height:39px;width:39px;border:1px solid rgba(125,220,237,.3);display:grid;place-items:center;border-radius:12px;background:rgba(90,189,226,.08);color:#92e5ff}
+.pro-runtime-status{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;font-size:11px;font-weight:800;border-radius:99px;background:rgba(57,182,140,.12);border:1px solid rgba(103,235,189,.3);color:#9aeccd}
+.pro-runtime-status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pro-runtime-status[data-state="restarting"],.pro-runtime-status[data-state="cooldown"]{background:rgba(177,126,53,.14);color:#f7c981;border-color:rgba(237,190,117,.4)}
+.pro-runtime-status[data-state="stopped"],.pro-runtime-status[data-state="pending"]{background:rgba(151,163,182,.16);color:#c4cfd7;border-color:rgba(184,189,206,.26)}
+.pro-runtime-card h3{font-size:19px;margin:17px 0 7px;color:#f0faff}
+.pro-runtime-card p{font-size:13px;line-height:1.6;color:#a5bdd0;min-height:38px;margin:0}
+.pro-runtime-card dl{display:grid;gap:11px;padding:17px 0 0;margin:18px 0 0;border-top:1px solid rgba(155,200,231,.15)}
+.pro-runtime-card dl>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.pro-runtime-card dt{color:#9fb9cc;font-size:12px}
+.pro-runtime-card dd{margin:0;color:#e0f3fb;font-size:12px;font-weight:700;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.pro-runtime-note{margin-top:26px;padding:24px 27px;border-radius:18px;border:1px solid rgba(119,189,222,.22);background:rgba(13,29,48,.74)}
+.pro-runtime-note h2{font-size:18px;margin:0 0 10px}
+.pro-runtime-note p{font-size:13px;line-height:1.75;color:#afc7d9}
+.pro-runtime-note code{color:#a2edee;overflow-wrap:anywhere}
+@media(max-width:640px){.pro-runtime-summary{gap:8px}.pro-runtime-summary>div{padding:13px}.pro-runtime-summary small{font-size:9px}.pro-runtime-hero{border-radius:17px}.pro-runtime-card{padding:18px}}

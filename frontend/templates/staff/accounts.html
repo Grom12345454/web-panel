@@ -1,0 +1,184 @@
+{% extends 'shared/base.html' %}
+{% block title %}Сотрудники и доступы{% endblock %}
+{% block content %}
+<div class="staff-workspace staff-directory">
+  <header class="staff-directory-hero">
+    <div><span class="eyebrow">АДМИНИСТРИРОВАНИЕ / СОТРУДНИКИ</span><h1>Команда и доступы</h1>
+      <p>Сотрудники создаются главным администратором. Направления и категории прав назначаются независимо от подключённых ботов.</p></div>
+    <div class="staff-directory-header-actions">
+      <form method="post" action="{{url_for('staff.request_password_rotation')}}" data-confirm-password-reset>
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"><input type="hidden" name="scope" value="all">
+        <button type="submit" class="btn" title="При следующем входе все активные пользователи панели должны задать новый пароль">🔐 Потребовать смену пароля у всех пользователей панели</button>
+      </form>
+      <button type="button" class="btn btn-primary staff-add-button" id="staff-add"><span aria-hidden="true">＋</span> Создать учётную запись</button>
+    </div>
+  </header>
+  <section class="staff-directory-panel" aria-label="Список сотрудников">
+    <div class="staff-directory-toolbar">
+      <div><h2>Сотрудники и наблюдатели <span class="staff-total">{{ users|length }}</span></h2><p>Главный администратор может создавать любое количество общих сотрудников, наблюдателей и сотрудников отдельных направлений.</p></div>
+      <label class="staff-directory-search"><span aria-hidden="true">⌕</span><span class="sr-only">Поиск сотрудников</span><input id="staff-search" type="search" placeholder="Поиск по ФИО, логину или должности" autocomplete="off"></label>
+    </div>
+    <div class="staff-people" id="staff-people">
+    {% for user in users %}
+      <article class="staff-employee" data-search="{{((user.full_name or '') ~ ' ' ~ (user.email or '') ~ ' ' ~ (user.position or '') ~ ' ' ~ (user.assigned_direction.name if user.assigned_direction else ''))|lower }}">
+        <div class="staff-person-avatar staff-employee-avatar" aria-hidden="true">{{(user.full_name or user.email)[0]|upper}}</div>
+        <div class="staff-employee-about"><strong>{{user.full_name or user.email}}</strong><span>{{ 'Наблюдатель' if user.role == 'observer' else ranks.get(user.staff_rank, 'Сотрудник') }}{% if user.assigned_direction and user.role != 'observer' %} · {{user.assigned_direction.name}}{% endif %}</span></div>
+        <div class="staff-employee-identity"><b>{{user.email}}</b><span>{% if user.tg_id %}Telegram привязан{% else %}Вход по логину и паролю{% endif %}</span></div>
+        <div class="staff-employee-state"><span class="{{'staff-enabled' if user.is_active else 'staff-disabled'}}">● {{'Активен' if user.is_active else 'Отключён'}}</span><small>{% if user.tg_id %}Дополнительное подтверждение включено{% else %}Вход без Telegram{% endif %}</small></div>
+        <div class="staff-person-actions">
+          {% if user.must_change_password %}<span class="staff-password-pending" title="Потребуется новый пароль при следующем входе">🔐 Смена пароля ожидается</span>{% endif %}
+          <form method="post" action="{{url_for('staff.request_password_rotation')}}" data-confirm-password-reset><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><input type="hidden" name="user_id" value="{{user.id}}"><button type="submit" class="btn" aria-label="Потребовать смену пароля у {{user.full_name or user.email}}">Потребовать смену пароля</button></form>
+          <button type="button" class="btn staff-edit" data-staff-id="{{user.id}}" data-url="{{url_for('staff.account_data',user_id=user.id)}}" aria-label="Изменить сотрудника {{user.full_name or user.email}}">Редактировать</button><button type="button" class="btn staff-delete" data-staff-id="{{ user.id }}" data-login="{{ user.email }}" data-name="{{ user.full_name or user.email }}" data-url="{{ url_for('staff.delete_account',user_id=user.id) }}" aria-label="Удалить сотрудника {{ user.full_name or user.email }}">Удалить</button></div>
+      </article>
+    {% else %}<div class="staff-directory-empty">Записей пока нет. Создайте первую учётную запись сотрудника или наблюдателя.</div>{% endfor %}
+    </div>
+    <p class="staff-search-empty" id="staff-search-empty" hidden>По вашему запросу сотрудники не найдены.</p>
+  </section>
+</div>
+
+<dialog id="staff-editor" class="staff-editor" aria-labelledby="staff-editor-title">
+  <form method="post" class="staff-editor-form" id="staff-form" action="{{url_for('staff.accounts')}}">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"><input type="hidden" name="user_id" id="staff-user-id" value="">
+    <header class="staff-editor-header"><div><span class="eyebrow">СОТРУДНИК / НАСТРОЙКИ</span><h2 id="staff-editor-title">Создание учётной записи</h2><p id="staff-editor-caption">Данные, должность и права доступа в одном окне.</p></div><button type="button" class="staff-dialog-close" id="staff-close" aria-label="Закрыть окно">×</button></header>
+    <div class="staff-editor-body">
+      <div class="staff-editor-section"><div class="staff-section-heading"><strong>01 / Профиль</strong><span>Данные сотрудника</span></div>
+        <div class="staff-promotion-options"><label>Связать с существующим студентом
+          <select name="student_id" class="input" id="staff-student-picker"><option value="">Новый сотрудник (не из таблицы студентов)</option>
+          {% for student in students_for_promotion %}<option value="{{student.id}}" data-name="{{student.full_name}}" data-tg="{{student.tg_id}}" data-phone="{{student.phone or ''}}" data-email="{{student.email or ''}}" {% if suggested_student and suggested_student.id==student.id %}selected{% endif %}>{{student.full_name}} · {{student.group or 'Без группы'}} · #{{student.id}}</option>{% endfor %}
+          </select></label><p class="muted">Связанный студент остаётся в Student App. Указанные ниже категории доступа работают без привязки к чату или боту.</p></div>
+        <div class="staff-form-grid">
+          <label>ФИО <input name="full_name" class="input" maxlength="255" required placeholder="Иванов Иван Иванович" autocomplete="name"></label>
+          <label>Должность <input name="position" class="input" maxlength="150" required placeholder="Сотрудник направления / сотрудник всех направлений"></label>
+          <label>Роль <select class="input" name="staff_rank" id="staff-rank">{% for value,label in ranks.items() %}<option value="{{value}}" {% if value == 'employee' %}selected{% endif %}>{{label}}</option>{% endfor %}</select><small id="staff-role-hint">Права сотрудника определяются выбранным направлением и разрешениями.</small></label>
+          <label>Основное направление (только для сотрудника направления) <select class="input" name="home_direction_id" id="staff-home-direction"><option value="">Не назначено</option>{% for direction in directions %}<option value="{{direction.id}}">{{direction.name}}</option>{% endfor %}</select></label>
+          <label>Рабочая почта <input name="contact_email" class="input" type="email" maxlength="255" autocomplete="email" placeholder="name@example.org"></label>
+          <label>Телефон <input name="phone" class="input" maxlength="40" autocomplete="tel" placeholder="+7 ..."></label>
+        </div>
+      </div>
+      <div class="staff-editor-section"><div class="staff-section-heading"><strong>02 / Вход в панель</strong><span>Отдельные учётные данные</span></div>
+        <div class="staff-form-grid">
+          <label>Логин для входа <input name="login" class="input" minlength="3" maxlength="50" required autocomplete="off" placeholder="ivanov"></label>
+          <label>Временный пароль <input name="password" id="staff-password" class="input" type="password" autocomplete="new-password" minlength="12" maxlength="72" placeholder="12+ символов, регистр, цифра, символ" required><small>При первом входе сотрудник задаст собственный пароль. Требования: 12+ символов, заглавная и строчная буквы, цифра, специальный символ, без пробелов и логина.</small></label>
+        </div>
+        <label class="staff-check staff-account-active"><input name="is_active" type="checkbox" value="1" checked> Учётная запись активна</label>
+        <p class="staff-bound-status" id="staff-bound-status" aria-live="polite"></p>
+      </div>
+      <div class="staff-editor-section"><div class="staff-section-heading"><strong>03 / Уведомления</strong><span>Что получать в панели</span></div>
+        <div class="staff-notification-list">{% for channel in notification_options if channel != 'science' %}<label class="staff-notification-item"><input type="checkbox" name="notifications" value="{{channel}}" checked><span>{{ {'applications':'Заявления','events':'Мероприятия','lessons':'Занятия','system':'Системные уведомления'}[channel] }}</span></label>{% endfor %}</div>
+      </div>
+      <div class="staff-editor-section"><div class="staff-section-heading"><strong>04 / Направления студсовета</strong><span>Права доступа по обязанностям</span></div>
+        <p class="staff-rights-help" id="staff-rights-help">Сотрудник направления получает рабочие права только в выбранном направлении. Общий сотрудник получает такие же права во всех активных направлениях. Архив отчётов и приказы остаются в режиме просмотра и скачивания.</p><p class="staff-rights-help" id="staff-observer-note" hidden><b>Наблюдатель:</b> просмотр всех активных направлений и рабочих разделов. Изменение данных, создание, рассылка и управление чатами запрещены.</p>
+        <div class="staff-direction-list" id="staff-directions">
+          {% for direction in directions %}
+          <details class="staff-direction-card" data-direction-id="{{direction.id}}" data-direction-name="{{direction.name|lower}}"><summary><span class="staff-direction-title"><span class="staff-direction-symbol" aria-hidden="true">{{direction.icon or '◈'}}</span>{{direction.name}}</span><span class="staff-direction-count" data-count-for="{{direction.id}}">Нет доступа</span><span class="staff-direction-arrow" aria-hidden="true">⌄</span></summary>
+            <div class="staff-direction-content">
+              <div class="staff-direction-actions"><button type="button" data-direction-preset="view" data-direction-id="{{direction.id}}">Всё: просмотр</button><button type="button" data-direction-preset="manage" data-direction-id="{{direction.id}}">Всё: управление</button><button type="button" data-direction-preset="none" data-direction-id="{{direction.id}}">Сбросить</button></div>
+              <div class="staff-category-list">
+              {% for section in sections %}
+                {% set read_only = section in ['report_archive', 'orders'] %}
+                <label class="staff-category-row"><span class="staff-category-info"><strong>{{ {'students':'Студенты','applications':'Заявления','events':'Мероприятия','lessons':'Занятия','notifications':'Уведомления','report_archive':'Архив отчётов','statistics':'Статистика','chats':'Чаты','orders':'Приказы и документы'}[section] }}</strong><small>{{ {'students':'Карточки и данные студентов','applications':'Заявления на участие','events':'Создание и редактирование мероприятий','lessons':'Расписание и занятия','notifications':'Создание, редактирование и рассылка своего направления','report_archive':'Только просмотр и скачивание отчётов своего направления','statistics':'Управление статистикой в рамках своего направления','chats':'Работа с чатами своего направления','orders':'Только просмотр и скачивание документов своего направления'}[section] }}</small></span>
+                <select name="grant_{{direction.id}}_{{section}}" class="input staff-grant-select" data-direction="{{direction.id}}" data-section="{{section}}" data-default-access="{{ default_employee_grants.get(section, 'none') }}" aria-label="{{direction.name}}: {{section}}"><option value="none">Нет доступа</option><option value="view">Просмотр</option>{% if not read_only %}<option value="manage">Управление</option>{% endif %}</select></label>
+              {% endfor %}
+              </div>
+            </div>
+          </details>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div id="staff-form-error" class="staff-form-error" role="alert" hidden></div>
+    <footer class="staff-editor-footer"><button type="button" class="btn" id="staff-cancel">Отмена</button><button type="submit" class="btn btn-primary" id="staff-save">Создать учётную запись</button></footer>
+  </form>
+</dialog>
+<dialog id="staff-delete-dialog" class="staff-editor staff-delete-dialog" aria-labelledby="staff-delete-title">
+  <form method="post" class="staff-delete-form" id="staff-delete-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <header class="staff-editor-header"><div><span class="eyebrow">ДЕЙСТВИЕ НЕОБРАТИМО</span><h2 id="staff-delete-title">Удалить учётную запись?</h2></div><button class="staff-dialog-close" type="button" id="staff-delete-close" aria-label="Закрыть">×</button></header>
+    <div class="staff-delete-body"><p>Вы удаляете учётную запись <strong id="staff-delete-name"></strong>, её доступы и привязку к панели. Карточка студента и история заявок сохранятся.</p>
+      <label>Введите логин сотрудника для подтверждения <strong id="staff-delete-login"></strong><input class="input" id="staff-delete-confirm" name="confirm_login" required autocomplete="off" spellcheck="false"></label>
+      <p class="staff-form-error" id="staff-delete-error" role="alert" hidden></p>
+    </div>
+    <footer class="staff-editor-footer"><button type="button" class="btn" id="staff-delete-cancel">Отмена</button><button type="submit" class="btn staff-delete-confirm" id="staff-delete-submit" disabled>Удалить сотрудника</button></footer>
+  </form>
+</dialog>
+<script>
+(() => {
+ const modal=document.getElementById('staff-editor'), form=document.getElementById('staff-form');
+ if(!modal||!form)return;
+ const $=name=>form.elements.namedItem(name);
+ const fieldNames=['full_name','position','contact_email','phone','login'];
+ const studentPicker=document.getElementById('staff-student-picker');
+ const grants=Array.from(form.querySelectorAll('.staff-grant-select'));
+ const search=document.getElementById('staff-search');
+ document.querySelectorAll('[data-confirm-password-reset]').forEach(resetForm=>resetForm.addEventListener('submit',event=>{
+  const all=resetForm.querySelector('[name="scope"]')?.value==='all';
+  const promptText=all?'Потребовать смену пароля у всех активных пользователей панели? При следующем входе каждый задаст новый надёжный пароль.':'Потребовать, чтобы сотрудник задал новый пароль при следующем входе? Его текущие сессии будут завершены.';
+  if(!window.confirm(promptText))event.preventDefault();
+ }));
+ let editRequest=0;
+ function refreshCounts(){const rank=$('staff_rank').value;const observer=rank==='observer';document.querySelectorAll('[data-count-for]').forEach(count=>{if(observer){count.textContent='Глобальный просмотр';return;}const selected=grants.filter(g=>g.dataset.direction===count.dataset.countFor&&g.value!=='none');count.textContent=selected.length ? `${selected.length} из {{sections|length}} категорий`:'Нет доступа';});}
+ function applyDefaults(directionId){if(!directionId)return;grants.filter(g=>g.dataset.direction===String(directionId)).forEach(el=>{if(el.value==='none')el.value=el.dataset.defaultAccess||'none';});}
+ function applyDefaultsAll(){document.querySelectorAll('.staff-direction-card').forEach(card=>applyDefaults(card.dataset.directionId));}
+ function resetEditor(){const error=document.getElementById('staff-form-error');error.textContent='';error.hidden=true;form.reset();$('user_id').value='';grants.forEach(el=>el.value='none');document.getElementById('staff-editor-title').textContent='Создание учётной записи';document.getElementById('staff-save').textContent='Создать учётную запись';document.getElementById('staff-password').required=true;document.getElementById('staff-password').placeholder='Минимум 12 символов';document.getElementById('staff-bound-status').textContent='Для входа используются только логин и временный пароль.';document.querySelectorAll('.staff-direction-card').forEach(c=>c.open=false);syncRoleMode();refreshCounts();}
+ function syncRoleMode(){const rank=$('staff_rank').value;const observer=rank==='observer';const all=rank==='employee_all';const home=$('home_direction_id').value;$('home_direction_id').disabled=observer||all;$('home_direction_id').required=rank==='employee';document.getElementById('staff-observer-note').hidden=!observer;document.getElementById('staff-rights-help').hidden=observer;document.getElementById('staff-role-hint').textContent=observer?'Только просмотр всех активных направлений. Управление запрещено.':(all?'Управление во всех активных направлениях. Набор разрешений настраивается для каждого направления.':'Одинаковый набор прав, но только в одном выбранном направлении.');document.querySelectorAll('.staff-direction-card').forEach(card=>{const matches=all||(rank==='employee'&&card.dataset.directionId===home);card.hidden=observer||!matches;card.querySelectorAll('.staff-grant-select').forEach(el=>{el.disabled=observer||!matches;});card.querySelectorAll('[data-direction-preset]').forEach(el=>{el.disabled=observer||!matches;});});}
+ function show(){if(!modal.open)modal.showModal();}
+ function showError(message){const error=document.getElementById('staff-form-error');error.textContent=message;error.hidden=false;}
+ function fillStudent(){const option=studentPicker.selectedOptions[0];if(!option?.value)return;$('full_name').value=option.dataset.name||'';$('phone').value=option.dataset.phone||'';$('contact_email').value=option.dataset.email||'';}
+ function create(){++editRequest;resetEditor();studentPicker.value='';show();$('full_name').focus();}
+ async function edit(id,url){const requestId=++editRequest;resetEditor();show();document.getElementById('staff-editor-title').textContent='Загрузка сотрудника…';
+  try{const response=await fetch(url,{headers:{Accept:'application/json'},credentials:'same-origin'});if(!response.ok)throw new Error('Не удалось загрузить сотрудника');const data=await response.json();if(requestId!==editRequest)return;
+   $('user_id').value=data.id;fieldNames.forEach(name=>{$(name).value=data[name]||'';});
+   $('staff_rank').value=data.staff_rank||'employee';$('home_direction_id').value=data.home_direction_id||'';studentPicker.value=data.student_id||'';$('is_active').checked=!!data.is_active;
+   form.querySelectorAll('input[name="notifications"]').forEach(el=>el.checked=data.notifications.includes(el.value));
+   grants.forEach(el=>el.value=data.grants[el.name.replace('grant_','')]||'none');syncRoleMode();refreshCounts();
+   document.querySelectorAll('.staff-direction-card').forEach(c=>{c.open=Array.from(c.querySelectorAll('.staff-grant-select')).some(el=>el.value!=='none');});
+   document.getElementById('staff-editor-title').textContent='Редактирование сотрудника';document.getElementById('staff-save').textContent='Сохранить изменения';
+   const password=document.getElementById('staff-password');password.required=false;password.placeholder='Не менять (оставьте пустым)';
+   document.getElementById('staff-bound-status').textContent=data.bot_bound?'✓ Telegram привязан: для входа используется дополнительное подтверждение.':'Telegram не привязан: вход выполняется по логину и паролю.';
+  }catch(error){if(requestId===editRequest){modal.close();window.alert(error.message);}}
+ }
+ const delDialog=document.getElementById('staff-delete-dialog'),delForm=document.getElementById('staff-delete-form');
+ const delConfirm=document.getElementById('staff-delete-confirm'),delSubmit=document.getElementById('staff-delete-submit');
+ let deletingLogin='';
+ function closeDelete(){delDialog.close();delForm.reset();document.getElementById('staff-delete-error').hidden=true;delSubmit.disabled=true;}
+ document.querySelectorAll('.staff-delete').forEach(button=>button.addEventListener('click',()=>{
+  deletingLogin=button.dataset.login;
+  delForm.action=button.dataset.url;
+  document.getElementById('staff-delete-name').textContent=button.dataset.name;
+  document.getElementById('staff-delete-login').textContent=deletingLogin;
+  delConfirm.value='';delSubmit.disabled=true;delDialog.showModal();delConfirm.focus();
+ }));
+ delConfirm.addEventListener('input',()=>{delSubmit.disabled=delConfirm.value.trim()!==deletingLogin});
+ document.getElementById('staff-delete-close').addEventListener('click',closeDelete);
+ document.getElementById('staff-delete-cancel').addEventListener('click',closeDelete);
+ delDialog.addEventListener('click',event=>{if(event.target===delDialog)closeDelete()});
+ delForm.addEventListener('submit',async event=>{
+  event.preventDefault();if(delSubmit.disabled||delConfirm.value.trim()!==deletingLogin)return;
+  delSubmit.disabled=true;const old=delSubmit.textContent;delSubmit.textContent='Удаление…';
+  try{const response=await fetch(delForm.action,{method:'POST',body:new FormData(delForm),headers:{Accept:'application/json'},credentials:'same-origin'});
+   const data=await response.json();if(!response.ok||!data.ok)throw Error(data.error||'Не удалось удалить сотрудника.');
+   window.location.assign('{{url_for('staff.accounts')}}');
+  }catch(error){const node=document.getElementById('staff-delete-error');node.textContent=error.message;node.hidden=false;}
+  finally{delSubmit.textContent=old;delSubmit.disabled=delConfirm.value.trim()!==deletingLogin;}
+ });
+ document.getElementById('staff-add').addEventListener('click',create);
+ document.querySelectorAll('.staff-edit').forEach(button=>button.addEventListener('click',()=>edit(button.dataset.staffId,button.dataset.url)));
+ document.getElementById('staff-close').addEventListener('click',()=>modal.close());document.getElementById('staff-cancel').addEventListener('click',()=>modal.close());
+ modal.addEventListener('click',event=>{if(event.target===modal)modal.close();});
+ studentPicker.addEventListener('change',fillStudent);
+ $('staff_rank').addEventListener('change',()=>{const position=$('position');const rank=$('staff_rank').value;if(rank==='observer')position.value='Наблюдатель';else if(position.value==='Наблюдатель')position.value=rank==='employee_all'?'Сотрудник всех направлений':'Сотрудник направления';if(rank==='employee_all')applyDefaultsAll();else if(rank==='employee')applyDefaults($('home_direction_id').value);syncRoleMode();refreshCounts();});
+ $('home_direction_id').addEventListener('change',()=>{if($('staff_rank').value==='employee'&&!$('user_id').value)applyDefaults($('home_direction_id').value);syncRoleMode();refreshCounts();});
+ grants.forEach(el=>el.addEventListener('change',refreshCounts));
+ form.querySelectorAll('[data-direction-preset]').forEach(button=>button.addEventListener('click',()=>{grants.filter(el=>el.dataset.direction===button.dataset.directionId).forEach(el=>el.value=button.dataset.directionPreset);refreshCounts();}));
+ if(search)search.addEventListener('input',()=>{const q=search.value.toLocaleLowerCase('ru').trim(),rows=[...document.querySelectorAll('.staff-employee')];let hits=0;rows.forEach(row=>{const match=row.dataset.search.includes(q);row.hidden=!match;if(match)hits++;});document.getElementById('staff-search-empty').hidden=hits!==0;});
+ form.addEventListener('submit',async event=>{event.preventDefault();const submit=document.getElementById('staff-save');if(submit.disabled)return;submit.disabled=true;const old=submit.textContent;submit.textContent='Сохранение…';
+  try{const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'},credentials:'same-origin'});const data=await response.json();if(!response.ok||!data.ok){showError(data.error||'Не удалось сохранить данные.');return;}location.assign('{{url_for('staff.accounts')}}');}
+  catch(_){showError('Не удалось связаться с сервером. Данные в форме сохранены — попробуйте снова.');}
+  finally{submit.disabled=false;submit.textContent=old;}
+ });
+ const query=new URLSearchParams(location.search);const editId=query.get('edit'),studentId=query.get('student_id');
+ if(editId&&/^\d+$/.test(editId)){const button=[...document.querySelectorAll('.staff-edit')].find(b=>b.dataset.staffId===editId);if(button)edit(editId,button.dataset.url);}
+ else if(studentId){create();studentPicker.value=studentId;fillStudent();}
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+/* Student App · 2026 UI foundation. Telegram WebView and standard browsers. */
+:root {
+  color-scheme: dark;
+  --student-content-max: 900px;
+  --student-focus: var(--season-accent, #78d4e3);
+  --student-text: #edf5fb;
+  --student-muted: #a0b5c6;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+html { min-width: 0; min-height: 100%; scroll-padding-top: 16px; }
+body.student-app-body {
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(22px, env(safe-area-inset-bottom));
+  color: var(--student-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.student-app-body #app { width: min(var(--student-content-max), 100%); margin-inline: auto; }
+.student-app-body :is(button, input, select, textarea) { font: inherit; }
+.student-app-body :is(button, input, select, textarea, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--student-focus);
+  outline-offset: 3px;
+}
+.student-app-body button, .student-app-body .btn { touch-action: manipulation; }
+.student-app-body :is(input, select, textarea) { max-width: 100%; }
+.student-app-body .nav { max-width: 100%; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+.student-app-body .nav button { flex: 0 0 auto; min-height: 42px; }
+.student-app-body :is(.card, .glass, .event, .stat, .hero) { min-width: 0; }
+.student-app-body :is(.card, .event, .dir-option, .notice, .error) { overflow-wrap: anywhere; }
+.student-app-body :is(.grid, .form, .row, .section-title, .top, .actions) { min-width: 0; }
+.student-app-body .toast { max-width: calc(100vw - 24px); width: max-content; text-align: center; }
+@media (max-width: 640px) {
+  body.student-app-body { padding-inline: 10px; }
+  .student-app-body #app { width: 100%; }
+  .student-app-body .hero { padding: 18px 16px; border-radius: 21px; }
+  .student-app-body .title { font-size: clamp(24px, 7vw, 29px); }
+  .student-app-body .nav { position: sticky; top: max(4px, env(safe-area-inset-top)); z-index: 20; }
+  .student-app-body .nav button { min-width: max-content; padding-inline: 12px; }
+  .student-app-body .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .student-app-body .card { padding: 13px; }
+  .student-app-body .row { flex-wrap: wrap; }
+  .student-app-body .row.space { justify-content: space-between; }
+  .student-app-body .actions { gap: 8px; }
+  .student-app-body .actions .btn { flex: 1 1 auto; min-height: 42px; }
+  .student-app-body :is(.event-modal, .decline-modal) { max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); overflow-y: auto; }
+}
+@media (max-width: 390px) {
+  body.student-app-body { padding-inline: 8px; }
+  .student-app-body .grid { grid-template-columns: minmax(0, 1fr); }
+  .student-app-body .section-title { align-items: flex-start; }
+  .student-app-body .nav { gap: 4px; padding: 5px; }
+  .student-app-body .nav button { padding: 9px 10px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .student-app-body *, .student-app-body *::before, .student-app-body *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

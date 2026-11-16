@@ -1,0 +1,16 @@
+{% extends "shared/base.html" %}
+{% block title %}Объявление направления · Студенческий совет{% endblock %}
+{% block content %}
+<div class="section-title"><div><div class="eyebrow">ЦЕНТР СВЯЗИ / 03 КАНАЛА</div><h2>Объявление направления</h2><p>Одна публикация — во все подключённые чаты Telegram, VK и MAX.</p></div><a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=direction.id) }}">← К направлению</a></div>
+<form class="card card-pad space-broadcast-card" method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="callout-3d"><b>{{ direction.icon or '✦' }} {{ direction.name }}</b><span>Боты отправят объявление в активные чаты данного направления. Индивидуальный выбор беседы не требуется.</span></div>
+<div class="space-chat-counts" aria-label="Подключённые каналы">
+  <span>✈ Telegram <strong>{{ telegram_count }}</strong></span>
+  <span>VK <strong>{{ vk_count }}</strong></span>
+  <span>MAX <strong>{{ max_count }}</strong></span>
+</div>
+<div class="field" style="margin-top:18px"><label class="label" for="broadcast-message">Текст объявления</label><textarea class="input textarea-3d" id="broadcast-message" name="message" rows="7" maxlength="4000" required placeholder="Например: Сбор участников завтра в 16:00."></textarea><div class="subtle">Максимум 4000 символов. Telegram принимает форматированный текст, VK и MAX — обычное сообщение бота.</div></div>
+<div class="form-foot"><a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=direction.id) }}">Отмена</a><button class="btn btn-primary" type="submit">🚀 Отправить во все три мессенджера</button></div>
+</form>
+{% endblock %}

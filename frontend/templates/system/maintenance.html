@@ -1,0 +1,66 @@
+{% extends "shared/base.html" %}
+{% block title %}Очистка баз данных{% endblock %}
+{% block content %}
+<div class="section-title"><div><h1>Очистка баз данных</h1><p>Опасные операции доступны только главному администратору. Перед очисткой создайте резервную копию.</p></div><a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← Дашборд</a></div>
+<p><a class="btn btn-soft" href="{{ url_for('admin.system_runtime') }}">◷ Здоровье системы и восстановление ↗</a></p>
+
+<section class="card" style="padding:22px;margin-top:18px" aria-labelledby="guardian-title">
+  <div class="section-title" style="margin:0 0 12px;align-items:flex-start">
+    <div>
+      <h2 id="guardian-title">Автоматическая защита баз данных</h2>
+      <p class="subtle">Фоновая проверка запускается вместе с приложением и работает, пока запущен run.py. Повреждённая база заменяется только проверенной резервной копией; исходные файлы сохраняются отдельно.</p>
+    </div>
+    {% if guardian.running %}<span class="badge badge-active">Мониторинг работает</span>{% else %}<span class="badge badge-pending">Ожидает запуска</span>{% endif %}
+  </div>
+  <div class="grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">
+    <div class="card card-soft" style="padding:14px"><div class="subtle">Проверены базы</div><strong>{{ guardian.healthy_count|default(0) }} из {{ guardian.database_count|default(5) }}</strong></div>
+    <div class="card card-soft" style="padding:14px"><div class="subtle">Интервал проверки</div><strong>Каждые {{ guardian.interval_seconds|default(60) }} сек.</strong></div>
+    <div class="card card-soft" style="padding:14px"><div class="subtle">Резервные копии</div><strong>{{ guardian.backup_count|default(backups|length) }}</strong><div class="subtle">Автокопия каждые {{ guardian.backup_interval_hours|default(6) }} ч.</div></div>
+    <div class="card card-soft" style="padding:14px"><div class="subtle">Последняя проверка</div><strong>{{ guardian.last_check_at or 'Первый цикл ещё не завершён' }}</strong></div>
+  </div>
+  {% if guardian.last_error %}<p class="flash" style="border-color:rgba(255,113,131,.42);color:#ffadb9" role="status">{{ guardian.last_error }}</p>{% endif %}
+  {% if guardian.last_recovery %}
+    {% if guardian.last_recovery.ok %}<p class="flash" style="border-color:rgba(66,211,146,.34);color:#9af1c6" role="status">Последнее восстановление: {{ guardian.last_recovery.database }} из {{ guardian.last_recovery.backup }}. Исходный файл сохранён в карантине резервных копий.</p>
+    {% else %}<p class="flash" style="border-color:rgba(255,113,131,.42);color:#ffadb9" role="status">Автовосстановление {{ guardian.last_recovery.database }} не завершено: {{ guardian.last_recovery.detail }}</p>{% endif %}
+  {% endif %}
+  <div style="overflow-x:auto;margin-top:14px">
+    <table class="table">
+      <thead><tr><th>База данных</th><th>Состояние</th><th>Результат проверки</th></tr></thead>
+      <tbody>
+        {% for item in guardian.databases %}
+        <tr>
+          <td>{{ item.label }}</td>
+          <td>{% if item.healthy %}<span class="badge badge-active">В норме</span>{% elif item.state == 'busy' %}<span class="badge badge-pending">Занята</span>{% else %}<span class="badge badge-rejected">{{ item.state }}</span>{% endif %}</td>
+          <td>{{ item.detail }}{% if item.restored_from_backup %}<br><span class="subtle">Восстановлена из {{ item.restored_from_backup }}</span>{% endif %}{% if item.recovery_error %}<br><span class="subtle">{{ item.recovery_error }}</span>{% endif %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="subtle">Первичная проверка выполняется после запуска фонового контроллера.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="actions" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px">
+    <form method="POST" action="{{ url_for('admin.create_manual_database_backup') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-primary" type="submit">Создать резервную копию сейчас</button>
+    </form>
+    <span class="subtle">Автоматически хранится до {{ guardian.retained_automatic_backups|default(48) }} снимков. Повреждённые файлы не удаляются: они сохраняются в папке quarantine внутри каталога резервных копий. Восстановление может откатить изменения, сделанные после даты снимка.</span>
+  </div>
+</section>
+
+<div class="grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:20px">
+  <section class="card" style="padding:22px"><h2>База мероприятий</h2><p class="subtle">Сейчас мероприятий: <strong>{{ event_count }}</strong></p><p>Удалит мероприятия, даты, записи студентов, отметки посещения, отказы и связи с направлениями. Сначала создайте резервную копию, если данные могут пригодиться.</p><form method="POST" action="{{ url_for('admin.clear_events') }}" data-confirm="Полностью удалить все мероприятия вместе с датами, записями, посещениями и отказами? Восстановить их можно будет только из резервной копии."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger" type="submit">Очистить базу мероприятий</button></form></section>
+  <section class="card" style="padding:22px"><h2>База занятий</h2><p class="subtle">Сейчас занятий: <strong>{{ lesson_count }}</strong></p><p>Удалит все занятия из базы. Перед очисткой рекомендуется создать резервную копию.</p><form method="POST" action="{{ url_for('admin.clear_lessons') }}" data-confirm="Удалить все занятия? При необходимости данные можно будет вернуть из резервной копии."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger" type="submit">Очистить базу занятий</button></form></section>
+  <section class="card" style="padding:22px"><h2>Общая статистика</h2><p>Удалит регистрации, отметки посещаемости, отказы студентов и сводные записи статистики. Сами мероприятия и занятия останутся.</p><form method="POST" action="{{ url_for('admin.clear_statistics') }}" data-confirm="Очистить общую статистику? Будут удалены регистрации, посещения, отказы и сводные записи. Мероприятия и занятия останутся."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger" type="submit">Очистить общую статистику</button></form></section>
+</div>
+
+<section class="card" style="padding:22px;margin-top:20px" aria-labelledby="backups-title">
+  <h2 id="backups-title">Последние резервные копии</h2>
+  <p class="subtle">Копии содержат согласованные снимки всех пяти SQLite-баз. Файл .env, секреты и токены в архив не включаются. Восстановление заменяет все пять баз после проверки архива и целостности SQLite; перед заменой автоматически создаётся страховочная копия.</p>
+  {% if backups %}
+  <div style="overflow-x:auto"><table class="table"><thead><tr><th>Архив</th><th>Тип</th><th>Создан</th><th>Размер</th><th>Проверка и восстановление</th></tr></thead><tbody>
+  {% for backup in backups %}<tr><td>{{ backup.name }}</td><td>{% if backup.automatic %}Автоматическая{% else %}Создана вручную{% endif %}</td><td>{{ backup.created.strftime('%d.%m.%Y %H:%M:%S') }}</td><td>{{ backup.size_mb }} МБ</td><td><div class="system-backup-row-actions"><form method="POST" action="{{ url_for('admin.check_database_backup_action') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="backup_name" value="{{ backup.name }}"><button class="btn btn-soft" type="submit">Проверить</button></form><form method="POST" action="{{ url_for('admin.restore_database_backup_action') }}" data-confirm="Восстановить все базы из этой копии? Перед заменой будет создана страховочная копия. Все изменения после даты снимка будут потеряны."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="backup_name" value="{{ backup.name }}"><button class="btn btn-danger" type="submit">Восстановить</button></form></div></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<p class="subtle">Резервных копий пока нет. Контроллер создаст первую автоматическую копию после успешной проверки всех баз.</p>{% endif %}
+</section>
+{% endblock %}

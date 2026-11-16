@@ -1,0 +1,138 @@
+/* GALAXY DEPTH PLUS 2026
+ * Final-layer 3D art direction for web panel, Student App and theme design studio.
+ * Static depth remains on touch devices; motion is optional to the OS, not an in-app switch.
+ * Decoration never intercepts pointer, keyboard or form interactions.
+ */
+:root{--depth-duration:.38s;--depth-ease:cubic-bezier(.17,.72,.19,1)}
+
+/* Preserve the selected season / holiday identity instead of painting all skins blue. */
+body.uc-body[data-ui-version="11"]{
+  --depth-light:rgba(var(--fest-a,123,234,255),.22);
+  --depth-contrast:rgba(var(--fest-b,170,157,255),.16);
+  background:
+    radial-gradient(ellipse 61% 55% at 88% -8%,rgba(var(--fest-b),.29),transparent 74%),
+    radial-gradient(ellipse 54% 65% at -12% 84%,rgba(var(--fest-a),.16),transparent 77%),
+    linear-gradient(145deg,var(--fest-background,#07142a),#040b1b 60%,#090d22)!important;
+}
+body.uc-body[data-ui-version="11"] .topbar{
+  border-bottom-color:rgba(var(--fest-a),.34)!important;
+  background:linear-gradient(115deg,rgba(16,31,55,.93),rgba(6,17,36,.88))!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.09),0 14px 36px #0208195c,0 1px 0 rgba(var(--fest-a),.09);
+}
+body.uc-body[data-ui-version="11"] .sidebar{
+  border-right-color:rgba(var(--fest-a),.27)!important;
+  background:radial-gradient(ellipse at 0 0,rgba(var(--fest-b),.12),transparent 67%),linear-gradient(168deg,#0e2543,#071326 85%)!important;
+}
+body.uc-body[data-ui-version="11"] .sidebar :is(.nav-link,.nav-section-toggle):hover{
+  background:linear-gradient(92deg,rgba(var(--fest-a),.14),rgba(var(--fest-b),.06));
+  box-shadow:inset 2px 0 rgba(var(--fest-a),.52),0 5px 19px #010c2429;
+}
+body.uc-body[data-ui-version="11"] .sidebar :is(.nav-link.active,.nav-sub-link.active){
+  background:linear-gradient(96deg,rgba(var(--fest-a),.23),rgba(var(--fest-b),.11))!important;
+  border-color:rgba(var(--fest-a),.32)!important;
+  box-shadow:inset 3px 0 rgb(var(--fest-a)),0 9px 24px rgba(var(--fest-a),.08)!important;
+}
+body.uc-body[data-ui-version="11"] .top-title-accent{color:rgb(var(--fest-a));text-shadow:0 0 25px rgba(var(--fest-a),.29)}
+body.uc-body[data-ui-version="11"] .mission-hero-20{
+  border-color:rgba(var(--fest-a),.52)!important;
+  background:radial-gradient(circle at 78% 29%,rgba(var(--fest-b),.32),transparent 46%),
+             radial-gradient(circle at 9% 93%,rgba(var(--fest-a),.17),transparent 59%),
+             linear-gradient(116deg,#132d50,#091935 70%,#101b3b)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.21),inset 0 -29px 80px #02071846,
+             0 30px 86px #01091c99,0 0 80px rgba(var(--fest-b),.10)!important;
+}
+/* Multilayer solar system: real CSS planes rather than a flat background image. */
+.mission-hero-20 .galaxy-hero-visual,.command-hero .command-world{isolation:isolate;transform-style:preserve-3d}
+.galaxy-depth-aura,.galaxy-depth-track,.galaxy-depth-atmosphere,.galaxy-depth-moon,.galaxy-depth-beacon,
+.command-depth-track,.command-depth-atmosphere,.command-depth-moon,.depth-hero-stars{position:absolute;pointer-events:none}
+.galaxy-depth-aura{inset:-12%;border-radius:50%;background:conic-gradient(from 115deg,transparent,rgba(var(--fest-a,123,234,255),.19),transparent 39%,rgba(var(--fest-b,170,157,255),.23),transparent 85%);filter:blur(11px);animation:galaxy-plus-spin 38s linear infinite}
+.galaxy-depth-track{inset:11% -14%;border:1px solid rgba(var(--fest-a,123,234,255),.38);border-radius:50%;transform:rotate(-19deg) rotateX(67deg);filter:drop-shadow(0 0 6px rgba(var(--fest-a,123,234,255),.42))}
+.galaxy-depth-track--far{inset:4% -21%;opacity:.49;transform:rotate(27deg) rotateX(64deg)}
+.galaxy-depth-track--near{inset:24% -8%;opacity:.7;transform:rotate(-37deg) rotateX(62deg)}
+.galaxy-depth-atmosphere{inset:16%;border-radius:50%;border:2px solid rgba(var(--fest-a,123,234,255),.44);box-shadow:0 0 38px rgba(var(--fest-a,123,234,255),.24),inset 0 0 26px rgba(var(--fest-b,170,157,255),.20);transform:translateZ(23px)}
+.galaxy-depth-moon{width:39px;aspect-ratio:1;right:2%;top:19%;border-radius:50%;background:radial-gradient(circle at 28% 24%,#fff, rgb(var(--fest-a,123,234,255)) 21%,rgb(var(--fest-b,170,157,255)) 61%,#10183b 100%);box-shadow:inset -10px -9px 14px #03091b91,0 0 25px rgba(var(--fest-a,123,234,255),.45);animation:galaxy-plus-float 9s ease-in-out infinite alternate}
+.galaxy-depth-beacon{width:8px;height:8px;bottom:18%;left:9%;border-radius:50%;background:#fff;box-shadow:0 0 10px 5px rgba(var(--fest-a,123,234,255),.65),0 0 30px 12px rgba(var(--fest-a,123,234,255),.20);animation:galaxy-plus-pulse 3.4s ease-in-out infinite alternate}
+.depth-hero-stars{inset:0;z-index:1;opacity:.65;background-image:radial-gradient(1.8px 1.8px at 13% 22%,#fff 98%,transparent),radial-gradient(2px 2px at 72% 9%,#c9f2ff 98%,transparent),radial-gradient(1.4px 1.4px at 90% 73%,#fff 98%,transparent),radial-gradient(2px 2px at 48% 82%,#9dbfff 98%,transparent),radial-gradient(1px 1px at 63% 62%,#fff 98%,transparent)}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction){border-color:rgba(var(--fest-a),.29)!important;box-shadow:inset 0 1px rgba(255,255,255,.14),inset 0 -21px 34px #01081945,0 20px 44px #020a21a3!important;background-image:radial-gradient(circle at 5% 0,rgba(var(--fest-a),.16),transparent 58%),linear-gradient(145deg,#1d3656,#0a1a35)!important}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction):hover{border-color:rgba(var(--fest-a),.72)!important;box-shadow:0 27px 65px #01081fc4,0 0 36px rgba(var(--fest-a),.14),inset 0 1px #ffffff2d!important}
+body.uc-body[data-ui-version="11"] :is(.mission-panel,.mission-bot-card,.galaxy-ops-hub,.card,.log-explorer-filter-panel,.stat-card-3d){
+  border-color:rgba(var(--fest-a),.23)!important;
+  box-shadow:inset 0 1px #ffffff13,0 19px 48px #030b2585,0 0 33px rgba(var(--fest-a),.035);
+}
+body.uc-body[data-ui-version="11"] :is(.mission-panel,.mission-bot-card,.galaxy-ops-hub,.card) :is(h2,h3){text-shadow:0 3px 19px #01091643}
+body.uc-body[data-ui-version="11"] :is(.btn,.icon-btn,.logout-btn){transition:transform .25s var(--depth-ease),box-shadow .25s,border-color .25s}
+@media(hover:hover) and (pointer:fine){body.uc-body[data-ui-version="11"] .page :is(.btn,.icon-btn):hover{transform:translateY(-2px);box-shadow:0 10px 29px rgba(var(--fest-a),.15)}}
+body.uc-body[data-ui-version="11"] :is(.input,input:not([type=checkbox]):not([type=radio]),select,textarea):focus-visible{outline:2px solid rgb(var(--fest-a))!important;outline-offset:2px;box-shadow:0 0 0 5px rgba(var(--fest-a),.13)}
+/* Tables and forms stay flat and selectable, with premium elevation only on their containers. */
+body.uc-body[data-ui-version="11"] :is(.table-wrap,.audit-table,.log-explorer-table,.data-table-wrap){border-color:rgba(var(--fest-a),.2);box-shadow:0 16px 35px #03091852,inset 0 1px #ffffff12;border-radius:18px}
+
+/* Student App: 3D layers inherit the currently chosen theme. */
+body.student-app-body{
+  --depth-skin:var(--season-accent-rgb,114,193,222);
+  --depth-skin-secondary:var(--season-secondary-rgb,155,145,245);
+  background:radial-gradient(ellipse 70% 57% at 92% -7%,rgba(var(--depth-skin-secondary),.27),transparent 75%),radial-gradient(ellipse 65% 60% at -17% 83%,rgba(var(--depth-skin),.16),transparent 78%),linear-gradient(151deg,var(--season-bg-b,#071528),#050b1c 70%,#0b1128)!important;
+}
+body.student-app-body .command-hero{border-color:rgba(var(--depth-skin),.52)!important;background:radial-gradient(circle at 85% 14%,rgba(var(--depth-skin-secondary),.35),transparent 54%),radial-gradient(circle at 6% 95%,rgba(var(--depth-skin),.19),transparent 56%),linear-gradient(130deg,#15365a,#0b2140 56%,#141d43)!important;box-shadow:inset 0 1px #ffffff35,inset 0 -25px 50px #01071c52,0 28px 75px #01071c9c,0 0 52px rgba(var(--depth-skin),.1)!important}
+body.student-app-body .command-world-planet{background:radial-gradient(circle at 23% 19%,#fff,rgba(var(--depth-skin),.95) 8%,transparent 25%),radial-gradient(circle at 32% 26%,rgba(var(--depth-skin),.92),rgba(var(--depth-skin-secondary),.8) 35%,#15315b 68%,#080f2e 96%)!important}
+.command-depth-track{inset:10% -12%;border:2px solid rgba(var(--depth-skin),.46);border-radius:50%;transform:rotate(-22deg) rotateX(69deg);filter:drop-shadow(0 0 10px rgba(var(--depth-skin),.34))}
+.command-depth-track--far{inset:2% -23%;transform:rotate(32deg) rotateX(62deg);opacity:.48}
+.command-depth-track--near{inset:22% -3%;transform:rotate(-42deg) rotateX(65deg);opacity:.75}
+.command-depth-atmosphere{inset:16%;border-radius:50%;border:2px solid rgba(var(--depth-skin),.40);box-shadow:0 0 25px rgba(var(--depth-skin),.22),inset 0 0 24px rgba(var(--depth-skin-secondary),.26);transform:translateZ(17px)}
+.command-depth-moon{width:35px;height:35px;top:7%;right:5%;border-radius:50%;background:radial-gradient(circle at 28% 23%,#fff,rgb(var(--depth-skin)) 23%,rgb(var(--depth-skin-secondary)) 56%,#080e27);box-shadow:inset -8px -9px 11px #020b19a1,0 0 23px rgba(var(--depth-skin),.35);animation:galaxy-plus-float 8s ease-in-out infinite alternate}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button){border-color:rgba(var(--depth-skin),.33)!important;background:radial-gradient(circle at 6% 0%,rgba(var(--depth-skin),.16),transparent 60%),linear-gradient(145deg,#1b3657,#0b1d39)!important;box-shadow:inset 0 1px #ffffff24,0 16px 39px #020a238a!important}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button):hover{border-color:rgba(var(--depth-skin),.68)!important}
+body.student-app-body :is(.mission-student-disclosure,.mission-lesson,.account-tile,.command-edit-card){border-color:rgba(var(--depth-skin),.3)!important}
+body.student-app-body :is(input,button,select,a):focus-visible{outline:2px solid rgb(var(--depth-skin))!important;outline-offset:3px}
+
+/* 3D theme studio: season + holiday cards are miniature collectible scenes. */
+.theme-page{perspective:1600px}
+.theme-page-header{padding:20px 22px;border:1px solid rgba(var(--fest-a,123,234,255),.24);border-radius:22px;background:radial-gradient(circle at 78% 0,rgba(var(--fest-b,170,157,255),.16),transparent 58%),linear-gradient(125deg,#122b49d9,#0b1831e6);box-shadow:inset 0 1px #ffffff22,0 20px 55px #02091884}
+.theme-page-header h1{font-size:clamp(28px,2.5vw,40px);text-shadow:0 5px 22px #0208178c}
+.theme-editor{border-color:rgba(var(--fest-a,123,234,255),.29);background:radial-gradient(circle at 84% -9%,rgba(var(--fest-a,123,234,255),.11),transparent 46%),linear-gradient(150deg,#0e2642,#07162c 74%);box-shadow:0 29px 75px #03071987,inset 0 1px #ffffff25}
+.theme-preview-panel{perspective:1000px;border:1px solid rgba(var(--fest-a,123,234,255),.29)!important;box-shadow:0 26px 70px #03091e91,inset 0 1px #ffffff22!important}
+.theme-section-icon{transform:perspective(250px) rotateX(13deg);box-shadow:inset 0 1px #ffffff45,0 12px 27px #01081999,0 0 22px rgba(var(--fest-a,123,234,255),.12)}
+.theme-card{--card-rx:0deg;--card-ry:0deg;--card-px:50%;--card-py:50%;transform-style:preserve-3d;backface-visibility:hidden;isolation:isolate;border-radius:18px;border-color:color-mix(in srgb,var(--theme-accent) 30%,#3c536e);background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--theme-accent) 12%,transparent),transparent 60%),linear-gradient(143deg,color-mix(in srgb,var(--theme-depth) 65%,#17304b),#07172c)!important;box-shadow:0 13px 32px #02091888,inset 0 1px #ffffff16;transition:transform .31s var(--depth-ease),border-color .26s,box-shadow .31s}
+.theme-card:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at var(--card-px) var(--card-py),color-mix(in srgb,var(--theme-accent) 18%,transparent),transparent 55%);opacity:0;transition:opacity .25s}
+.theme-card.depth-interacting:before{opacity:1}
+.theme-card.is-selected{border-color:var(--theme-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--theme-accent) 55%,transparent),0 20px 42px #02091994,0 0 33px color-mix(in srgb,var(--theme-accent) 23%,transparent)!important}
+.theme-cover{transform-style:preserve-3d;box-shadow:inset 0 1px #ffffff52,inset 0 -22px 32px #03091680,0 13px 21px #01081870}
+.theme-cover::before{box-shadow:inset -13px -16px 25px #010718ba,inset 7px 7px 14px #fff6,0 0 35px color-mix(in srgb,var(--theme-accent) 37%,transparent)}
+.theme-cover::after{box-shadow:0 0 16px color-mix(in srgb,var(--theme-secondary) 58%,transparent)}
+.theme-cover-stars{position:absolute;inset:0;z-index:1;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 8% 27%,#fff 99%,transparent),radial-gradient(2px 2px at 75% 70%,#fff 99%,transparent),radial-gradient(1px 1px at 51% 35%,#bcdfff 99%,transparent);opacity:.8}
+.theme-cover-satellite{position:absolute;z-index:2;width:10px;height:10px;right:11px;bottom:17px;border-radius:50%;background:radial-gradient(circle at 24% 20%,#fff,var(--theme-secondary) 44%,var(--theme-depth));box-shadow:0 0 12px color-mix(in srgb,var(--theme-secondary) 70%,transparent);animation:galaxy-plus-float 5s ease-in-out infinite alternate}
+.theme-cover-object{box-shadow:inset 0 1px #ffffff77,inset 0 -10px 14px #050c1b75,0 16px 20px #020717b8;transform:translateZ(20px) rotate(-7deg)}
+.theme-cover-symbol{transform:translateZ(17px);text-shadow:0 7px 19px #030a1fb2}
+.theme-card-content{position:relative;transform:translateZ(10px)}
+.theme-card--holiday .theme-cover{box-shadow:inset 0 1px #ffffff4d,0 8px 14px #01071877}
+.theme-card--holiday .theme-cover-object{transform:translateZ(10px) rotate(-6deg)}
+.theme-preview-panel{--preview-tilt-x:0deg;--preview-tilt-y:0deg;transform-style:preserve-3d}
+.theme-site-preview{isolation:isolate;transform:none;box-shadow:0 17px 33px #010718a1,inset 0 1px #ffffff52;background:radial-gradient(circle at 82% 14%,color-mix(in srgb,var(--active-secondary) 27%,transparent),transparent 62%),linear-gradient(125deg,#0d2742,#08162e)!important}
+.theme-site-sidebar,.theme-site-work{position:relative;z-index:3}.theme-site-work strong{text-shadow:0 2px 12px #030b1b}.theme-site-orbit{z-index:1}
+.theme-site-planet{z-index:2;position:absolute;right:14%;top:17%;width:53px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,var(--active-accent) 20%,var(--active-secondary) 63%,var(--active-depth));box-shadow:inset -12px -12px 15px #010918a6,0 0 31px color-mix(in srgb,var(--active-accent) 39%,transparent);pointer-events:none}
+.theme-site-stars,.theme-preview-hero-stars{z-index:2;position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 11% 20%,#fff 98%,transparent),radial-gradient(1px 1px at 44% 76%,#fff 98%,transparent),radial-gradient(2px 2px at 92% 21%,#fff 98%,transparent);opacity:.6}
+.theme-phone{transform:perspective(1400px) rotateY(var(--preview-tilt-y,-3deg)) rotateX(var(--preview-tilt-x,3deg));transform-style:preserve-3d;box-shadow:0 28px 70px #000a25af,0 0 36px color-mix(in srgb,var(--active-accent) 15%,transparent),inset 0 1px #ffffff41;transition:transform .3s var(--depth-ease)}
+.theme-phone-hero{isolation:isolate;box-shadow:inset 0 1px #ffffff5b,inset 0 -15px 34px #02091f7d,0 12px 28px #01081b87}
+.theme-preview-hero-object{filter:drop-shadow(0 17px 16px #0107199f);transform:translateZ(21px)}
+.theme-preview-hero-orbit{filter:drop-shadow(0 0 11px color-mix(in srgb,var(--active-accent) 55%,transparent))}
+.theme-preview-hero-moon{position:absolute;right:15%;top:12%;height:21px;width:21px;border-radius:50%;background:radial-gradient(circle at 29% 20%,#fff,var(--active-accent) 35%,var(--active-depth) 94%);box-shadow:inset -6px -7px 8px #040b20a6,0 0 18px color-mix(in srgb,var(--active-accent) 45%,transparent);animation:galaxy-plus-float 6s ease-in-out infinite alternate}
+.theme-phone-stats>div,.theme-phone-event,.theme-phone-season{box-shadow:0 9px 23px #01081b6b,inset 0 1px #ffffff2a;transform:translateZ(4px)}
+.theme-preview-palette{border-color:color-mix(in srgb,var(--active-accent) 25%,transparent)}
+.theme-save-button{box-shadow:0 12px 27px rgba(var(--fest-a,123,234,255),.21),inset 0 1px #fff6!important}
+
+@media (hover:hover) and (pointer:fine){
+  .theme-card:hover{transform:perspective(900px) translateY(-6px) rotateX(var(--card-rx)) rotateY(var(--card-ry));border-color:color-mix(in srgb,var(--theme-accent) 76%,white);box-shadow:0 26px 48px #010817ba,0 0 35px color-mix(in srgb,var(--theme-accent) 20%,transparent)!important}
+  .theme-card .theme-cover-object{transition:transform .3s var(--depth-ease)}
+  .theme-card:hover .theme-cover-object{transform:translateZ(28px) rotate(1deg) scale(1.07)}
+  .theme-card--holiday:hover .theme-cover-object{transform:translateZ(14px) rotate(1deg) scale(1.04)}
+}
+@media(max-width:900px){.theme-page-header{padding:15px}.theme-site-preview{transform:none}.theme-phone{transform:none!important}.theme-card{transform:none!important}}
+@media(max-width:760px){.galaxy-depth-moon{width:28px}.command-depth-moon{width:23px}.theme-preview-panel{overflow:hidden}.theme-page-header{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){
+  .galaxy-depth-aura,.galaxy-depth-moon,.galaxy-depth-beacon,.command-depth-moon,.theme-cover-satellite,.theme-preview-hero-moon{animation:none!important}
+  .theme-card,.theme-phone,.theme-cover-object{transition:none!important;transform:none!important}
+  .theme-cover-stars,.theme-preview-hero-stars{opacity:.55}
+}
+@media(forced-colors:active){.theme-card,.theme-site-preview,.theme-phone,.theme-editor,.theme-preview-panel{border:1px solid CanvasText!important}.galaxy-depth-aura,.command-depth-track,.theme-cover-stars{display:none!important}}
+@keyframes galaxy-plus-spin{to{transform:rotate(360deg)}}
+@keyframes galaxy-plus-float{from{translate:0 -6px}to{translate:0 9px}}
+@keyframes galaxy-plus-pulse{from{opacity:.4;scale:.75}to{opacity:1;scale:1.18}}

@@ -1,0 +1,15 @@
+/* Operational filters and audit drill-down: Galaxy staff V5 */
+.audit-operations-v5{border:1px solid #365a7c;border-radius:21px;background:linear-gradient(130deg,#0e2440ed,#09192cea);padding:22px;box-shadow:0 22px 50px #02091550;margin:20px 0}
+.audit-operations-form{display:grid;grid-template-columns:minmax(200px,1.7fr) repeat(3,minmax(140px,1fr));gap:13px;align-items:end}
+.audit-operations-form .field{margin:0;min-width:0}.audit-operations-form .input,.audit-operations-form .select{min-height:44px;width:100%}
+.audit-search-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap}
+.audit-quick{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.audit-quick a{display:inline-flex;align-items:center;border-radius:100px;border:1px solid #416585;padding:8px 13px;background:#1c3856;color:#c4e5ff;font-size:13px;font-weight:750;text-decoration:none}
+.audit-quick a:hover{border-color:#8de4ff;color:#fff}
+.audit-operations-v5 .audit-count{color:#b0c4db;font-size:13px}
+.audit-row-more{margin-top:8px;font-size:12px;color:#b1d5ee}
+.audit-row-more summary{cursor:pointer;display:inline-block;border-bottom:1px dashed #80c7e7;line-height:1.6}
+.audit-row-more>div{margin-top:5px}
+.audit-summary-cell{overflow-wrap:anywhere;max-width:560px}
+@media(max-width:1000px){.audit-operations-form{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-search{grid-column:1/-1}}
+@media(max-width:590px){.audit-operations-v5{padding:14px}.audit-operations-form{grid-template-columns:1fr}.audit-search{grid-column:auto}.audit-search-actions .btn{flex:1}.audit-quick a{flex:1;justify-content:center}}

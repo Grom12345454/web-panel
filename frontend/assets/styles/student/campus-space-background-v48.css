@@ -1,0 +1,90 @@
+/* Student App v48 — campus-space.webp is the bottom visual layer.
+   Theme tints and ambient cosmos motion remain above it. No pointer-follow light,
+   holiday stickers, or extra 3D model is introduced by this layer. */
+html.student-app-document {
+  background: #030916 !important;
+}
+
+body.student-app-body[data-page="student-app"][data-season] {
+  background-color: #030916 !important;
+  background-image:
+    linear-gradient(180deg,
+      rgba(2, 8, 20, .12) 0%,
+      rgba(3, 9, 23, .27) 48%,
+      rgba(3, 8, 18, .60) 100%),
+    radial-gradient(ellipse at 78% 16%,
+      rgba(var(--season-secondary-rgb, 155, 123, 255), .19), transparent 46%),
+    radial-gradient(ellipse at 12% 72%,
+      rgba(var(--season-accent-rgb, 49, 217, 255), .13), transparent 43%),
+    url("/static/images/campus-space.webp?v=48") !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat !important;
+  background-position: center center, center center, center center, 50% 50% !important;
+  background-size: cover, cover, cover, cover !important;
+  background-attachment: fixed, fixed, fixed, fixed !important;
+}
+
+/* The fixed cosmos layer sits above the photo; the app content stays above both. */
+body.student-app-body > .cosmos-field {
+  z-index: 0 !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+body.student-app-body > .cosmos-field > span {
+  z-index: 1;
+}
+body.student-app-body > .cosmos-field > .cosmos-field__nebula {
+  opacity: .67;
+}
+body.student-app-body > .cosmos-field > .cosmos-field__stars--distant {
+  opacity: .48;
+}
+body.student-app-body > .cosmos-field > .cosmos-field__stars--near {
+  opacity: .29;
+}
+body.student-app-body > .cosmos-field > .cosmos-field__horizon {
+  opacity: .43;
+}
+
+/* Re-enable only subtle ambient animations; do not add cursor-following light. */
+@media (prefers-reduced-motion: no-preference) {
+  body.student-app-body > .cosmos-field > .cosmos-field__nebula {
+    animation: cosmos-aurora-drift 32s ease-in-out infinite alternate !important;
+  }
+  body.student-app-body > .cosmos-field > .cosmos-field__stars--distant {
+    animation: cosmos-star-breathe 13s ease-in-out infinite alternate !important;
+  }
+  body.student-app-body > .cosmos-field > .cosmos-field__stars--near {
+    animation: cosmos-star-breathe 11s ease-in-out infinite alternate-reverse !important;
+  }
+}
+
+/* Keep the previously requested clean background: no festive stickers or moving streak. */
+body.student-app-body .student-festive-atmosphere {
+  display: none !important;
+}
+body.student-app-body > .cosmos-field > .cosmos-field__comet {
+  display: none !important;
+  animation: none !important;
+}
+
+@media (max-width: 640px) {
+  body.student-app-body[data-page="student-app"][data-season] {
+    /* Bias the crop toward the observatory while keeping the image full-bleed. */
+    background-position: center center, center center, center center, 24% 50% !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.student-app-body[data-page="student-app"][data-season] {
+    background-position: center center, center center, center center, 18% 50% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body > .cosmos-field > .cosmos-field__nebula,
+  body.student-app-body > .cosmos-field > .cosmos-field__stars--distant,
+  body.student-app-body > .cosmos-field > .cosmos-field__stars--near {
+    animation: none !important;
+    transition: none !important;
+  }
+}

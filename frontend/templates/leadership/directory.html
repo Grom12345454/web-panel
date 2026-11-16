@@ -1,0 +1,25 @@
+{% extends "shared/base.html" %}
+{% block title %}Руководство студенческого совета{% endblock %}
+{% block content %}
+<section class="leadership-public-hero">
+  <div class="leadership-public-mark">♙</div>
+  <div class="leadership-public-copy"><div class="eyebrow">✦ ЛЮДИ, КОТОРЫЕ ВЕДУТ КОМАНДУ</div><h1>Руководство студсовета</h1><p>{% if session.user_role == 'staff' %}Показаны руководители и заместители только в направлениях, доступных вашей учётной записи. Раздел доступен для просмотра.{% else %}Актуальные должности, направления и публичные контакты команды. Наблюдатели могут просматривать состав, а менять назначения — только главный администратор.{% endif %}</p></div>
+  {% if can_manage %}<a class="btn btn-primary" href="{{ url_for('admin.manage_leadership') }}">Управлять составом →</a>{% endif %}
+</section>
+<section class="leadership-public-summary"><div><strong>{{ cards|length }}</strong><span>активных должностей</span></div><div><strong>{{ cards|map(attribute='student_id')|unique|list|length }}</strong><span>участников руководства</span></div><div><strong>{{ cards|selectattr('position', 'equalto', 'Председатель студсовета')|list|length }}</strong><span>председатель студсовета</span></div></section>
+<section class="leadership-public-section"><div class="section-title"><h2>Состав руководства</h2></div>
+<div class="leadership-public-grid">
+{% for person in cards %}
+<article class="card leadership-public-card {{ 'leadership-public-card--chair' if person.position == 'Председатель студсовета' else '' }}">
+  <div class="leadership-public-person-top"><div class="leadership-public-avatar">{{ person.full_name[:1]|upper }}</div><span class="leadership-public-role">{{ person.position }}</span></div>
+  <h3>{{ person.full_name }}</h3>
+  <div class="leadership-public-meta">{{ person.direction_name }}{% if person.group %} · {{ person.group }}{% endif %}</div>
+  <div class="leadership-public-scope" aria-label="Публичные контакты">
+  {% for contact in person.links %}
+   <a class="leader-public-link leader-public-link--{{ contact.platform }}" href="{{ contact.url }}" target="_blank" rel="noopener noreferrer" aria-label="Открыть {{ contact.label }}: {{ contact.handle }}"><span class="leader-public-icon">{{ contact.symbol }}</span><span class="leader-public-link-copy"><strong>{{ contact.label }}</strong><small>{{ contact.handle }}</small></span><span class="leader-public-arrow" aria-hidden="true">↗</span></a>
+  {% else %}<span class="leader-public-private">Контакты пока не опубликованы</span>{% endfor %}
+  </div>
+</article>
+{% else %}<div class="card empty">Руководители пока не назначены</div>{% endfor %}
+</div></section>
+{% endblock %}

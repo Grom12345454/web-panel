@@ -1,0 +1,103 @@
+/* V30 hotfix — keep the Telegram / VK / MAX monitoring panel stable after the immersive redesign. */
+.uc-body .galaxy-dashboard > section.galaxy-ops-hub.mission-bot-hub {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-flow: row !important;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.uc-body .mission-bot-hub > .mission-panel-top {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap;
+  gap: 14px 20px !important;
+  width: 100%;
+  min-width: 0;
+  margin: 0 !important;
+}
+.uc-body .mission-bot-hub > .mission-panel-top > div {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.uc-body .mission-bot-hub > .mission-panel-top h2 {
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+.uc-body .mission-bot-hub > .mission-panel-top p {
+  max-width: 70ch;
+}
+.uc-body .mission-bot-hub > .mission-bot-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+.uc-body .mission-bot-hub .mission-bot-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  border-color: color-mix(in srgb, var(--v29-accent, #79dcff) 24%, rgba(134,195,241,.22));
+  background: linear-gradient(145deg, rgba(16,37,64,.78), rgba(5,17,36,.74));
+  box-shadow: inset 0 1px rgba(255,255,255,.055), 0 12px 28px rgba(0,5,24,.15);
+}
+.uc-body .mission-bot-hub .mission-bot-head,
+.uc-body .mission-bot-hub .mission-bot-values,
+.uc-body .mission-bot-hub .mission-bot-last {
+  min-width: 0;
+  max-width: 100%;
+}
+.uc-body .mission-bot-hub .mission-bot-values {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: clamp(12px, 2vw, 30px);
+  row-gap: 12px;
+}
+.uc-body .mission-bot-hub .mission-bot-values > span {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.uc-body .mission-bot-hub .mission-bot-values strong {
+  font-size: clamp(21px, 2vw, 26px);
+}
+.uc-body .mission-bot-hub .mission-bot-last strong {
+  overflow-wrap: anywhere;
+}
+.uc-body .mission-bot-hub > .mission-monitor-note {
+  width: 100%;
+  margin: 0 !important;
+  padding-top: 14px;
+  border-top: 1px solid rgba(150,194,235,.13);
+  line-height: 1.65;
+}
+@media (max-width: 1050px) {
+  .uc-body .mission-bot-hub > .mission-bot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 680px) {
+  .uc-body .mission-bot-hub { padding: 18px !important; }
+  .uc-body .mission-bot-hub > .mission-panel-top { align-items: stretch !important; }
+  .uc-body .mission-bot-hub > .mission-panel-top > div { flex-basis: 100%; }
+  .uc-body .mission-bot-hub .galaxy-ops-cta { align-self: flex-start; white-space: normal; }
+  .uc-body .mission-bot-hub > .mission-bot-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .uc-body .mission-bot-hub .mission-bot-card { padding: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uc-body .mission-bot-hub,
+  .uc-body .mission-bot-hub * { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

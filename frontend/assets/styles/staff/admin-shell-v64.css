@@ -1,0 +1,187 @@
+/* v64 — continuous portal canvas, compact page ending and more responsive admin controls. */
+html,
+html body.uc-body {
+  min-height: 100%;
+  background-color: #07111d !important;
+}
+html,
+html:has(body.uc-body) {
+  background:
+    radial-gradient(ellipse at 84% 5%, rgba(var(--office-secondary-rgb, 120, 135, 255), .14), transparent 39%),
+    radial-gradient(ellipse at 12% 72%, rgba(var(--office-accent-rgb, 105, 214, 238), .12), transparent 44%),
+    radial-gradient(ellipse at 52% 112%, rgba(79, 135, 195, .10), transparent 45%),
+    linear-gradient(150deg, #07121f 0%, #081522 55%, #060d17 100%) !important;
+  background-color: #07111d !important;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: 100% 100%;
+}
+body.uc-body,
+html body.uc-body:has(.app-shell) {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  background: transparent !important;
+  background-color: transparent !important;
+  position: relative;
+  isolation: isolate;
+}
+body.uc-body:has(.app-shell)::before {
+  position: absolute;
+  inset: 0;
+  min-height: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 74% 16%, rgba(var(--office-secondary-rgb, 120, 135, 255), .09), transparent 38%),
+    radial-gradient(ellipse at 12% 78%, rgba(var(--office-accent-rgb, 105, 214, 238), .09), transparent 40%),
+    linear-gradient(125deg, transparent 20%, rgba(113, 192, 255, .025) 48%, transparent 72%) !important;
+}
+.app-shell {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  height: auto !important;
+  background: transparent !important;
+}
+.app-shell > .main {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+  align-self: stretch;
+  width: auto !important;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  height: auto !important;
+  background: transparent !important;
+}
+.app-shell > .main > .page {
+  flex: 1 0 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  margin: 0 !important;
+  padding-bottom: max(14px, env(safe-area-inset-bottom)) !important;
+  background: transparent !important;
+}
+.app-shell > .main > .app-footer {
+  flex: 0 0 auto;
+  margin-top: auto;
+  background: transparent !important;
+}
+
+/* Use the available working width instead of leaving a narrow dashboard column. */
+.uc-body.is-dashboard-page .page { max-width: none !important; }
+.uc-body.is-dashboard-page .galaxy-dashboard {
+  width: 100%;
+  max-width: none !important;
+  margin-inline: 0;
+  gap: clamp(15px, 1.65vw, 25px);
+}
+.uc-body.is-dashboard-page .mission-hero-20 { min-height: clamp(220px, 25vh, 310px); }
+.uc-body.is-dashboard-page .mission-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.uc-body.is-dashboard-page .mission-workspace-grid { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); }
+.uc-body.is-dashboard-page .mission-analytics { min-width: 0; }
+.uc-body.is-dashboard-page .galaxy-direction-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); }
+
+/* Sharper interaction feedback: active states are visible without constant GPU-heavy effects. */
+.uc-body .sidebar-nav .nav-section-toggle,
+.uc-body .sidebar-nav .nav-link,
+.uc-body .sidebar-nav .nav-sub-link {
+  transition: color .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.uc-body .sidebar-nav .nav-section.is-active-section > .nav-section-toggle {
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .25);
+  background: linear-gradient(100deg, rgba(var(--office-accent-rgb, 105, 214, 238), .16), rgba(var(--office-secondary-rgb, 120, 135, 255), .08));
+  box-shadow: inset 3px 0 rgba(var(--office-accent-rgb, 105, 214, 238), .78), 0 7px 22px rgba(0, 0, 0, .14);
+}
+.uc-body .sidebar-nav .nav-link.active {
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .27) !important;
+  box-shadow: inset 3px 0 var(--office-accent, #70d9e8), 0 7px 22px rgba(var(--office-accent-rgb, 105, 214, 238), .09) !important;
+}
+.uc-body .sidebar-nav .nav-link:hover,
+.uc-body .sidebar-nav .nav-section-toggle:hover { transform: translateX(3px); }
+.uc-body.is-dashboard-page .mission-kpi,
+.uc-body.is-dashboard-page .mission-panel,
+.uc-body.is-dashboard-page .galaxy-tool,
+.uc-body.is-dashboard-page .galaxy-direction {
+  position: relative;
+  isolation: isolate;
+  transition: transform .22s cubic-bezier(.2, .8, .2, 1), border-color .22s ease, box-shadow .22s ease, filter .22s ease;
+}
+.uc-body.is-dashboard-page .mission-kpi::after,
+.uc-body.is-dashboard-page .mission-panel::after,
+.uc-body.is-dashboard-page .galaxy-tool::after,
+.uc-body.is-dashboard-page .galaxy-direction::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 18%, rgba(160, 235, 255, .075) 48%, transparent 76%);
+  transform: translateX(-18%);
+  transition: opacity .22s ease, transform .42s ease;
+}
+.uc-body.is-dashboard-page .mission-kpi:hover,
+.uc-body.is-dashboard-page .mission-panel:hover,
+.uc-body.is-dashboard-page .galaxy-tool:hover,
+.uc-body.is-dashboard-page .galaxy-direction:hover {
+  transform: translateY(-3px);
+  border-color: rgba(133, 224, 250, .40) !important;
+  box-shadow: 0 20px 44px rgba(0, 5, 26, .27), 0 0 22px rgba(69, 180, 225, .10);
+}
+.uc-body.is-dashboard-page .mission-kpi:hover::after,
+.uc-body.is-dashboard-page .mission-panel:hover::after,
+.uc-body.is-dashboard-page .galaxy-tool:hover::after,
+.uc-body.is-dashboard-page .galaxy-direction:hover::after { opacity: 1; transform: translateX(18%); }
+.uc-body.is-dashboard-page .galaxy-hero-actions .btn:active,
+.uc-body.is-dashboard-page .mission-periods a:active,
+.uc-body .admin-monitor-tab:active { transform: translateY(1px) scale(.985); }
+.uc-body .admin-monitor-tabs {
+  position: sticky;
+  top: 8px;
+  z-index: 8;
+  box-shadow: 0 12px 30px rgba(0, 5, 22, .23), inset 0 1px rgba(255,255,255,.055);
+}
+.uc-body .admin-monitor-tab.is-active {
+  color: #f2fbff;
+  background: linear-gradient(105deg, rgba(var(--office-accent-rgb, 105, 214, 238), .22), rgba(var(--office-secondary-rgb, 120, 135, 255), .18));
+}
+.uc-body .page :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--office-accent, #79e0ed) !important;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1120px) {
+  .uc-body.is-dashboard-page .mission-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .uc-body.is-dashboard-page .mission-workspace-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 820px) {
+  .app-shell { display: block; }
+  .app-shell > .main { width: 100% !important; min-height: 100svh; min-height: 100dvh; }
+  .app-shell > .main > .page { padding-bottom: max(16px, env(safe-area-inset-bottom)) !important; }
+  .uc-body.is-dashboard-page .mission-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .uc-body .admin-monitor-tabs { position: static; }
+}
+@media (max-width: 520px) {
+  .uc-body.is-dashboard-page .mission-kpis { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uc-body .sidebar-nav .nav-section-toggle,
+  .uc-body .sidebar-nav .nav-link,
+  .uc-body.is-dashboard-page .mission-kpi,
+  .uc-body.is-dashboard-page .mission-panel,
+  .uc-body.is-dashboard-page .galaxy-tool,
+  .uc-body.is-dashboard-page .galaxy-direction,
+  .uc-body .admin-monitor-tab { animation: none !important; transition: none !important; transform: none !important; }
+  .uc-body.is-dashboard-page .mission-kpi::after,
+  .uc-body.is-dashboard-page .mission-panel::after,
+  .uc-body.is-dashboard-page .galaxy-tool::after,
+  .uc-body.is-dashboard-page .galaxy-direction::after { display: none !important; }
+}

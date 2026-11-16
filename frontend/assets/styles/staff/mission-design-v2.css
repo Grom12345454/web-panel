@@ -1,0 +1,23 @@
+/* Mission Control visual refresh: staff pages use the same seasonal accents as Student App. */
+.uc-body{--mission-glow:rgba(var(--season-accent-rgb,107,202,255),.16)}
+.uc-body .app-shell{isolation:isolate;}
+.uc-body .sidebar{background:linear-gradient(168deg,rgba(13,31,62,.98),rgba(3,13,32,.99))!important;border-right:1px solid rgba(var(--season-accent-rgb,107,202,255),.26)!important;}
+.uc-body .topbar{border-bottom:1px solid rgba(var(--season-accent-rgb,107,202,255),.2)!important;box-shadow:0 12px 32px rgba(0,8,25,.24)}
+.uc-body .brand-mark{filter:drop-shadow(0 0 22px rgba(var(--season-accent-rgb,107,202,255),.45))}
+.uc-body .main .section-title:is(h1,h2),.uc-body h1{letter-spacing:-.04em}
+.uc-body .main :is(.card,.dashboard-card,.metric,.stat-card){border-radius:20px!important;position:relative;}
+.uc-body .main :is(.card,.dashboard-card,.metric,.stat-card)::before{content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(215,243,255,.05);pointer-events:none;}
+.uc-body .sidebar-nav :is(a,button){position:relative;border-radius:12px;transition:background .22s ease,transform .22s ease,box-shadow .22s ease!important;}
+.uc-body .sidebar-nav :is(a,button):hover{transform:translateX(4px);background:rgba(var(--season-accent-rgb,107,202,255),.1)!important;box-shadow:inset 3px 0 rgba(var(--season-accent-rgb,107,202,255),.55);}
+.uc-body :is(.btn-primary,button.btn-primary){background:linear-gradient(112deg,var(--season-accent,#43b8e9),var(--season-secondary,#667add))!important;color:#061729!important;font-weight:800;}
+.uc-body .main :is(.card,.dashboard-card,.metric,.stat-card):hover{border-color:rgba(var(--season-accent-rgb,107,202,255),.32)!important;box-shadow:0 24px 70px rgba(0,7,27,.43),0 0 28px var(--mission-glow)!important;}
+.uc-body .main :is(input,select,textarea){border-radius:12px;}
+.uc-body .main :is(input,select,textarea):focus{border-color:rgba(var(--season-accent-rgb,107,202,255),.7)!important;box-shadow:0 0 0 3px rgba(var(--season-accent-rgb,107,202,255),.13)!important;outline:none;}
+@media(prefers-reduced-motion:no-preference){
+  .uc-body .space-nebula{animation:mission-nebula 13s ease-in-out infinite alternate;}
+  .uc-body .space-ring-two{animation:mission-ring 18s ease-in-out infinite alternate;}
+  .uc-body .main :is(.card,.dashboard-card,.metric,.stat-card){transition:border-color .24s,box-shadow .24s;}
+}
+@keyframes mission-nebula{from{transform:scale(.93);opacity:.65}to{transform:scale(1.12);opacity:.97}}
+@keyframes mission-ring{from{transform:rotate(16deg) rotateX(72deg)}to{transform:rotate(26deg) rotateX(71deg)}}
+@media(prefers-reduced-motion:reduce){.uc-body .space-nebula,.uc-body .space-ring-two{animation:none!important;}}

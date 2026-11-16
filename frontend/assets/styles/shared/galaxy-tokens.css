@@ -1,0 +1,11 @@
+/* Galaxy 2.0 design tokens: shared by staff web panel and Student App. */
+:root{
+  --galaxy-bg-20:#071225;
+  --galaxy-surface-20:#10243e;
+  --galaxy-accent-20:#77dfff;
+  --galaxy-light-20:#a99bff;
+  --galaxy-text-20:#f3f8ff;
+  --galaxy-border-20:rgba(135,203,250,.25);
+  --galaxy-radius-20:20px;
+  --galaxy-shadow-20:0 18px 48px rgba(0,7,33,.28);
+}

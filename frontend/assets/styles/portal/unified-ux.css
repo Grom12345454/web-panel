@@ -1,0 +1,11 @@
+/* Unified accessibility polish shared by all admin pages. */
+.uc-body :is(.nav-link,.nav-sub-link,.nav-title,.btn,button,a,[role="button"]):focus-visible {
+  outline: 3px solid var(--accent, #5acdf2);
+  outline-offset: 3px;
+}
+.uc-body .page :is(h1,h2,h3){text-wrap:balance}
+.uc-body :is(input,select,textarea){min-width:0}
+.uc-body :is(.nav-link,.nav-sub-link,.nav-title,.btn,button){transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.uc-body .sidebar-nav a[aria-current="page"]{font-weight:750}
+.uc-body .page :is(.table-scroll,.table-responsive){scrollbar-width:thin;overscroll-behavior-x:contain}
+@media(prefers-reduced-motion:reduce){.uc-body :is(.nav-link,.nav-sub-link,.nav-title,.btn,button){transition:none!important;animation:none!important}}

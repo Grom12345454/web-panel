@@ -1,0 +1,18 @@
+/* Clean Student App home: no dashboard shortcut pile, counts, or cross-section cards. */
+.student-app-body .home-screen { position: relative; isolation: isolate; display: grid; align-content: center; justify-items: start; gap: 0; min-height: clamp(300px, 43dvh, 450px); overflow: hidden; padding: clamp(24px, 5vw, 48px); border: 1px solid rgba(var(--sa-accent-rgb,104,228,255),.2); border-radius: 26px; background: radial-gradient(ellipse at 90% 2%,rgba(var(--sa-secondary-rgb,155,140,255),.2),transparent 40%),linear-gradient(145deg,rgba(var(--season-panel-rgb,13,35,53),.92),rgba(var(--season-panel-dark-rgb,7,19,31),.96)); box-shadow: 0 22px 65px rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.065); }
+.student-app-body .home-glow { position: absolute; z-index: -1; width: 320px; height: 320px; right: -115px; bottom: -205px; border: 1px solid rgba(var(--sa-accent-rgb,104,228,255),.15); border-radius: 50%; box-shadow: 0 0 0 28px rgba(var(--sa-accent-rgb,104,228,255),.025),0 0 0 62px rgba(var(--sa-accent-rgb,104,228,255),.018),0 0 0 100px rgba(var(--sa-accent-rgb,104,228,255),.012); pointer-events: none; }
+.student-app-body .home-symbol { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 26px; border: 1px solid rgba(var(--sa-accent-rgb,104,228,255),.24); border-radius: 17px; background: linear-gradient(145deg,rgba(var(--sa-accent-rgb,104,228,255),.18),rgba(var(--sa-secondary-rgb,155,140,255),.19)); color: var(--sa-accent,#68e4ff); box-shadow: 0 12px 28px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.14); font-size: 24px; }
+.student-app-body .home-overline { margin: 0 0 12px; color: var(--sa-accent,#68e4ff); font-size: 10px; font-weight: 900; letter-spacing: .15em; line-height: 1.5; }
+.student-app-body .home-screen h1 { max-width: 720px; margin: 0; color: #f5f8ff; font-size: clamp(28px,4vw,42px); font-weight: 880; line-height: 1.08; letter-spacing: -.04em; text-wrap: balance; }
+.student-app-body .home-screen p { max-width: 620px; margin: 17px 0 0; color: #a8bad0; font-size: clamp(13px,1.7vw,15px); line-height: 1.75; }
+.student-app-body .home-status { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.075); color: #9bb1c7; font-size: 11px; font-weight: 650; }
+.student-app-body .home-status-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #4fe0a1; box-shadow: 0 0 0 4px rgba(79,224,161,.1),0 0 14px rgba(79,224,161,.28); }
+.student-app-body .home-status-divider { width: 3px; height: 3px; border-radius: 50%; background: #526d85; }
+@media (max-width: 640px) {
+  .student-app-body .home-screen { min-height: 330px; padding: 26px 22px; border-radius: 22px; }
+  .student-app-body .home-symbol { width: 46px; height: 46px; margin-bottom: 22px; border-radius: 15px; }
+  .student-app-body .home-overline { font-size: 9px; letter-spacing: .11em; }
+  .student-app-body .home-screen p { margin-top: 14px; }
+  .student-app-body .home-status { margin-top: 23px; }
+}
+@media (prefers-reduced-motion: reduce) { .student-app-body .home-screen * { animation: none !important; transition: none !important; } }

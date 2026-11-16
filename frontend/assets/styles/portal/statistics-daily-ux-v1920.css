@@ -1,0 +1,69 @@
+/* v1.9.20 — daily analytics workflow and page-frame correction.
+   One canonical report entry in navigation; frequent tasks are one-click table presets. */
+body.uc-body[data-page^="stats-"] .stats-daily-shortcuts {
+  display:flex; align-items:center; flex-wrap:wrap; gap:7px;
+  padding:11px 15px 10px; border-bottom:1px solid rgba(139,190,218,.10);
+  background:rgba(5,16,29,.12);
+}
+body.uc-body[data-page^="stats-"] .stats-daily-shortcuts-label {
+  margin-right:5px; color:#819caf; font-size:10px; font-weight:800; letter-spacing:.035em;
+}
+body.uc-body[data-page^="stats-"] .stats-view-chip {
+  min-height:30px; padding:5px 11px; border:1px solid rgba(139,190,218,.16);
+  border-radius:9px; background:rgba(7,21,35,.45); color:#a9bfce;
+  font:inherit; font-size:10px; font-weight:750; cursor:pointer;
+  transition:background .14s ease,border-color .14s ease,color .14s ease;
+}
+body.uc-body[data-page^="stats-"] .stats-view-chip:hover,
+body.uc-body[data-page^="stats-"] .stats-view-chip.is-active {
+  color:#e3f8fb; border-color:rgba(105,201,226,.38); background:rgba(55,147,177,.16);
+}
+body.uc-body[data-page^="stats-"] .stats-view-chip:focus-visible {
+  outline:2px solid #71cce7; outline-offset:2px;
+}
+body.uc-body[data-page^="stats-"] .stats-data-table-card { display:flex; flex-direction:column; }
+body.uc-body[data-page^="stats-"] .direction-table-scroll { min-height:0; }
+body.uc-body[data-page^="stats-"] #direction-statistics-table thead th { position:sticky; top:0; z-index:2; }
+body.uc-body[data-page^="stats-"] #direction-statistics-table tbody tr:focus-within { background:rgba(91,190,211,.075); }
+body.uc-body[data-page^="stats-"] .stats-table-toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:11px 15px; }
+body.uc-body[data-page^="stats-"] .stats-table-pagination { display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:10px 15px; }
+body.uc-body[data-page^="stats-"] .stats-table-pagination-info { margin-right:auto; color:#8fa9bd; font-size:10px; font-variant-numeric:tabular-nums; }
+body.uc-body[data-page^="stats-"] .stats-table-result-count { color:#9bb4c5; font-size:10px; font-weight:750; }
+body.uc-body[data-page^="stats-"] .stats-table-search,
+body.uc-body[data-page^="stats-"] .stats-table-page-size { display:grid; gap:4px; color:#8fa9bd; font-size:10px; font-weight:700; }
+body.uc-body[data-page^="stats-"] .stats-table-search input,
+body.uc-body[data-page^="stats-"] .stats-table-page-size select { min-height:34px; border:1px solid rgba(139,190,218,.18); border-radius:9px; padding:0 9px; background:rgba(5,17,31,.72); color:#e8f3fb; font:inherit; }
+body.uc-body[data-page^="stats-"] .stats-table-export { min-height:34px; margin-left:auto; }
+
+/* The global shell intentionally fills the viewport. On the statistics route,
+   the main column must size to its content and must not paint a viewport-sized panel. */
+body.uc-body[data-page^="stats-"] .app-shell {
+  min-height:0 !important; height:auto !important; align-items:flex-start !important;
+}
+body.uc-body[data-page^="stats-"] .app-shell > .main {
+  display:flex !important; flex:1 1 auto !important; align-self:flex-start !important;
+  min-height:0 !important; height:auto !important; width:auto !important;
+  background:transparent !important; border:0 !important; box-shadow:none !important;
+}
+body.uc-body[data-page^="stats-"] .app-shell > .main > .page {
+  display:block !important; flex:0 0 auto !important; align-self:flex-start !important;
+  min-height:0 !important; height:auto !important; margin:0 !important;
+  padding-bottom:12px !important; background:transparent !important;
+}
+body.uc-body[data-page^="stats-"] .app-shell > .main::before,
+body.uc-body[data-page^="stats-"] .app-shell > .main::after,
+body.uc-body[data-page^="stats-"] .app-shell > .main > .page::before,
+body.uc-body[data-page^="stats-"] .app-shell > .main > .page::after { content:none !important; display:none !important; }
+body.uc-body[data-page^="stats-"] .app-shell > .sidebar { height:100dvh; min-height:100dvh; }
+@media (max-width:820px) {
+  body.uc-body[data-page^="stats-"] .app-shell { min-height:0 !important; }
+  body.uc-body[data-page^="stats-"] .app-shell > .main { width:100% !important; min-height:0 !important; }
+  body.uc-body[data-page^="stats-"] .app-shell > .sidebar { height:auto; min-height:0; }
+}
+@media (max-width:600px) {
+  body.uc-body[data-page^="stats-"] .stats-daily-shortcuts { padding:10px; }
+  body.uc-body[data-page^="stats-"] .stats-daily-shortcuts-label { flex-basis:100%; }
+  body.uc-body[data-page^="stats-"] .stats-view-chip { flex:1 1 calc(50% - 7px); }
+  body.uc-body[data-page^="stats-"] .stats-table-toolbar { align-items:stretch; }
+  body.uc-body[data-page^="stats-"] .stats-table-export { margin-left:0; }
+}

@@ -1,0 +1,183 @@
+{% extends "shared/base.html" %}
+{% block title %}Журнал Telegram · VK · MAX | Студсовет{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/bot-journal.css', v=asset_version('css/bot-journal.css')) }}">{% endblock %}
+{% block content %}
+{% include "activity/_admin_monitor_tabs.html" %}
+{% set journal_tab = 'bots' %}
+<div class="journal-shell pro-log-bots" data-journal-check="{{ url_for('admin.bot_journal_check', **filters) }}" data-journal-latest="{{ latest_id }}">
+  <header class="journal-header galaxy-journal-hero">
+    <div class="galaxy-journal-space" aria-hidden="true"><span class="galaxy-journal-core"></span><span class="galaxy-journal-ring"></span></div>
+    <div class="journal-intro">
+      <span class="journal-eyebrow"><span class="journal-live-mark" aria-hidden="true"></span> ОПЕРАЦИОННЫЙ КОНТРОЛЬ / МЕССЕНДЖЕРЫ</span>
+      <h1>Боты <span>и доставка</span></h1>
+      <p>Вначале проверяйте очередь публикаций. Для поиска команд, обращений и ошибок переходите в события ботов.</p>
+      <div class="galaxy-journal-platforms"><span>✈ Telegram</span><span>VK ВКонтакте</span><span>М MAX</span></div>
+    </div>
+    <div class="journal-tools">
+      <a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_activity') }}">История заявок</a>
+      {% if focus == 'deliveries' %}<a class="journal-btn journal-btn--outline" href="{{ url_for('admin.delivery_export', delivery_platform=delivery_platform, delivery_status=delivery_status, delivery_source=delivery_source, delivery_id=delivery_number) }}">↓ Выгрузить доставки</a>
+      {% else %}<a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_journal_export', **filters) }}">↓ Экспорт событий</a>{% endif %}
+      <button class="journal-btn journal-btn--primary" type="button" id="journal-refresh">↻ Обновить</button>
+    </div>
+  </header>
+
+  <nav class="pro-log-bot-modes" aria-label="Задача журнала ботов">
+    <a href="{{ url_for('admin.bot_journal', focus='deliveries') }}#delivery-queue" {% if focus == 'deliveries' %}aria-current="page" class="is-current"{% endif %}>Доставки <small>Статус сообщений и повторы</small></a>
+    <a href="{{ url_for('admin.bot_journal', focus='events') }}#bot-events" {% if focus == 'events' %}aria-current="page" class="is-current"{% endif %}>События ботов <small>Команды, ошибки и аудит</small></a>
+  </nav>
+
+  {% if focus == 'events' %}
+  <section class="journal-stats" aria-label="События за последние 24 часа">
+    <div class="journal-stat journal-stat--all"><span>За 24 часа</span><strong>{{ totals.total }}</strong><small>событий трёх платформ</small></div>
+    <div class="journal-stat journal-stat--good"><span>Успешно</span><strong>{{ totals.success }}</strong><small>выполненных действий</small></div>
+    <div class="journal-stat journal-stat--bad"><span>Ошибок</span><strong>{{ totals.error }}</strong><small>неудачных операций</small></div>
+    <div class="journal-stat journal-stat--platform"><span>Telegram / VK / MAX</span><div class="journal-triple"><b>{{ totals.telegram }}</b><b>{{ totals.vk }}</b><b>{{ totals.max }}</b></div><small>событий по платформам</small></div>
+  </section>
+
+  {% endif %}
+  {% if focus == 'deliveries' %}
+  <section class="bot-delivery-summary" aria-label="Реальная доставка объявлений в чаты">
+    <div class="bot-delivery-head">
+      <div><span class="journal-eyebrow">КАЛЕНДАРЬ · ПУБЛИКАЦИИ</span><h2>Доставка объявлений</h2><p>Telegram, VK и MAX. «В очереди» ещё не означает «доставлено».</p></div>
+      {% if delivery_counts.failed %}<form method="post" action="{{ url_for('admin.retry_failed_deliveries') }}" data-confirm="Повторно поставить в очередь до 100 недоставленных публикаций? Возможно создание повторных сообщений. Продолжить?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="journal-btn journal-btn--outline" type="submit">↻ Повторить ошибки</button></form>{% endif %}
+    </div>
+    <div class="bot-delivery-stats">
+      <div><small>Ожидают отправки</small><strong>{{ delivery_counts.pending + delivery_counts.retry + delivery_counts.sending }}</strong></div>
+      <div><small>Ожидают токен бота</small><strong>{{ delivery_counts.blocked }}</strong></div>
+      <div><small>Доставлено</small><strong>{{ delivery_counts.delivered }}</strong></div>
+      <div class="bot-delivery-failed"><small>Не доставлено</small><strong>{{ delivery_counts.failed }}</strong></div>
+    </div>
+  </section>
+
+  <section class="journal-panel delivery-detail-panel" id="delivery-queue" aria-label="Подробные результаты доставки">
+    <div class="journal-panel-top"><div><span class="journal-eyebrow">ПРОЗРАЧНАЯ ОЧЕРЕДЬ / БЕЗ ЛИЧНЫХ ДАННЫХ</span><h2>Каждая публикация: от заявки до доставки</h2><p>Мероприятие или занятие, платформа, попытки, результат и техническая причина сбоя. Отправка выполняется фоновым обработчиком.</p></div></div>
+    <form method="get" action="{{ url_for('admin.bot_journal') }}" class="delivery-detail-filters"><input type="hidden" name="focus" value="deliveries">
+      <label>Мессенджер<select name="delivery_platform"><option value="">Все платформы</option><option value="telegram" {% if delivery_platform == 'telegram' %}selected{% endif %}>Telegram</option><option value="vk" {% if delivery_platform == 'vk' %}selected{% endif %}>VK</option><option value="max" {% if delivery_platform == 'max' %}selected{% endif %}>MAX</option></select></label>
+      <label>Состояние<select name="delivery_status"><option value="">Все статусы</option>{% for value, text in [('pending','Ожидает'),('blocked','Нет токена'),('retry','Повторная попытка'),('sending','Отправляется'),('delivered','Доставлено'),('failed','Ошибка')] %}<option value="{{ value }}" {% if delivery_status == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select></label>
+      <label>Тип записи<select name="delivery_source"><option value="">Все публикации</option><option value="lesson" {% if delivery_source == 'lesson' %}selected{% endif %}>Занятия</option><option value="event" {% if delivery_source == 'event' %}selected{% endif %}>Мероприятия</option></select></label>
+      <label>Номер доставки<input name="delivery_id" type="search" inputmode="numeric" pattern="[0-9]*" maxlength="20" placeholder="Например, 154" value="{{ delivery_number }}"></label>
+      <button type="submit" class="journal-btn journal-btn--primary">Применить</button>
+      <a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_journal') }}">Сбросить</a>
+      <a class="journal-btn journal-btn--outline" href="{{ url_for('admin.delivery_export', delivery_platform=delivery_platform, delivery_status=delivery_status, delivery_source=delivery_source, delivery_id=delivery_number) }}">↓ Выгрузить доставки CSV</a>
+    </form>
+    <div class="journal-quick journal-ops-shortcuts" aria-label="Быстрый разбор проблем">
+      <a class="journal-chip" href="{{ url_for('admin.bot_journal', delivery_status='failed', focus='deliveries') }}">Ошибки доставки</a>
+      <a class="journal-chip" href="{{ url_for('admin.bot_journal', delivery_status='blocked', focus='deliveries') }}">Ожидают токены</a>
+      <a class="journal-chip" href="{{ url_for('admin.bot_journal', delivery_status='retry', focus='deliveries') }}">Повторные попытки</a>
+      <a class="journal-chip" href="{{ url_for('admin.admin_audit_log') }}">Журнал действий сайта ↗</a>
+    </div>
+    <div class="journal-panel-top journal-delivery-counter"><strong>Найдено заданий: {{ delivery_total }}</strong><span>Страница {{ delivery_page }} из {{ delivery_pages }}</span></div>
+    <div class="delivery-detail-list">
+      {% for job in delivery_items %}
+      <article class="delivery-item delivery-item--{{ job.status }}">
+        <span class="delivery-item-mark" aria-hidden="true">{% if job.status == 'delivered' %}✓{% elif job.status == 'blocked' %}⌁{% elif job.status == 'failed' %}!{% else %}↻{% endif %}</span>
+        <div class="delivery-item-main">
+          <div class="delivery-item-title"><span class="journal-platform journal-platform--{{ job.platform }}">{{ platform_names.get(job.platform, job.platform) }}</span><strong>{% if job.source_type == 'lesson' %}Занятие{% elif job.source_type == 'event' %}Мероприятие{% else %}Объявление{% endif %}{% if job.source_id %} №{{ job.source_id }}{% endif %}</strong><small>#{{ job.id }}</small></div>
+          <div class="delivery-item-meta"><span>Создано {{ job.created_at.strftime('%d.%m %H:%M') if job.created_at else '—' }} UTC</span><span>Попыток: {{ job.attempts }}/6</span>{% if job.last_attempt_at %}<span>Последняя попытка: {{ job.last_attempt_at.strftime('%d.%m %H:%M') }} UTC</span>{% endif %}{% if job.delivered_at %}<span>Доставлено: {{ job.delivered_at.strftime('%d.%m %H:%M') }} UTC</span>{% endif %}</div>
+          <details class="journal-job-details"><summary>Диагностика и действия</summary>
+            <div class="journal-job-technical"><span>Задание #{{ job.id }}</span><span>Публикация: {{ job.source_type or 'системная' }}{% if job.source_id %} №{{ job.source_id }}{% endif %}</span>
+            {% if job.next_attempt_at %}<span>Следующая попытка: {{ job.next_attempt_at.strftime('%d.%m.%Y %H:%M') }} UTC</span>{% endif %}</div>
+            {% if job.last_error %}<div class="delivery-item-error">Последняя ошибка: {{ job.last_error }}</div>{% endif %}
+            {% if job.status == 'blocked' %}<p class="journal-job-help">Проверьте токен {{ platform_names.get(job.platform, job.platform) }} в .env и запустите обработчик очереди. Затем можно повторить доставку.</p>{% elif job.status == 'failed' %}<p class="journal-job-help">Проверьте, добавлен ли бот в чат и имеет ли право отправлять сообщения. Повторите доставку только после устранения причины.</p>{% elif job.status == 'delivered' %}<p class="journal-job-help">API платформы подтвердил отправку. Повтор отключён для предотвращения дублей.</p>{% else %}<p class="journal-job-help">Задание ожидает обработки. Если статус не меняется, проверьте запущенный worker и серверные логи.</p>{% endif %}
+            {% if job.status in ('failed', 'blocked') %}<form method="post" action="{{ url_for('admin.retry_single_delivery', job_id=job.id) }}" data-confirm="Повторно поставить только это сообщение в очередь?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="journal-btn journal-btn--outline">↻ Повторить только #{{ job.id }}</button></form>{% endif %}
+          </details>
+        </div>
+        <span class="delivery-state delivery-state--{{ job.status }}">{{ {'delivered':'Доставлено','blocked':'Нет токена','failed':'Не доставлено','retry':'Повтор','sending':'Отправляется','pending':'В очереди'}.get(job.status,job.status) }}</span>
+      </article>
+      {% else %}<p class="journal-empty">Нет сообщений, подходящих под фильтры. Если объявление создано, но здесь нет записей, проверьте активные чаты выбранных направлений.</p>{% endfor %}
+    </div>
+    {% if delivery_pages > 1 %}<nav class="journal-pages" aria-label="Страницы заданий">
+      {% if delivery_page > 1 %}<a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_journal', focus='deliveries', delivery_page=delivery_page-1, delivery_platform=delivery_platform, delivery_status=delivery_status, delivery_source=delivery_source, delivery_id=delivery_number) }}">← Ранее</a>{% else %}<span></span>{% endif %}
+      <span>{{ delivery_page }} / {{ delivery_pages }}</span>
+      {% if delivery_page < delivery_pages %}<a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_journal', focus='deliveries', delivery_page=delivery_page+1, delivery_platform=delivery_platform, delivery_status=delivery_status, delivery_source=delivery_source, delivery_id=delivery_number) }}">Дальше →</a>{% else %}<span></span>{% endif %}
+    </nav>{% endif %}
+    <p class="delivery-help">В журнале не отображаются тексты сообщений, личные данные и ID чатов. Статус «опубликовано на сайте» отличается от подтверждённой доставки в мессенджер. Если очередь не двигается в production, запустите единственный <code>scripts/run_calendar_worker.py</code>.</p>
+  </section>
+
+  {% endif %}
+  {% if focus == 'events' %}
+  <section class="journal-panel" id="bot-events" aria-label="Фильтры журнала">
+    <div class="journal-panel-top"><div><h2>Лента событий</h2><p>Найдено: <strong>{{ total }}</strong> · время показано в UTC</p></div>
+      <div class="journal-update-controls"><label class="journal-auto"><input id="journal-auto" type="checkbox" checked> Автообновление</label><span id="journal-check-status" role="status" aria-live="polite">Проверка каждые 20 сек.</span></div>
+    </div>
+    <div class="log-explorer-filter-panel log-explorer-filter-panel--bots" id="bot-journal-search">
+      <div class="log-explorer-panel-heading">
+        <div><span class="log-explorer-panel-kicker">BOT LOG EXPLORER</span><h3>Исследование событий ботов</h3><p>Сначала найдите действие или платформу. Уточняющие фильтры доступны по необходимости.</p></div>
+        <span class="log-explorer-shortcut">Ctrl / ⌘ + K</span>
+      </div>
+      <form class="log-explorer-form" method="get" action="{{ url_for('admin.bot_journal') }}" role="search">
+        <input type="hidden" name="focus" value="events">
+        <div class="log-explorer-primary">
+          <label class="log-explorer-field log-explorer-field--query" for="bot-journal-query"><span>Поиск по событиям</span>
+            <input id="bot-journal-query" name="q" type="search" maxlength="80" value="{{ filters.q }}" placeholder="Например: message_sent или ошибка отправки">
+          </label>
+          <label class="log-explorer-field" for="bot-journal-platform"><span>Мессенджер</span><select id="bot-journal-platform" name="platform"><option value="">Все платформы</option>{% for value, title in platform_names.items() %}<option value="{{ value }}" {% if filters.platform == value %}selected{% endif %}>{{ title }}</option>{% endfor %}</select></label>
+          <label class="log-explorer-field" for="bot-journal-status"><span>Результат</span><select id="bot-journal-status" name="status"><option value="">Все результаты</option>{% for value, title in status_names.items() %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ title }}</option>{% endfor %}</select></label>
+          <div class="log-explorer-actions"><button class="log-explorer-apply" type="submit">Показать <span aria-hidden="true">⌕</span></button><a class="log-explorer-reset" href="{{ url_for('admin.bot_journal', focus='events') }}">Сбросить</a></div>
+        </div>
+        <details class="log-explorer-advanced" {% if filters.kind or filters.start or filters.end %}open{% endif %}>
+          <summary>Дополнительные параметры <span class="log-explorer-summary-icon" aria-hidden="true">⌄</span>{% if filters.kind or filters.start or filters.end %}<strong>Активны</strong>{% endif %}</summary>
+          <div class="log-explorer-secondary">
+            <label class="log-explorer-field" for="bot-journal-kind"><span>Тип события</span><select id="bot-journal-kind" name="kind"><option value="">Все типы</option>{% for value, title in kind_names.items() %}<option value="{{ value }}" {% if filters.kind == value %}selected{% endif %}>{{ title }}</option>{% endfor %}</select></label>
+            <label class="log-explorer-field" for="bot-journal-start"><span>Дата от (UTC)</span><input id="bot-journal-start" type="date" name="start" value="{{ filters.start }}"></label>
+            <label class="log-explorer-field" for="bot-journal-end"><span>Дата до (UTC)</span><input id="bot-journal-end" type="date" name="end" value="{{ filters.end }}"></label>
+            <p class="log-explorer-secondary-tip">Фильтры применяются на сервере, параметры включаются в экспорт CSV.</p>
+          </div>
+        </details>
+      </form>
+      <div class="log-explorer-quick" aria-label="Быстрые фильтры ботов">
+        <span>БЫСТРО</span>
+        <a href="{{ url_for('admin.bot_journal', status='error') }}">Ошибки <span aria-hidden="true">↗</span></a>
+        <a href="{{ url_for('admin.bot_journal', platform='telegram') }}">Telegram <span aria-hidden="true">↗</span></a>
+        <a href="{{ url_for('admin.bot_journal', platform='vk') }}">VK <span aria-hidden="true">↗</span></a>
+        <a href="{{ url_for('admin.bot_journal', platform='max') }}">MAX <span aria-hidden="true">↗</span></a>
+        <a href="{{ url_for('admin.bot_journal', kind='outgoing') }}">Отправки <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="journal-new" id="journal-new" hidden><span>Появились новые события</span><button type="button" id="journal-show-new">Показать новые</button></div>
+
+  <section class="journal-panel journal-feed" aria-label="Список событий">
+    <div class="bot-monitor-table-wrap">
+      <table class="bot-monitor-table">
+        <thead><tr><th>Когда (UTC)</th><th>Платформа</th><th>Что произошло</th><th>Тип события</th><th>Аккаунт</th><th>Время</th><th>Результат</th></tr></thead>
+        <tbody>
+        {% for item in rows %}
+          <tr class="{% if item.status == 'error' %}is-error{% endif %}">
+            <td class="bot-monitor-time"><strong>{{ item.created_at.strftime('%d.%m.%Y') if item.created_at else '—' }}</strong><span>{{ item.created_at.strftime('%H:%M:%S') if item.created_at else '—' }}</span><small>#{{ item.id }}</small></td>
+            <td><span class="journal-platform journal-platform--{{ item.platform }}">{{ platform_names.get(item.platform, item.platform) }}</span></td>
+            <td class="bot-monitor-action"><strong>{{ action_names.get(item.action, item.action.replace('_', ' ')) }}</strong><span>{{ safe_summary(item.summary) or 'Описание не сохранено' }}</span><small><code>{{ item.action }}</code></small></td>
+            <td>{{ kind_names.get(item.kind, item.kind) }}</td>
+            <td>{% if item.actor_alias %}<code>{{ item.actor_alias }}</code><small>Псевдоним, без открытого ID</small>{% else %}<span class="bot-monitor-muted">Системное событие</span>{% endif %}</td>
+            <td class="bot-monitor-duration">{{ item.duration_ms ~ ' мс' if item.duration_ms is not none else '—' }}</td>
+            <td><span class="journal-status journal-status--{{ item.status }}">{{ status_names.get(item.status, item.status) }}</span></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7"><div class="journal-empty"><span aria-hidden="true">◎</span><h3>Пока нет подходящих событий</h3><p>Измените фильтры или дождитесь события от Telegram, VK или MAX.</p></div></td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if pages > 1 %}
+      <div class="journal-pages">
+      {% if page > 1 %}<a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_journal', page=page-1, focus='events', **filters) }}">← Назад</a>{% else %}<span></span>{% endif %}
+      <span>{{ page }} / {{ pages }}</span>
+      {% if page < pages %}<a class="journal-btn journal-btn--outline" href="{{ url_for('admin.bot_journal', page=page+1, focus='events', **filters) }}">Вперёд →</a>{% else %}<span></span>{% endif %}
+      </div>
+    {% endif %}
+  </section>
+  {% endif %}
+  <details class="pro-log-danger-settings"><summary>Обслуживание истории ботов</summary>
+  <section class="journal-panel journal-maintenance" aria-label="Очистка журнала Telegram VK MAX">
+    <div><span class="journal-eyebrow">ТОЛЬКО ГЛАВНЫЙ АДМИНИСТРАТОР</span><h2>Очистка журнала ботов</h2><p>Удаляет сохранённую историю Telegram, VK и MAX. Заявки, действия сотрудников и очередь доставки сохраняются.</p></div>
+    <form method="post" action="{{ url_for('admin.clear_bot_journal') }}" class="journal-erase-form" data-confirm="Необратимо очистить журнал трёх ботов?">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label for="bot-clear-confirmation">Напишите <strong>БОТЫ</strong></label>
+      <input class="input" id="bot-clear-confirmation" name="confirmation" autocomplete="off" placeholder="БОТЫ" required><button type="submit" class="journal-btn journal-btn--outline">Очистить журнал TG / VK / MAX</button>
+    </form>
+  </section>
+  </details>
+  <p class="journal-footnote">Для защиты пользователей журнал не хранит тексты личных сообщений, пароли, коды привязки и токены. CSV ограничен 5 000 новейших записей по выбранным фильтрам. Время UTC.</p>
+</div>
+<script src="{{ url_for('static', filename='js/bot-journal.js', v=asset_version('js/bot-journal.js')) }}" defer></script>
+{% endblock %}

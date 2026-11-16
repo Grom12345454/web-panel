@@ -1,0 +1,134 @@
+/* One dashboard design system for every authenticated panel role.
+   Role-specific permissions change data and actions, never the visual shell. */
+body.uc-body.is-dashboard-page .page > .galaxy-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(16px, 1.7vw, 24px);
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin-inline: 0;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard > * { min-width: 0; }
+body.uc-body.is-dashboard-page .galaxy-dashboard .mission-hero-20 {
+  min-height: clamp(230px, 25vh, 315px);
+  padding: clamp(24px, 3vw, 42px);
+  border-radius: 22px;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .mission-hero-20 .galaxy-hero-copy {
+  width: min(60%, 760px);
+  max-width: 760px;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .mission-hero-20 .galaxy-hero-copy p {
+  max-width: 62ch;
+  line-height: 1.65;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .mission-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.1vw, 15px);
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .mission-workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 1.4vw, 19px);
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .mission-panel {
+  min-width: 0;
+  padding: clamp(17px, 1.8vw, 25px);
+  border-radius: 20px;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tools,
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-direction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(11px, 1.15vw, 15px);
+  min-width: 0;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  min-height: 190px;
+  padding: clamp(17px, 1.6vw, 23px);
+  border-radius: 18px;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tool-symbol {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 13px;
+  border-radius: 14px;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tool h3 {
+  margin: 0 0 7px;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.25;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tool p {
+  max-width: 46ch;
+  margin: 0 0 14px;
+  line-height: 1.55;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tool b { margin-top: auto; }
+body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-direction { min-width: 0; }
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-directions,
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-current-direction {
+  border: 1px solid rgba(132,190,218,.16);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(13,34,54,.85), rgba(7,18,33,.86));
+  box-shadow: 0 12px 28px rgba(0,4,18,.14), inset 0 1px rgba(255,255,255,.035);
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-section {
+  scroll-margin-top: 24px;
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-table {
+  border: 1px solid rgba(132,190,218,.14);
+  border-radius: 14px;
+  background: rgba(5,17,30,.34);
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-details {
+  border-color: color-mix(in srgb, var(--office-accent, #76d9ee) 24%, transparent);
+  border-radius: 15px;
+  background: linear-gradient(120deg,
+    color-mix(in srgb, var(--office-accent, #76d9ee) 8%, rgba(7,20,36,.8)),
+    rgba(7,20,36,.82));
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-notice,
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-record {
+  padding: 15px 13px;
+  border: 1px solid rgba(132,190,218,.12);
+  border-radius: 13px;
+  background: rgba(8,23,39,.48);
+}
+body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-record-list { gap: 9px; }
+@media (max-width: 1180px) {
+  body.uc-body.is-dashboard-page .galaxy-dashboard .mission-kpis { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tools,
+  body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-direction-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 960px) {
+  body.uc-body.is-dashboard-page .galaxy-dashboard .mission-workspace-grid { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 720px) {
+  body.uc-body.is-dashboard-page .galaxy-dashboard { gap: 15px; }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .mission-hero-20 {
+    min-height: 0;
+    padding: 22px 19px;
+  }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .mission-hero-20 .galaxy-hero-copy {
+    width: 100%;
+    max-width: 100%;
+  }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .mission-kpis { gap: 8px; }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tools,
+  body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-direction-grid { grid-template-columns: minmax(0,1fr); }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .galaxy-tool { min-height: 160px; }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-record { align-items: flex-start; flex-direction: column; }
+  body.uc-body.is-dashboard-page .galaxy-dashboard .staff-dashboard-record-actions { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body.is-dashboard-page .galaxy-dashboard * { scroll-behavior: auto !important; }
+}

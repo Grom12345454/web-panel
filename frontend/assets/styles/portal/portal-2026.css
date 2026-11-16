@@ -1,0 +1,93 @@
+/* Student Council Portal · 2026 UI foundation
+   Last-loaded layer: accessible controls, layout guardrails and responsive polish. */
+:root {
+  color-scheme: dark;
+  --ui-page: #07111d;
+  --ui-surface: #0c1a29;
+  --ui-surface-raised: #102235;
+  --ui-border: rgba(151, 184, 207, .16);
+  --ui-border-strong: rgba(128, 204, 220, .32);
+  --ui-text-primary: #e8f2f7;
+  --ui-text-secondary: #9bb0c0;
+  --ui-accent: #7dd3df;
+  --ui-accent-strong: #52bcca;
+  --ui-success: #76d9ad;
+  --ui-warning: #f4ca7b;
+  --ui-danger: #ff9ca9;
+  --ui-radius-sm: 10px;
+  --ui-radius-md: 16px;
+  --ui-radius-lg: 22px;
+  --ui-shadow-card: 0 18px 42px rgba(0, 0, 0, .18);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+html { min-width: 320px; min-height: 100%; scroll-padding-top: 88px; }
+body.uc-body {
+  min-width: 320px;
+  min-height: 100%;
+  color: var(--ui-text-primary);
+  background-color: var(--ui-page);
+  overflow-x: clip;
+  font-size: 14px;
+  line-height: 1.55;
+}
+body.uc-body::selection { color: #06131d; background: rgba(125, 211, 223, .72); }
+.app-shell { min-height: 100vh; min-height: 100dvh; background: var(--ui-page); }
+.app-shell > .main { min-width: 0; background: transparent; }
+.topbar { min-width: 0; }
+.topbar-inner { max-width: 1500px; }
+.page { width: 100%; max-width: 1500px; min-width: 0; margin-inline: auto; }
+.page > * { min-width: 0; }
+.page img, .page video, .page canvas { max-width: 100%; }
+.page table { max-width: 100%; }
+.page input, .page select, .page textarea, .page button { font: inherit; }
+.page input:not([type="checkbox"]):not([type="radio"]),
+.page select, .page textarea { max-width: 100%; }
+.page :is(input, select, textarea, button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 3px;
+}
+.page :is(button, .btn, input[type="submit"]) { min-height: 40px; }
+.page .card, .page .panel, .page .bot-panel, .page .table-wrap {
+  border-color: var(--ui-border);
+}
+.page .empty { overflow-wrap: anywhere; }
+.table-scroll, .table-wrap, .activity-table, .audit-table { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.app-footer { margin-top: auto; background: transparent; color: #71899a; }
+.flash-stack { max-width: min(460px, calc(100vw - 28px)); }
+
+@media (max-width: 1120px) {
+  .topbar { padding-inline: 22px; }
+  .page { padding-inline: 22px; }
+}
+@media (max-width: 820px) {
+  html { scroll-padding-top: 72px; }
+  .app-shell { display: block; }
+  .app-shell > .main { width: 100%; min-height: 100dvh; }
+  .topbar { height: auto; min-height: 68px; padding: 12px 16px; }
+  .topbar-inner { align-items: center; }
+  .page { padding: 24px 16px calc(32px + env(safe-area-inset-bottom)); }
+  .top-account-copy { max-width: 40vw; }
+  .top-account-copy strong, .top-account-copy small { overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 560px) {
+  .topbar { padding: 10px 12px; }
+  .topbar-inner { gap: 8px; }
+  .topbar-heading { gap: 8px; }
+  .top-title { font-size: 13px; overflow-wrap: anywhere; }
+  .top-actions { min-width: 0; }
+  .top-account { min-width: 0; }
+  .top-account-copy { display: none; }
+  .logout-btn { padding-inline: 10px; }
+  .page { padding: 20px 12px calc(28px + env(safe-area-inset-bottom)); }
+  .section-title { align-items: flex-start; flex-wrap: wrap; }
+  .section-title > div { min-width: 0; }
+  .section-title .btn, .section-title > .btn { max-width: 100%; }
+  .form-grid, .grid-3, .grid-2, .stats-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .card { max-width: 100%; }
+  .table-scroll table { min-width: 680px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

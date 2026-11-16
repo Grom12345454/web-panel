@@ -1,0 +1,96 @@
+/* GALAXY CLARITY 2026 — immersive, quiet typography, readable daily work.
+   Maintained source shared by site and Student App, never alters backend behaviour. */
+:root{--clarity-easing:cubic-bezier(.22,.8,.2,1);--clarity-speed:540ms}
+/* Layer the depth scene behind the content, not above controls. */
+body.uc-body[data-ui-version="11"] .mission-hero-20,
+body.student-app-body .command-hero{backface-visibility:hidden;transform-style:preserve-3d}
+body.uc-body[data-ui-version="11"] .mission-hero-20{min-height:260px}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-hero-visual{
+  animation:clarity-hero-drift 11s ease-in-out infinite alternate;
+  will-change:transform;
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-planet{
+  filter:drop-shadow(0 14px 26px rgba(var(--fest-a,123,234,255),.20));
+}
+body.uc-body[data-ui-version="11"] :is(.mission-kpi,.galaxy-tool,.galaxy-direction){
+  position:relative;isolation:isolate;overflow:hidden;backface-visibility:hidden;
+  transition:transform var(--clarity-speed) var(--clarity-easing),border-color .3s,box-shadow .4s;
+}
+body.uc-body[data-ui-version="11"] :is(.mission-kpi,.galaxy-tool,.galaxy-direction)::after{
+  content:"";position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(ellipse 65% 62% at var(--depth-px,50%) var(--depth-py,0%),rgba(var(--fest-a,123,234,255),.19),transparent 76%);
+  opacity:.5;transition:opacity .3s;
+}
+body.uc-body[data-ui-version="11"] :is(.mission-kpi,.galaxy-tool,.galaxy-direction) > *{position:relative;z-index:1}
+body.uc-body[data-ui-version="11"] :is(.mission-kpi,.galaxy-tool,.galaxy-direction):is(:hover,:focus-visible)::after{opacity:1}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-panel,.galaxy-ops-hub){
+  background-image:linear-gradient(135deg,rgba(255,255,255,.05),transparent 42%),radial-gradient(circle at 92% 0,rgba(var(--fest-b,170,157,255),.13),transparent 52%);
+  backdrop-filter:blur(8px);
+}
+body.uc-body[data-ui-version="11"] :is(.sidebar,.topbar,.galaxy-dashboard .card){backface-visibility:hidden}
+body.uc-body[data-ui-version="11"] .sidebar :is(.nav-link,.nav-sub-link,.nav-section-toggle):is(:hover,:focus-visible){transition:background .25s,border-color .25s,box-shadow .25s}
+/* Visual 3D forms should stay stationary under the pointer. */
+body.uc-body[data-ui-version="11"] :is(.table-wrap,.audit-table,.log-explorer-table,.data-table-wrap,form input,form textarea,form select){transform:none!important}
+body.student-app-body .command-world{
+  filter:drop-shadow(0 20px 32px rgba(var(--depth-skin,123,234,255),.15));
+}
+body.student-app-body .command-world-halo{
+  animation:clarity-breathe 8s ease-in-out infinite alternate;
+}
+body.student-app-body .command-depth-track--far,
+body.student-app-body .command-depth-track--near{
+  backface-visibility:hidden;
+}
+body.student-app-body .command-depth-track--far{animation:clarity-orbit-far 28s linear infinite}
+body.student-app-body .command-depth-track--near{animation:clarity-orbit-near 35s linear infinite reverse}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button){
+  position:relative;isolation:isolate;backface-visibility:hidden;overflow:hidden;
+  transition:transform var(--clarity-speed) var(--clarity-easing),box-shadow .38s,border-color .25s;
+}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button)::after{
+  content:"";position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(circle at var(--depth-px,50%) var(--depth-py,0%),rgba(var(--depth-skin),.20),transparent 68%);
+  opacity:.42;transition:opacity .32s;
+}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button) > *{position:relative;z-index:1}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button):is(:hover,:focus-visible)::after{opacity:1}
+body.student-app-body :is(.mission-student-disclosure,.account-tile,.mission-list-row){
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 15px 36px rgba(0,6,24,.37);
+}
+/* Every theme card already has interactive 3D tilt; give its miniature universe a fuller glow. */
+.theme-page .theme-card{isolation:isolate;backface-visibility:hidden}
+.theme-page .theme-cover{box-shadow:inset 0 1px rgba(255,255,255,.19),inset 0 -19px 40px rgba(0,0,0,.3)}
+.theme-page .theme-card .theme-cover::after{filter:drop-shadow(0 0 13px var(--theme-accent));}
+.theme-page .theme-preview-panel{box-shadow:0 34px 90px rgba(0,5,20,.57),inset 0 1px rgba(255,255,255,.09)}
+.theme-page .theme-site-preview,.theme-page .theme-phone-hero{isolation:isolate}
+.theme-page .theme-site-planet,.theme-page .theme-preview-hero-object{animation:clarity-theme-float 7s ease-in-out infinite alternate}
+/* Intuitive read order: fewer slogans; labels and actionable controls remain. */
+body.student-app-body .app{padding-top:env(safe-area-inset-top,0px)}
+body.student-app-body :is(.command-hero h1,.hero .title){letter-spacing:-.035em}
+@media(hover:hover) and (pointer:fine){
+  body.uc-body[data-ui-version="11"] :is(.mission-panel,.mission-bot-card,.galaxy-ops-hub):hover{border-color:rgba(var(--fest-a,123,234,255),.42)!important}
+  body.student-app-body :is(.mission-student-disclosure,.account-tile):hover{border-color:rgba(var(--depth-skin),.46)!important}
+}
+@media(max-width:760px){
+  body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-hero-visual{animation-duration:15s;will-change:auto}
+  body.student-app-body .command-depth-track--far,body.student-app-body .command-depth-track--near{animation-duration:45s}
+  .theme-page .theme-site-preview,.theme-page .theme-phone{transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-hero-visual,
+  body.student-app-body .command-world-halo,
+  body.student-app-body .command-depth-track--far,
+  body.student-app-body .command-depth-track--near,
+  .theme-page .theme-site-planet,.theme-page .theme-preview-hero-object{animation:none!important;will-change:auto!important}
+  body.uc-body[data-ui-version="11"] :is(.mission-kpi,.galaxy-tool,.galaxy-direction),
+  body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button){transition:none!important}
+}
+@media(forced-colors:active){.theme-page .theme-card .theme-cover::after{filter:none}}
+@keyframes clarity-hero-drift{
+  0%{transform:translate3d(0,-5px,0) scale(.95) rotateX(5deg) rotateY(-12deg)}
+  100%{transform:translate3d(0,10px,0) scale(.98) rotateX(9deg) rotateY(-5deg)}
+}
+@keyframes clarity-breathe{from{opacity:.56;transform:scale(.95)}to{opacity:1;transform:scale(1.09)}}
+@keyframes clarity-orbit-far{from{transform:rotate(32deg) rotateX(62deg)}to{transform:rotate(392deg) rotateX(62deg)}}
+@keyframes clarity-orbit-near{from{transform:rotate(-42deg) rotateX(65deg)}to{transform:rotate(318deg) rotateX(65deg)}}
+@keyframes clarity-theme-float{from{translate:0 -4px}to{translate:0 9px}}

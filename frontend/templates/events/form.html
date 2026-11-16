@@ -1,0 +1,166 @@
+{% extends "shared/base.html" %}
+{% block title %}Новое мероприятие | Управление студенческим советом {% endblock %}
+{% block content %}
+<div class="section-title">
+    <div>
+        <div class="eyebrow">EVENT CREATOR</div>
+        <h2>Создание мероприятия</h2>
+        <p>Добавляйте несколько дат, а для этого мероприятия выбирайте отдельные чаты для публикации и приглашений.</p>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('admin.calendar', date=selected_date) if return_to_calendar else url_for('quotas.quotas_list') }}">← Назад</a>
+</div>
+
+<form method="POST" class="card card-pad" id="quota-create-form" data-initial-date="{{ selected_date or '' }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% if return_to_calendar %}<input type="hidden" name="return_to" value="calendar"><input type="hidden" name="calendar_date" value="{{ selected_date or '' }}">{% endif %}
+    <div class="form-grid">
+        <div class="field">
+            <label class="label">Название</label>
+            <input class="input" name="title" required placeholder="Например: Волонтёрский форум 2026">
+        </div>
+        <div class="field">
+            <label class="label">Общая вместимость</label>
+            <input class="input" name="total_places" type="number" min="1" required placeholder="50">
+        </div>
+        <div class="field">
+            <label class="label">Место</label>
+            <input class="input" name="location" placeholder="Главный корпус, актовый зал">
+        </div>
+        <div class="field">
+            <label class="label">Время</label>
+            <input class="input" name="time_range" placeholder="10:00–14:00">
+        </div>
+        <div class="field">
+            <label class="label">Дресс-код</label>
+            <input class="input" name="dress_code" placeholder="Свободный стиль">
+        </div>
+        <div class="field">
+            <label class="label">Функционал</label>
+            <input class="input" name="functionality" placeholder="Регистрация, помощь организаторам">
+        </div>
+        <div class="field">
+            <label class="label">Публикация мероприятия</label>
+            <select class="input" name="publish_mode" id="publish-mode">
+                <option value="immediate">Опубликовать сразу</option>
+                <option value="scheduled">Автоматически в назначенное время</option>
+                <option value="manual">Сохранить черновиком — опубликую сам(а)</option>
+            </select>
+        </div>
+        <div class="field" id="publish-at-field" hidden>
+            <label class="label">Дата и время автопубликации</label>
+            <input class="input" type="datetime-local" name="publish_at" id="publish-at">
+        </div>
+        <div class="field field-full">
+            <label class="label">Описание</label>
+            <textarea class="textarea" name="description" placeholder="Короткое описание события"></textarea>
+        </div>
+        <div class="field field-full">
+            <label class="label" id="event-direction-label">Направления мероприятия</label>
+            <p class="subtle" id="event-direction-hint">Направления определяют аудиторию мероприятия. Чаты для сообщения выбираются отдельно ниже — публикация пойдёт только в выбранные чаты.</p>
+            <div class="space-direction-picker direction-choice-grid direction-choice-grid--multiple" role="group" aria-labelledby="event-direction-label" aria-describedby="event-direction-hint">
+                {% for d in directions %}
+                <label class="space-direction-option direction-choice-card">
+                    <input type="checkbox" name="direction_ids" value="{{ d.id }}" class="direction-toggle direction-choice-input">
+                    <span class="space-direction-icon direction-choice-icon" aria-hidden="true">{{ d.icon or '✦' }}</span>
+                    <span class="space-direction-copy direction-choice-copy"><strong>{{ d.name }}</strong><small>Аудитория мероприятия</small></span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        {% if can_assign_event_chats %}
+        <div class="field field-full" id="event-chat-picker">
+            <label class="label" id="event-chat-label">Чаты для этого мероприятия</label>
+            <p class="subtle" id="event-chat-hint">Только главный администратор назначает чаты мероприятия. Можно выбрать один или несколько чатов. Отдельные Telegram-группы используются для этого мероприятия и получают ссылку для записавшихся участников; общие чаты направления не предлагаются, чтобы при закрытии не удалить из них людей. Telegram-группы станут доступны после того, как бот будет добавлен в группу и обнаружит её. VK/MAX показываются после выбора соответствующего направления.</p>
+            {% if chat_options %}
+            <div class="space-direction-picker direction-choice-grid direction-choice-grid--chats" id="event-chat-options" role="group" aria-labelledby="event-chat-label" aria-describedby="event-chat-hint">
+                {% for chat in chat_options %}
+                <label class="space-direction-option direction-choice-card event-chat-option" data-direction-ids="{{ chat.direction_ids|join(',') }}" data-dedicated="{{ 'true' if chat.dedicated else 'false' }}">
+                    <input type="checkbox" class="event-chat-toggle direction-choice-input" name="event_chat_targets" value="{{ chat.key }}">
+                    <span class="space-direction-icon direction-choice-icon" aria-hidden="true">{{ '✈️' if chat.platform == 'telegram' else ('ВК' if chat.platform == 'vk' else 'М') }}</span>
+                    <span class="space-direction-copy direction-choice-copy"><strong>{{ chat.title }}</strong><small>{{ chat.platform_label }} · {{ chat.directions_label }}</small></span>
+                </label>
+                {% endfor %}
+            </div>
+            <p class="subtle" id="event-chat-no-options" hidden>Для выбранных направлений нет активных чатов VK/MAX. Отдельные Telegram-группы при этом можно выбрать независимо.</p>
+            {% else %}
+            <div class="empty-state" id="event-chat-empty">Пока нет доступных отдельных Telegram-групп или активных чатов VK/MAX. Мероприятие можно сохранить, но публикация в мессенджеры не отправится. Добавьте бота в отдельную Telegram-группу или подключите чат VK/MAX и обновите страницу.</div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="field field-full">
+            <div class="empty-state"><strong>Назначение чатов мероприятия</strong><p>Этой настройкой управляет только главный администратор. Вы можете создать мероприятие, но выбор чатов и отправка сообщений в них выполняются главным администратором.</p></div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="field field-full" style="margin-top:22px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap">
+            <div>
+                <label class="label" style="margin-bottom:5px">Даты и квоты по дням</label>
+                <div class="subtle">Количество дат не ограничено фиксированными полями — добавляйте их вручную.</div>
+            </div>
+            <button class="btn btn-primary" type="button" id="add-quota-day">＋ Добавить дату</button>
+        </div>
+
+        <div id="quota-days" style="display:grid;gap:12px;margin-top:14px"></div>
+        <div class="subtle" id="quota-days-hint" style="margin-top:10px"></div>
+    </div>
+
+    <div class="form-foot">
+        <a class="btn btn-soft" href="{{ url_for('admin.calendar', date=selected_date) if return_to_calendar else url_for('quotas.quotas_list') }}">Отмена</a>
+        <button class="btn btn-primary" type="submit">Сохранить мероприятие</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  const mode = document.getElementById('publish-mode');
+  const atField = document.getElementById('publish-at-field');
+  const atInput = document.getElementById('publish-at');
+  const syncPublishMode = () => {
+    const scheduled = mode.value === 'scheduled';
+    atField.hidden = !scheduled;
+    atInput.required = scheduled;
+  };
+  mode.addEventListener('change', syncPublishMode); syncPublishMode();
+  const directionPickers = [...document.querySelectorAll('.space-direction-option input.direction-toggle')];
+  const chatOptions = [...document.querySelectorAll('.event-chat-option')];
+  const noChatHint = document.getElementById('event-chat-no-options');
+  const syncChatOptions = () => {
+    const selected = new Set(directionPickers.filter(input => input.checked).map(input => input.value));
+    let visibleCount = 0;
+    chatOptions.forEach(option => {
+      const ids = (option.dataset.directionIds || '').split(',').filter(Boolean);
+      const available = option.dataset.dedicated === 'true' || ids.some(id => selected.has(id));
+      option.hidden = !available;
+      const input = option.querySelector('input');
+      input.disabled = !available;
+      if (!available) input.checked = false;
+      if (available) visibleCount += 1;
+    });
+    if (noChatHint) noChatHint.hidden = visibleCount > 0;
+  };
+  directionPickers.forEach(input => input.addEventListener('change', syncChatOptions));
+  syncChatOptions();
+  const pickers = directionPickers;
+  const createForm = document.getElementById('quota-create-form');
+  const validateDirections = () => {
+    const valid = pickers.some(input => input.checked);
+    pickers.forEach(input => input.setCustomValidity(valid ? '' : 'Выберите хотя бы одно направление'));
+    if (!valid) pickers[0]?.reportValidity();
+    return valid;
+  };
+  if (createForm) createForm.addEventListener('submit', event => {
+    if (!validateDirections()) event.preventDefault();
+  });
+  pickers.forEach(input => input.addEventListener('change', () => {
+    pickers.forEach(item => item.setCustomValidity(''));
+  }));
+})();
+</script>
+{% endblock %}
+
+{% block head %}
+{% endblock %}

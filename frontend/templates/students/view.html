@@ -1,0 +1,41 @@
+{% extends "shared/base.html" %}
+{% block title %}Просмотр студента | Центр управления студсоветом{% endblock %}
+{% block content %}
+<div class="galaxy-student-editor observer-student-detail">
+  <section class="galaxy-student-editor-hero">
+    <span class="galaxy-kicker">STUDENT / READ ONLY</span>
+    <h1>Профиль студента <span aria-hidden="true">◎</span></h1>
+    <p>Просмотр профиля и подтверждённых подключений. Изменение данных в режиме наблюдателя недоступно.</p>
+  </section>
+  <div class="section-title">
+    <div><div class="eyebrow">STUDENT / CARD #{{ student.id }}</div><h2>{{ student.full_name }}</h2><p>Карточка студента · только просмотр</p></div>
+    {% if is_staff_profile %}<a class="btn btn-soft" href="{{ url_for('staff.students') }}">← К рабочему пространству</a>{% else %}<a class="btn btn-soft" href="{{ url_for('admin.students_management') }}">← К студентам</a>{% endif %}
+  </div>
+  <div class="galaxy-edit-layout">
+    <section class="card card-pad galaxy-edit-form observer-profile-view" aria-label="Данные студента">
+      <div class="form-grid">
+        <div class="field field-full"><span class="label">ФИО</span><div class="observer-profile-value">{{ student.full_name or '—' }}</div></div>
+        <div class="field"><span class="label">Группа</span><div class="observer-profile-value">{{ student.group or 'Не указана' }}</div></div>
+        <div class="field"><span class="label">Телефон</span><div class="observer-profile-value">{{ student.phone or 'Не указан' }}</div></div>
+        <div class="field"><span class="label">Электронная почта</span><div class="observer-profile-value">{{ student.email or 'Не указана' }}</div></div>
+        <div class="field"><span class="label">Учебный контур</span><div class="observer-profile-value">{% if student.education_type == 'college' %}Колледж{% else %}Институт{% endif %}</div></div>
+        <div class="field"><span class="label">Telegram</span><div class="observer-profile-value">{% if student.tg_id and student.tg_id > 0 %}Подключён{% if student.telegram_username %} · @{{ student.telegram_username.lstrip('@') }}{% endif %}{% else %}Не привязан{% endif %}</div></div>
+        <div class="field field-full"><span class="label">Направления в доступной области</span><div class="observer-profile-value">{% for direction in visible_directions %}{{ direction.icon or '✦' }} {{ direction.name }}{% if not loop.last %} · {% endif %}{% else %}Не назначены{% endfor %}</div></div>
+      </div>
+      <div class="form-foot">{% if is_staff_profile %}<a class="btn btn-soft" href="{{ url_for('staff.students') }}">← К рабочему пространству</a>{% else %}<a class="btn btn-soft" href="{{ url_for('admin.students_management') }}">← К списку</a>{% endif %}<span class="muted">Доступ только для чтения</span></div>
+    </section>
+    <aside class="galaxy-edit-aside">
+      <span class="galaxy-edit-aside-symbol" aria-hidden="true">◎</span><span class="galaxy-kicker">ПОДКЛЮЧЁННЫЕ АККАУНТЫ</span>
+      <h2>Одна учётная запись.<br>Три мессенджера.</h2>
+      <p>Привязки мессенджеров принадлежат владельцу профиля. В режиме наблюдателя они доступны только для просмотра.</p>
+      <div class="galaxy-profile-linked">
+        <div class="galaxy-profile-linked-row"><span>Telegram</span>{% if student.tg_id and student.tg_id > 0 %}<strong>Подключён{% if student.telegram_username %} · @{{ student.telegram_username.lstrip('@') }}{% endif %}</strong>{% else %}<span class="subtle">Не привязан</span>{% endif %}</div>
+        {% for platform, title in [('vk','ВКонтакте'),('max','MAX')] %}
+          {% set profile = messenger_contacts.get(platform) %}
+          <div class="galaxy-profile-linked-row"><span>{{ title }}</span>{% if profile %}{% if profile.url %}<a href="{{ profile.url }}" target="_blank" rel="noopener noreferrer">{{ profile.label }} ↗</a>{% else %}<strong>{{ profile.label }}</strong>{% endif %}{% else %}<span class="subtle">Не привязан</span>{% endif %}</div>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

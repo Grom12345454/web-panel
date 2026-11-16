@@ -1,0 +1,217 @@
+{% extends "shared/base.html" %}
+{% block title %}{{ direction.name }} | Управление студенческим советом{% endblock %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<div class="section-title"><div><div class="eyebrow">УПРАВЛЕНИЕ НАПРАВЛЕНИЕМ</div><h2>{{ direction.icon or '✦' }} {{ direction.name }}</h2><p>{{ direction.description or 'Управление составом направления и статусами заявок.' }}</p></div><a class="btn btn-soft" href="{{ url_for('directions.directions_list') }}">← К направлениям</a></div>
+
+<div class="grid-2" style="margin-top:18px">
+{% if can_view_questions %}
+<div class="card card-pad">
+    <div class="eyebrow">ФОРМА ЗАЯВЛЕНИЯ</div>
+    <h3 style="margin:8px 0;font-size:18px">Анкета направления</h3>
+    <p class="subtle">Настройте вопросы, которые студент увидит при подаче заявки.</p>
+    <div class="card-actions"><a class="btn btn-soft" href="{{ url_for('directions.manage_questions', did=direction.id) }}">{{ 'Настроить вопросы анкеты →' if can_manage_direction else 'Посмотреть вопросы анкеты →' }}</a></div>
+</div>
+{% endif %}
+</div>
+
+<div class="grid-2" style="margin-top:18px">
+  {% if can_view_events or can_view_lessons %}
+  <div class="card card-pad">
+    <div class="eyebrow">РАБОЧИЕ РАЗДЕЛЫ НАПРАВЛЕНИЯ</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-top:8px">
+      <div><h3 style="margin:0;font-size:18px">Мероприятия и занятия</h3><p class="subtle" style="margin-top:6px">Разделы, доступные по назначенным правам.</p></div>
+    </div>
+    <div class="card-actions">
+      {% if session.user_role == 'staff' %}
+        {% if can_view_events %}<a class="btn btn-primary" href="{{ url_for('admin.calendar', direction_id=direction.id) }}">Мероприятия</a>{% endif %}
+        {% if can_view_lessons %}<a class="btn btn-soft" href="{{ url_for('admin.calendar', direction_id=direction.id) }}">Занятия</a>{% endif %}
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('admin.calendar') }}">Открыть календарь</a><a class="btn btn-soft" href="{{ url_for('admin.calendar', direction_id=direction.id) }}">Календарь занятий</a>{% if can_manage_direction %}<a class="btn btn-soft" href="{{ url_for('quotas.create_quota') }}">＋ Создать мероприятие</a>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  {% if can_view_direction_chats or can_manage_direction_chats or can_send_direction_chat %}
+  <div class="card card-pad">
+    <div class="eyebrow">ЧАТЫ УВЕДОМЛЕНИЙ</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-top:8px">
+      <div><h3 style="margin:0;font-size:18px">Чаты направления</h3><p class="subtle" style="margin-top:6px">{{ 'Отправка сообщений в подключённые чаты этого направления.' if can_send_direction_chat else 'Просмотр подключённых чатов этого направления.' }}</p></div>
+    </div>
+    <div class="card-actions">
+      {% if can_manage_direction_chats %}<a class="btn btn-primary" href="#direction-chats">Управлять чатами</a>{% endif %}
+      {% if can_send_direction_chat %}<button class="btn btn-soft" type="button" data-open-direction-broadcast>💬 Написать в чаты</button>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if can_view_direction_chats or can_manage_direction_chats %}
+<div class="card card-pad" id="direction-chats" style="margin-top:18px">
+  <div class="eyebrow">{{ 'УПРАВЛЕНИЕ ЧАТАМИ' if can_manage_direction_chats else 'ЧАТЫ НАПРАВЛЕНИЯ · ПРОСМОТР' }}</div>
+  <h3 style="margin:8px 0 4px">Чаты направления</h3>
+  {% if can_manage_direction_chats %}<p class="subtle">Важно: сюда нужен <b>username самой группы/канала</b> или числовой Chat ID. <b>Username бота</b> сюда указывать не нужно. Проще всего добавить бота в группу — после первого сообщения бот автоматически обнаружит чат, и его можно будет подключить одной кнопкой.</p>
+  <form method="POST" action="{{ url_for('directions.add_chat', did=direction.id) }}" style="margin-top:14px">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-grid">
+      <div class="field"><label class="label">Chat ID / username чата</label><input class="input" name="chat_id" required placeholder="-1001234567890 или @my_chat"></div>
+      <div class="field"><label class="label">Название (необязательно)</label><input class="input" name="title" placeholder="Определится автоматически"></div>
+      <div class="field"><label class="label">Аудитория чата</label><select class="input" name="education_type"><option value="all">Общий / смешанный чат</option><option value="college">Только колледж</option><option value="institute">Только институт</option></select></div>
+      <div class="field field-full"><label class="label">Username чата (необязательно)</label><input class="input" name="username" placeholder="@my_chat"></div>
+    </div>
+    <div class="form-foot"><span></span><button class="btn btn-primary" type="submit">＋ Подключить чат</button></div>
+  </form>
+  {% else %}<p class="subtle">Доступен только просмотр подключённых чатов и их аудитории. Изменение настроек отключено.</p>{% endif %}
+
+  {% if can_manage_direction_chats %}<div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+    <div class="eyebrow">ОБНАРУЖЕННЫЕ ЧАТЫ</div>
+    <h3 style="margin:8px 0 4px">Обнаруженные Telegram-чаты</h3>
+    <p class="subtle">Чаты появляются здесь автоматически, когда этот бот добавлен в группу/канал. Для уже добавленного бота достаточно написать любое обычное сообщение в группе.</p>
+    <div style="display:grid;gap:10px;margin-top:12px">
+    {% for candidate in telegram_candidates %}
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 14px;border:1px solid rgba(148,163,184,.1);border-radius:16px;background:rgba(255,255,255,.025);flex-wrap:wrap">
+        <div><div class="name-cell">{{ candidate.title or 'Telegram-чат' }}</div><div class="subtle">{{ candidate.chat_id }}{% if candidate.username %} · @{{ candidate.username.lstrip('@') }}{% endif %} · {{ candidate.chat_type }}</div></div>
+        <form method="POST" action="{{ url_for('directions.connect_chat_candidate', did=direction.id, cid=candidate.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><select class="input" name="education_type" aria-label="Аудитория обнаруженного чата"><option value="all">Общий чат</option><option value="college">Колледж</option><option value="institute">Институт</option></select><button class="btn btn-primary" type="submit">Подключить и проверить</button></form>
+      </div>
+    {% else %}<div class="empty"><div class="empty-icon">◎</div><h3>Новых чатов пока нет</h3><p>Добавьте бота администратором в нужную группу или канал. Для существующего чата отправьте в него любое сообщение.</p></div>{% endfor %}
+    </div>
+  </div>{% endif %}
+  {% if can_manage_direction_chats %}<p class="subtle" style="margin-top:14px">Для рассылки отдельно по колледжу или институту отметьте аудиторию каждого чата. Общие чаты смешанных направлений не получают рассылки только для одного учебного контура.</p>{% endif %}
+  <div style="display:grid;gap:10px;margin-top:16px">
+  {% for chat in direction.chats %}
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 14px;border:1px solid rgba(148,163,184,.1);border-radius:16px;background:rgba(255,255,255,.025);flex-wrap:wrap">
+      <div><div class="name-cell">{{ chat.title }}</div><div class="subtle">{{ chat.chat_id }}{% if chat.username %} · {{ chat.username }}{% endif %}{% if chat.last_test_at %} · тест {{ chat.last_test_at.strftime('%d.%m.%Y %H:%M') }}{% endif %}</div></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+      {% if can_manage_direction_chats %}<form method="POST" action="{{ url_for('directions.chat_audience', did=direction.id, cid=chat.id) }}" style="display:flex;gap:6px;align-items:center"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><select class="input" name="education_type" aria-label="Аудитория чата {{ chat.title }}"><option value="all" {% if chat.education_type == 'all' %}selected{% endif %}>Общий чат</option><option value="college" {% if chat.education_type == 'college' %}selected{% endif %}>Колледж</option><option value="institute" {% if chat.education_type == 'institute' %}selected{% endif %}>Институт</option></select><button class="btn btn-soft" type="submit">Сохранить</button></form>{% endif %}<span class="badge {% if chat.is_active %}badge-active{% else %}badge-rejected{% endif %}">{% if chat.is_active %}Подключён{% else %}Выключен{% endif %}</span>{% if can_manage_direction_chats %}<form method="POST" action="{{ url_for('directions.test_chat', did=direction.id, cid=chat.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft">Тест</button></form><form method="POST" action="{{ url_for('directions.delete_chat', did=direction.id, cid=chat.id) }}" data-confirm="Отключить чат от направления?">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger">Удалить</button></form>{% endif %}</div>
+    </div>
+  {% else %}<div class="empty"><div class="empty-icon">◌</div><h3>Чаты пока не подключены</h3><p>После подключения новые мероприятия будут дублироваться сюда автоматически.</p></div>{% endfor %}
+  </div>
+
+  <div class="space-chat-platforms" aria-label="Чаты VK и MAX">
+    {% if can_manage_direction_chats %}<div class="eyebrow">VK / MAX</div>
+    <h3>Чаты других мессенджеров</h3>
+    <p class="subtle">Добавьте бота в нужную беседу и отправьте <code>/chatid</code>. После обнаружения чаты привязывает только главный администратор. Сотрудники могут отправлять сообщения в уже подключённые чаты своего направления. Никакие чаты не подключаются автоматически.</p>
+    <div class="space-chat-candidate-list">
+      {% for candidate in social_candidates %}
+      <form method="POST" action="{{ url_for('directions.connect_social_chat', did=direction.id) }}" class="space-chat-row">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
+        <div><span class="space-platform-tag">{{ candidate.platform|upper }}</span> <strong>{{ candidate.title }}</strong><small>ID: {{ candidate.chat_id }}</small></div>
+        <label class="space-chat-audience">Аудитория<select name="education_type" class="input"><option value="all">Общий чат</option><option value="college">Колледж</option><option value="institute">Институт</option></select></label>
+        <button class="btn btn-primary" type="submit">Подключить</button>
+      </form>
+      {% else %}
+      <p class="subtle">Пока не обнаружено чатов VK/MAX. Бот должен находиться в беседе и получить команду <code>/chatid</code>.</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% for chat in connected_social_chats if chat.is_active %}
+    <div class="space-chat-row">
+      <div><span class="space-platform-tag">{{ chat.platform|upper }}</span> <strong>{{ chat.title }}</strong><small>{{ chat.chat_id }} · {{ 'Колледж' if chat.education_type == 'college' else 'Институт' if chat.education_type == 'institute' else 'Общий чат' }}</small></div>
+      {% if can_manage_direction_chats %}<form method="POST" action="{{ url_for('directions.remove_social_chat', did=direction.id, cid=chat.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit">Отключить</button></form>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if can_send_direction_chat %}
+<dialog id="direction-broadcast-dialog" class="management-dialog" aria-labelledby="direction-broadcast-title">
+  <form class="management-dialog-body" method="POST" action="{{ url_for('directions.chat_message', did=direction.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="management-dialog-header"><div><span class="eyebrow">ЧАТЫ НАПРАВЛЕНИЯ</span><h2 id="direction-broadcast-title">Написать в чат</h2></div><button type="button" class="btn btn-soft" data-close-direction-broadcast aria-label="Закрыть">✕</button></div>
+    <p class="subtle">Сообщение будет отправлено во все активные чаты Telegram, VK и MAX, подключённые главным администратором к направлению «{{ direction.name }}».</p>
+    <label for="direction-broadcast-message">Текст сообщения</label>
+    <textarea class="input" id="direction-broadcast-message" name="message" rows="7" maxlength="4000" required placeholder="Введите объявление для участников направления…"></textarea>
+    <div class="management-dialog-actions"><button type="button" class="btn btn-soft" data-close-direction-broadcast>Отмена</button><button class="btn btn-primary" type="submit">Отправить в чаты</button></div>
+  </form>
+</dialog>
+<script>(()=>{const dialog=document.getElementById('direction-broadcast-dialog');if(!dialog)return;document.querySelectorAll('[data-open-direction-broadcast]').forEach(button=>button.addEventListener('click',()=>dialog.showModal()));document.querySelectorAll('[data-close-direction-broadcast]').forEach(button=>button.addEventListener('click',()=>dialog.close()));dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});})();</script>
+{% endif %}
+
+{% if can_view_students or can_view_applications %}
+<div class="card table-wrap" style="margin-top:18px"><div class="card-pad" style="border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px"><div><strong>{{ 'Состав направления' if can_view_students else 'Заявления направления' }}</strong><div class="subtle" style="margin-top:4px">{{ 'Просмотр состава и истории участия.' if can_view_students and not can_manage_direction else 'Статусы обновляются из панели и могут отправлять уведомления.' }}</div></div></div>
+<div class="table-scroll"><table><thead><tr><th>Студент</th>{% if can_view_students %}<th>Группа</th>{% endif %}<th>Статус</th>{% if can_view_students %}<th>Отказы</th><th>Карточка</th>{% endif %}{% if can_manage_direction %}<th>Действия</th>{% endif %}</tr></thead><tbody>
+{% for item in students_with_status %}
+{% set status = item.status %}
+<tr>
+<td><div class="name-cell">{{ item.student.full_name }}</div>{% if can_view_students %}<div class="subtle">Профиль №{{ item.student.id }}</div>{% endif %}</td>
+{% if can_view_students %}<td>{{ item.student.group or '—' }}</td>{% endif %}
+<td><span class="badge badge-{{ status }}">{% if status=='pending' %}⏳ Ожидает{% elif status=='interview' %}◷ Собеседование{% elif status=='active' %}✦ Активен{% else %}× Отклонён{% endif %}</span></td>
+{% if can_view_students %}<td><span style="display:inline-flex;min-width:28px;justify-content:center;padding:5px 8px;border-radius:9px;font-weight:700;background:{% if item.decline_count > 1 %}rgba(248,113,113,.16){% else %}rgba(148,163,184,.12){% endif %};color:{% if item.decline_count > 1 %}#fca5a5{% else %}var(--muted){% endif %}">{{ item.decline_count }}</span></td>
+<td><button class="btn btn-soft" type="button" data-open-student-card="direction-student-card-{{ item.student.id }}">Карточка</button></td>{% endif %}
+{% if can_manage_direction %}<td><div style="display:flex;gap:7px;flex-wrap:wrap">
+{% if status=='pending' %}<form method="POST" action="{{ url_for('directions.approve_student', did=direction.id, sid=item.student.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-success" type="submit">Принять и активировать</button></form><details style="min-width:220px"><summary class="btn btn-danger" style="cursor:pointer;list-style:none">Отклонить</summary><form method="POST" action="{{ url_for('directions.reject_student', did=direction.id, sid=item.student.id) }}" style="display:grid;gap:6px;margin-top:8px;min-width:220px">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><textarea class="input" name="reason" required minlength="5" maxlength="2000" rows="2" placeholder="Причина отказа (минимум 5 символов)"></textarea><button class="btn btn-danger" type="submit">Подтвердить отказ</button></form></details>{% endif %}
+
+
+<form method="POST" action="{{ url_for('directions.remove_student', did=direction.id, sid=item.student.id) }}" data-confirm="Удалить студента из направления? ">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit">Удалить</button></form>
+</div></td>{% endif %}
+</tr>
+{% else %}<tr><td colspan="{{ (3 if can_view_students else 2) + (1 if can_manage_direction else 0) }}"><div class="empty"><div class="empty-icon">◎</div><h3>Состав пока пуст</h3><p>Заявки появятся после регистрации в Telegram-боте.</p></div></td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endif %}
+
+{% if can_view_students %}
+{% for item in students_with_status %}
+{% set student = item.student %}
+<dialog class="student-card-modal" id="direction-student-card-{{ student.id }}" aria-labelledby="direction-student-card-title-{{ student.id }}">
+  <div class="student-card-head">
+    <div><h2 id="direction-student-card-title-{{ student.id }}">{{ student.full_name }}</h2><p>Карточка студента · направление «{{ direction.name }}» · ID {{ student.id }}</p></div>
+    <button class="btn btn-soft" type="button" data-close-student-card="direction-student-card-{{ student.id }}" aria-label="Закрыть карточку">Закрыть ✕</button>
+  </div>
+  <div class="student-card-grid">
+    <div><small>Тип обучения</small><strong>{{ 'Колледж' if student.education_type == 'college' else 'Институт' }}</strong></div>
+    <div><small>Статус в направлении</small><strong>{% if item.status=='pending' %}Ожидает{% elif item.status=='interview' %}Собеседование{% elif item.status=='active' %}Активен{% elif item.status=='rejected' %}Отклонён{% else %}{{ item.status or '—' }}{% endif %}</strong></div>
+    <div><small>Учебная группа</small><strong>{{ student.group or 'Не указана' }}</strong></div>
+    <div><small>Телефон</small><strong>{{ student.phone or 'Не указан' }}</strong></div>
+    {% set profiles = messenger_by_student.get(student.id, {}) %}
+    {% for platform, title in [('vk','ВКонтакте'),('max','MAX')] %}
+    {% set contact = profiles.get(platform) %}
+    <div class="student-messenger-field student-messenger-{{ platform }}"><small>{{ title }} · подтверждённый профиль</small>
+      {% if contact %}{% if contact.url %}<a href="{{ contact.url }}" target="_blank" rel="noopener noreferrer">{{ contact.label }} ↗</a>{% else %}<strong>{{ contact.label }}</strong>{% endif %}
+      {% else %}<strong class="subtle">Не привязан</strong>{% endif %}
+    </div>
+    {% endfor %}
+    <div><small>Telegram</small><strong>{% if student.telegram_username %}@{{ student.telegram_username.lstrip('@') }}{% else %}Имя пользователя не указано{% endif %}</strong></div>
+    <div><small>Роль в этом направлении</small><strong>{{ item.leadership_position or 'Участник' }}</strong></div>
+    <div><small>Всего отказов</small><strong>{{ item.decline_count }}</strong></div>
+    <div class="student-card-wide"><small>Состоит в направлениях</small>{% if student.display_directions %}<div class="student-card-events">{% for student_direction in student.display_directions %}<span>{{ student_direction.icon or '✦' }} {{ student_direction.name }}</span>{% endfor %}</div>{% else %}<strong>Нет назначенных направлений</strong>{% endif %}</div>
+    <div class="student-card-wide"><small>Посещённые мероприятия ({{ item.attended_events|length }})</small>{% if item.attended_events %}<div class="student-card-events">{% for event in item.attended_events %}<span>{{ event.event_title }}</span>{% endfor %}</div>{% else %}<strong>Посещений пока нет</strong>{% endif %}</div>
+    <div class="student-card-wide"><small>Отказы от мероприятий ({{ item.declined_events|length }})</small>{% if item.declined_events %}<div style="display:grid;gap:8px">{% for declined in item.declined_events %}<div style="padding:10px 12px;border:1px solid #ffffff12;border-radius:10px;background:#ffffff05"><strong>{{ declined.event_title }}</strong><div class="subtle" style="margin-top:4px">{{ declined.decline.created_at.strftime('%d.%m.%Y %H:%M') if declined.decline.created_at else 'Дата не указана' }}</div><div style="margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere">{{ declined.decline.reason }}</div></div>{% endfor %}</div>{% else %}<strong>Отказов нет</strong>{% endif %}</div>
+  </div>
+  <div class="student-card-footer"><button class="btn btn-primary" type="button" data-close-student-card="direction-student-card-{{ student.id }}">Готово</button></div>
+</dialog>
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  document.querySelectorAll('[data-open-student-card]').forEach(button => {
+    button.addEventListener('click', () => {
+      const dialog = document.getElementById(button.dataset.openStudentCard);
+      if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+    });
+  });
+  document.querySelectorAll('[data-close-student-card]').forEach(button => {
+    button.addEventListener('click', () => {
+      const dialog = document.getElementById(button.dataset.closeStudentCard);
+      if (dialog) dialog.close();
+    });
+  });
+  document.querySelectorAll('.student-card-modal').forEach(dialog => {
+    dialog.addEventListener('click', event => {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+})();
+</script>
+{% endblock %}

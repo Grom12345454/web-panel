@@ -1,0 +1,166 @@
+{% extends "shared/base.html" %}
+{% block title %}Здоровье системы и восстановление · Student Council{% endblock %}
+{% block content %}
+<div class="pro-runtime pro-runtime-v42" data-runtime-url="{{ url_for('admin.system_runtime_status') }}">
+  <header class="pro-runtime-hero">
+    <div>
+      <span class="pro-runtime-eyebrow">STUDSOVET / SYSTEM CONTROL · ПАНЕЛЬ ГЛАВНОГО АДМИНИСТРАТОРА</span>
+      <h1>Здоровье системы <span>и восстановление</span></h1>
+      <p>Единый центр наблюдения за состоянием портала: хранилища, серверный процесс, интеграции, доставка и фоновые службы. Чувствительные значения и содержимое сообщений не выводятся.</p>
+    </div>
+    <div class="pro-runtime-actions">
+      <button class="btn btn-primary" type="button" data-runtime-refresh>✓ Проверить систему сейчас</button>
+      <form method="POST" action="{{ url_for('admin.create_manual_database_backup') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit">＋ Создать резервную копию</button></form>
+      <a class="btn btn-soft" href="#runtime-backups">Восстановление из копии ↓</a>
+    </div>
+  </header>
+
+  <nav class="runtime-console-nav" aria-label="Разделы диагностики">
+    <a href="#runtime-databases">Базы данных</a>
+    <a href="#runtime-process">Процесс</a>
+    <a href="#runtime-integrations">Интеграции</a>
+    <a href="#runtime-http">HTTP и аудит</a>
+    <a href="#runtime-queue">Очередь</a>
+    <a href="#runtime-workers">Фоновые задачи</a>
+    <a href="#runtime-recovery">Восстановление</a>
+  </nav>
+
+  <section class="pro-runtime-health-banner" data-runtime-health-banner data-state="{{ health.state }}" aria-live="polite">
+    <span class="pro-runtime-health-mark" aria-hidden="true">{% if health.state == 'ok' %}✓{% elif health.state == 'attention' %}!{% else %}×{% endif %}</span>
+    <div class="pro-runtime-health-copy">
+      <span>ОБЩЕЕ СОСТОЯНИЕ</span>
+      <strong data-runtime-health-label>{{ health.label }}</strong>
+      <p data-runtime-health-detail>{{ health.detail }}</p>
+    </div>
+    <div class="pro-runtime-health-time"><span>ПОСЛЕДНЯЯ ПРОВЕРКА</span><strong data-runtime-checked>{{ checked_at }}</strong><small>Автообновление · 20 сек.</small></div>
+  </section>
+
+  <section class="pro-runtime-summary" aria-label="Ключевые показатели">
+    <div class="pro-runtime-kpi"><span>Доступные базы</span><strong data-runtime-db-healthy>{{ databases_healthy }}/{{ databases_total }}</strong><small>проверка SELECT 1</small></div>
+    <div class="pro-runtime-kpi"><span>Работающие фоновые задачи</span><strong data-runtime-workers-running>{{ workers|selectattr('state', 'equalto', 'running')|list|length }}/{{ workers|length }}</strong><small>зарегистрировано в процессе</small></div>
+    <div class="pro-runtime-kpi"><span>Время работы процесса</span><strong data-runtime-uptime>{{ process.uptime_seconds }}</strong><small>секунд с запуска сайта</small></div>
+    <div class="pro-runtime-kpi"><span>HTTP 5xx за 24 часа</span><strong data-runtime-server-errors>{{ http_metrics.server_errors_24h }}</strong><small>ошибки серверной стороны</small></div>
+    <div class="pro-runtime-kpi"><span>Ожидают доставки</span><strong data-runtime-delivery-pending>{{ queue_metrics.pending }}</strong><small>pending, retry и sending</small></div>
+    <div class="pro-runtime-kpi"><span>Перезапуски задач</span><strong data-runtime-restarts>{{ workers|sum(attribute='restarts') }}</strong><small>с момента запуска процесса</small></div>
+  </section>
+
+  <section class="pro-runtime-block runtime-console-section" id="runtime-databases" aria-labelledby="runtime-databases-title">
+    <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">01 / ХРАНИЛИЩА</span><h2 id="runtime-databases-title">Базы данных</h2><p>Каждая база отдельно проверяется запросом SELECT 1. Размер показывается только для SQLite-файлов.</p></div><span class="pro-runtime-section-meta">{{ databases_healthy }} из {{ databases_total }} доступны</span></div>
+    <div class="pro-runtime-db-grid" data-runtime-databases>
+      {% for database in database_checks %}
+      <article class="pro-runtime-db-card" data-db-bind="{{ database.bind }}">
+        <div class="pro-runtime-card-heading"><span class="pro-runtime-db-icon" aria-hidden="true">▤</span><span class="pro-runtime-status" data-db-state data-state="{{ database.state }}">{{ database.status_label }}</span></div>
+        <h3>{{ database.label }}</h3>
+        <p>Источник: {{ database.bind }}</p>
+        <dl>
+          <div><dt>Время ответа</dt><dd data-db-latency>{% if database.latency_ms is not none %}{{ database.latency_ms }} мс{% else %}—{% endif %}</dd></div>
+          <div><dt>Размер файла</dt><dd data-db-size>{% if database.size_mb is not none %}{{ database.size_mb }} МБ{% else %}Не определён{% endif %}</dd></div>
+          <div><dt>Ошибка</dt><dd data-db-error>{{ database.error_type or 'Нет' }}</dd></div>
+        </dl>
+      </article>
+      {% else %}
+      <article class="pro-runtime-db-card" data-state="error"><h3>Нет данных о подключениях</h3><p>Не удалось получить список баз из текущего приложения.</p></article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="pro-runtime-detail-grid">
+    <section class="pro-runtime-detail-panel runtime-console-section" id="runtime-process" aria-labelledby="runtime-process-title">
+      <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">02 / СРЕДА ВЫПОЛНЕНИЯ</span><h2 id="runtime-process-title">Процесс и окружение</h2><p>Локальные параметры работающего приложения, без значений секретов.</p></div></div>
+      <dl class="pro-runtime-info-list">
+        <div><dt>Режим</dt><dd data-runtime-mode>{{ process.mode }}</dd></div>
+        <div><dt>Процесс ID</dt><dd>{{ process.pid }}</dd></div>
+        <div><dt>Версия Python</dt><dd>{{ process.python_version }}</dd></div>
+        <div><dt>Запущен (UTC)</dt><dd>{{ process.started_at }}</dd></div>
+        <div><dt>DEBUG</dt><dd><span class="pro-runtime-inline-state" data-state="{{ 'attention' if process.debug_enabled else 'ok' }}" data-runtime-debug>{{ 'Включён' if process.debug_enabled else 'Выключен' }}</span></dd></div>
+        <div><dt>SECRET_KEY</dt><dd><span class="pro-runtime-inline-state" data-state="{{ 'ok' if process.secret_key_configured else 'attention' }}" data-runtime-secret>{{ 'Задан надёжный ключ' if process.secret_key_configured else 'Не задан в .env; используется локальный fallback' }}</span></dd></div>
+        <div><dt>Свободное место на диске</dt><dd data-runtime-disk-free>{% if disk_metrics.available %}{{ disk_metrics.free_gb }} из {{ disk_metrics.total_gb }} ГБ{% else %}Не удалось проверить{% endif %}</dd></div>
+        <div><dt>Файл журнала</dt><dd><span class="pro-runtime-inline-state" data-state="{{ 'ok' if log_metrics.available else 'attention' }}" data-runtime-log-state>{{ log_metrics.status_label }}</span></dd></div>
+        <div><dt>Размер журнала</dt><dd data-runtime-log-size>{% if log_metrics.size_mb is not none %}{{ log_metrics.size_mb }} МБ{% else %}—{% endif %}</dd></div>
+        <div><dt>Последняя запись</dt><dd data-runtime-log-modified>{{ log_metrics.modified_at or '—' }}</dd></div>
+      </dl>
+      <p class="pro-runtime-caveat">Показатели относятся к текущему процессу. В многопроцессной production-конфигурации они могут отличаться между workers.</p>
+    </section>
+
+    <section class="pro-runtime-detail-panel runtime-console-section" id="runtime-integrations" aria-labelledby="runtime-integrations-title">
+      <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">03 / ВНЕШНИЕ СЕРВИСЫ</span><h2 id="runtime-integrations-title">Конфигурация интеграций</h2><p>Проверяется наличие требуемых параметров. Реальный сетевой запрос к провайдерам не выполняется.</p></div></div>
+      <div class="pro-runtime-integrations">
+        {% for integration in integrations %}
+        <article class="pro-runtime-integration" data-integration="{{ integration.key }}">
+          <span class="pro-runtime-integration-mark" aria-hidden="true">{% if integration.key == 'telegram' %}TG{% elif integration.key == 'vk' %}VK{% else %}M{% endif %}</span>
+          <div><strong>{{ integration.label }}</strong><span class="pro-runtime-status" data-integration-status data-state="{{ 'ok' if integration.configured else 'stopped' }}">{{ integration.status_label }}</span><p data-integration-detail>{{ integration.detail }}</p></div>
+        </article>
+        {% endfor %}
+      </div>
+      <p class="pro-runtime-caveat">Не публикуйте токены или секреты в отчётах. Для проверки реального подключения используйте журналы конкретного бота.</p>
+    </section>
+  </div>
+
+  <div class="pro-runtime-detail-grid">
+    <section class="pro-runtime-detail-panel runtime-console-section" id="runtime-http" aria-labelledby="runtime-http-title">
+      <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">04 / ЖУРНАЛ ЗАПРОСОВ</span><h2 id="runtime-http-title">HTTP и действия за 24 часа</h2><p>Это записи аудита, а не полный счётчик всех запросов веб-сервера.</p></div><span class="pro-runtime-section-meta" data-runtime-http-availability>{{ 'Данные доступны' if http_metrics.available else 'Данные недоступны' }}</span></div>
+      <div class="pro-runtime-mini-metrics">
+        <div><span>Записей аудита</span><strong data-runtime-audit-requests>{{ http_metrics.requests_24h }}</strong></div>
+        <div><span>Действий сотрудников</span><strong data-runtime-audit-staff>{{ http_metrics.staff_actions_24h }}</strong></div>
+        <div><span>Ответы 4xx</span><strong data-runtime-client-errors>{{ http_metrics.client_errors_24h }}</strong></div>
+        <div><span>Ответы 5xx</span><strong data-runtime-server-errors-detail>{{ http_metrics.server_errors_24h }}</strong></div>
+      </div>
+    </section>
+
+    <section class="pro-runtime-detail-panel runtime-console-section" id="runtime-queue" aria-labelledby="runtime-queue-title">
+      <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">05 / ДОСТАВКА</span><h2 id="runtime-queue-title">Очередь доставки</h2><p>Сводка по заданиям из базы данных, отдельно от in-memory задач.</p></div><span class="pro-runtime-section-meta" data-runtime-queue-availability>{{ 'Данные доступны' if queue_metrics.get('available', true) else 'Данные недоступны' }}</span></div>
+      <div class="pro-runtime-queue-grid">
+        <div><span>Ожидают / повтор</span><strong data-runtime-queue-pending>{{ queue_metrics.pending }}</strong></div>
+        <div><span>Отправляются</span><strong data-runtime-queue-sending>{{ queue_metrics.sending }}</strong></div>
+        <div><span>Не доставлены</span><strong data-runtime-queue-failed>{{ queue_metrics.failed }}</strong></div>
+        <div><span>Заблокированы</span><strong data-runtime-queue-blocked>{{ queue_metrics.blocked }}</strong></div>
+        <div><span>Доставлены</span><strong data-runtime-queue-delivered>{{ queue_metrics.delivered }}</strong></div>
+      </div>
+      <details class="pro-runtime-raw-status"><summary>Все статусы очереди</summary><ul>
+        {% for state in ['pending', 'retry', 'sending', 'delivered', 'failed', 'blocked'] %}<li data-queue-row="{{ state }}"><span>{{ state }}</span><strong data-queue-value>{{ queue_statuses.get(state, 0) }}</strong></li>{% endfor %}
+      </ul></details>
+    </section>
+  </div>
+
+  <section class="pro-runtime-block runtime-console-section" id="runtime-workers" aria-labelledby="runtime-workers-title">
+    <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">06 / ФОНОВЫЕ СЛУЖБЫ</span><h2 id="runtime-workers-title">Фоновые задачи</h2><p>Состояния обновляются автоматически каждые 20 секунд, пока страница открыта. Перезапуск не гарантирует устранения первопричины.</p></div><span class="pro-runtime-section-meta" data-runtime-worker-checked>{{ checked_at }}</span></div>
+    <div class="pro-runtime-grid" data-runtime-grid>
+      {% for worker in workers %}
+      <article class="pro-runtime-card" data-worker="{{ worker.name }}">
+        <div class="pro-runtime-card-heading"><span class="pro-runtime-worker-icon" aria-hidden="true">◈</span><span class="pro-runtime-status" data-field="state" data-state="{{ worker.state }}">{{ {'running':'Активна','restarting':'Перезапуск','cooldown':'Пауза защиты','stopped':'Остановлена','pending':'Запуск'}.get(worker.state, worker.state) }}</span></div>
+        <h3>{{ {'application-blocks':'Сроки блокировок','event-publishing':'Публикация мероприятий','delivery-outbox':'Общая очередь уведомлений','telegram-polling':'Telegram-бот','vk-polling':'VK-бот','max-polling':'MAX-бот','database-guardian':'Защита и восстановление баз'}.get(worker.name, worker.name) }}</h3>
+        <p>{{ {'application-blocks':'Контроль истечения сроков блокировок заявлений.','event-publishing':'Плановые публикации на сайте.','delivery-outbox':'Доставка сообщений с отложенными и повторными попытками.','telegram-polling':'Получение и обработка событий Telegram.','vk-polling':'Приём событий сообщества VK.','max-polling':'Обработка событий MAX в выбранном режиме.','database-guardian':'Проверка целостности SQLite, резервные копии и безопасное восстановление из проверенного снимка.'}.get(worker.name, 'Фоновый компонент приложения.') }}</p>
+        <dl>
+          <div><dt>Перезапусков</dt><dd data-field="restarts">{{ worker.restarts }}</dd></div>
+          <div><dt>Старт потока (UTC)</dt><dd data-field="started_at">{{ worker.started_at or '—' }}</dd></div>
+          <div><dt>Последний сбой (UTC)</dt><dd data-field="last_failure_at">{{ worker.last_failure_at or 'Нет' }}</dd></div>
+          <div><dt>Тип последней ошибки</dt><dd data-field="last_error_type">{{ worker.last_error_type or '—' }}</dd></div>
+          <div><dt>Поток жив</dt><dd data-field="thread_alive">{{ 'Да' if worker.thread_alive else 'Нет' }}</dd></div>
+        </dl>
+      </article>
+      {% else %}
+      <article class="pro-runtime-card"><h3>Фоновые задачи не зарегистрированы</h3><p>Это может быть нормально, если интеграция отключена или запущен только веб-процесс. Сверьте конфигурацию и способ запуска.</p></article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="pro-runtime-block runtime-console-section pro-runtime-backups" id="runtime-backups" aria-labelledby="runtime-backups-title">
+    <div class="pro-runtime-section-heading"><div><span class="runtime-section-kicker">08 / РЕЗЕРВИРОВАНИЕ</span><h2 id="runtime-backups-title">Проверка и восстановление</h2><p>Перед восстановлением архив проверяется, а текущие базы автоматически сохраняются в страховочную копию.</p></div><a class="btn btn-soft" href="{{ url_for('admin.system_maintenance') }}">Все копии и обслуживание ↗</a></div>
+    {% if recent_backups %}<div class="pro-runtime-backup-list">{% for backup in recent_backups %}<article class="pro-runtime-backup-row"><div class="pro-runtime-backup-meta"><strong>{{ backup.name }}</strong><span>{% if backup.automatic %}Автоматическая{% else %}Ручная{% endif %} · {{ backup.created.strftime('%d.%m.%Y %H:%M') }} · {{ backup.size_mb }} МБ</span></div><div class="pro-runtime-backup-actions"><form method="POST" action="{{ url_for('admin.check_database_backup_action') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="backup_name" value="{{ backup.name }}"><button class="btn btn-soft" type="submit">Проверить архив</button></form><form method="POST" action="{{ url_for('admin.restore_database_backup_action') }}" data-confirm="Восстановить все базы из этой копии? Текущие базы сначала будут сохранены отдельно. Все изменения после даты снимка будут потеряны."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="backup_name" value="{{ backup.name }}"><button class="btn btn-danger" type="submit">Восстановить</button></form></div></article>{% endfor %}</div>{% else %}<div class="pro-runtime-empty-backups">Резервных копий пока нет. Создайте первую кнопкой «Создать резервную копию».</div>{% endif %}
+  </section>
+
+  <section class="pro-runtime-note runtime-console-section" id="runtime-recovery" aria-label="Порядок диагностики и восстановления">
+    <span class="runtime-section-kicker">07 / ПЛАН ДЕЙСТВИЙ</span><h2>Безопасный порядок восстановления</h2>
+    <ol>
+      <li>Если база отмечена как недоступная, сначала проверьте состояние файлов в каталоге данных и ошибки SQLite в серверном журнале.</li>
+      <li>Если фоновая задача перезапускается или находится в паузе защиты, проверьте её тип ошибки и последние записи журнала. Не удаляйте базу ради устранения ошибки подключения.</li>
+      <li>Если растёт очередь доставки, проверьте конфигурацию соответствующего бота и его журнал. Метка «Настроен» сама по себе не означает, что провайдер доступен.</li>
+      <li>Перед очисткой данных сделайте отдельную резервную копию. Очистка в следующем разделе необратима.</li>
+    </ol>
+    <p>Файл журнала хранится вне публичного каталога сайта: <code>data/logs/portal.jsonl</code> либо в каталоге из <code>SITE_LOG_DIR</code>. Секреты в этой странице не показываются.</p>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/runtime-status.js', v=asset_version('js/runtime-status.js')) }}" defer></script>
+{% endblock %}

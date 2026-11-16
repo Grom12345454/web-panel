@@ -1,0 +1,75 @@
+{% extends "shared/base.html" %}
+{% block title %}Сводка по ботам · Telegram · VK · MAX{% endblock %}
+{% block content %}
+<div class="messenger-monitoring-v66 soc-bot-workspace" data-messenger-monitoring data-snapshot-url="{{ url_for('admin.messenger_monitoring_snapshot') }}">
+  {% include "activity/_admin_monitor_tabs.html" %}
+  <header class="mm-hero soc-bot-hero">
+    <div class="mm-hero-copy"><span class="mm-eyebrow"><i></i> ЗАКРЫТЫЙ КОНТУР · SUPER ADMIN</span><h1>Сводка <em>по ботам</em></h1><p>Состояние Telegram, VK и MAX, подтверждённые регистрации, заявления, решения и записи на мероприятия. Пользовательские события отображаются только для зарегистрированных профилей.</p><div class="mm-hero-actions"><a class="mm-button mm-button-ghost" href="#bot-actions">К операциям участников ↓</a><button class="mm-button mm-button-primary" type="button" data-mm-refresh>Обновить сводку ↻</button><a class="mm-button mm-button-ghost" href="{{ request.full_path if request.query_string else request.path }}">Обновить таблицы ↻</a></div></div>
+    <div class="mm-live-panel" aria-live="polite"><span class="mm-live-indicator"><i></i> МОНИТОРИНГ</span><strong data-mm-updated>Обновлено {{ snapshot.generated_at[:19].replace('T', ' ') }} UTC</strong><small>Обновление каждые 20 секунд, пока вкладка активна</small><span class="mm-live-footnote">Транспорт · очередь · действия профилей</span></div>
+  </header>
+
+  <section class="soc-section" aria-labelledby="soc-student-summary-heading">
+    <div class="soc-section-heading"><div><span class="mm-eyebrow">УЧАСТНИКИ · ПОСЛЕДНИЕ 30 ДНЕЙ</span><h2 id="soc-student-summary-heading">Зарегистрированные профили и действия</h2><p>Счётчики построены по сохранённым событиям StudentActivity, связанным с действующими зарегистрированными профилями.</p></div><span class="soc-window-label">Окно 30 дней · UTC</span></div>
+    <div class="soc-kpi-grid">
+      <article class="soc-kpi"><span>Зарегистрировано сейчас</span><strong data-mm-student-total="registered_profiles">{{ snapshot.student_summary.registered_profiles }}</strong><small>Профили с council_registered = true</small></article>
+      <article class="soc-kpi"><span>Новые регистрации</span><strong data-mm-student-total="registrations_30d">{{ snapshot.student_summary.registrations_30d }}</strong><small>События создания профиля</small></article>
+      <article class="soc-kpi"><span>Подано заявлений</span><strong data-mm-student-total="applications_30d">{{ snapshot.student_summary.applications_30d }}</strong><small>Заявления на рассмотрении</small></article>
+      <article class="soc-kpi soc-kpi--good"><span>Принято</span><strong data-mm-student-total="accepted_30d">{{ snapshot.student_summary.accepted_30d }}</strong><small>Положительные решения</small></article>
+      <article class="soc-kpi soc-kpi--risk"><span>Отклонено</span><strong data-mm-student-total="rejected_30d">{{ snapshot.student_summary.rejected_30d }}</strong><small>Отказы по заявлениям</small></article>
+      <article class="soc-kpi"><span>Записи на мероприятия</span><strong data-mm-student-total="event_signups_30d">{{ snapshot.student_summary.event_signups_30d }}</strong><small>Подтверждённые записи</small></article>
+      <article class="soc-kpi soc-kpi--risk"><span>Отказы от мероприятий</span><strong data-mm-student-total="event_declines_30d">{{ snapshot.student_summary.event_declines_30d }}</strong><small>Формально сохранённые отказы</small></article>
+      <article class="soc-kpi"><span>Отозвано заявлений</span><strong data-mm-student-total="withdrawals_30d">{{ snapshot.student_summary.withdrawals_30d }}</strong><small>Действия зарегистрированных профилей</small></article>
+    </div>
+  </section>
+
+  <section class="soc-section" aria-labelledby="soc-platform-heading">
+    <div class="soc-section-heading"><div><span class="mm-eyebrow">TRANSPORT HEALTH</span><h2 id="soc-platform-heading">Состояние интеграций</h2><p>Сохранённые события, успешность отправок и очередь доставки. Наличие событий не является сетевым ping.</p></div><span class="soc-window-label">Последние 24 часа</span></div>
+    <div class="mm-platform-grid soc-platform-grid">
+      {% for bot in snapshot.platforms %}
+      <article class="mm-platform-card mm-platform-{{ bot.platform }}" data-mm-platform="{{ bot.platform }}">
+        <div class="mm-platform-top"><span class="mm-platform-icon" aria-hidden="true">{% if bot.platform == 'telegram' %}✈{% elif bot.platform == 'vk' %}ᴠκ{% else %}M{% endif %}</span><div><strong>{{ bot.label }}</strong><small data-mm-platform-state>{% if bot.errors_24h %}Есть ошибки в журнале{% elif bot.events_24h %}События фиксируются{% else %}Нет событий за 24 ч{% endif %}</small></div><span class="mm-status-dot {% if bot.errors_24h %}is-warning{% elif bot.events_24h %}is-active{% else %}is-idle{% endif %}" data-mm-status-dot></span></div>
+        <div class="mm-platform-stats"><div><span>События</span><strong data-mm-value="events_24h">{{ bot.events_24h }}</strong></div><div><span>Успешно</span><strong data-mm-value="success_24h">{{ bot.success_24h }}</strong></div><div class="mm-stat-error"><span>Ошибки</span><strong data-mm-value="errors_24h">{{ bot.errors_24h }}</strong></div></div>
+        <div class="mm-platform-meta"><div><span>Среднее время</span><b data-mm-value="average_duration_ms">{{ bot.average_duration_ms }} мс</b></div><div><span>Активная очередь</span><b data-mm-value="queue_active">{{ bot.queue_active }}</b></div><div><span>Заблокировано / не доставлено</span><b><span data-mm-queue="blocked">{{ bot.queue.blocked }}</span> / <span data-mm-queue="failed">{{ bot.queue.failed }}</span></b></div><div><span>Последнее событие</span><b data-mm-value="last_event">{{ bot.last_event[:16].replace('T', ' ') ~ ' UTC' if bot.last_event else 'Нет записей' }}</b></div><div><span>Последняя отправка</span><b data-mm-value="last_send">{{ bot.last_send[:16].replace('T', ' ') ~ ' UTC' if bot.last_send else 'Нет записей' }}</b></div></div>
+        <footer class="mm-platform-footer"><span>Ожидание {{ bot.queue.pending }} · повтор {{ bot.queue.retry }} · отправка {{ bot.queue.sending }}</span></footer>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="soc-section soc-table-section" id="bot-actions" aria-labelledby="soc-bot-actions-heading">
+    <div class="soc-section-heading"><div><span class="mm-eyebrow">GROUPED BOT BUSINESS ACTIONS</span><h2 id="soc-bot-actions-heading">Операции участников через ботов</h2><p>Одна лента бизнес-действий: регистрация профиля, подача и решения по заявлениям, запись на квоты и мероприятия, отказы и отмены. Нажатия кнопок и отдельные входящие сообщения не считаются самостоятельными операциями.</p><div class="soc-action-groups"><span>Регистрация</span><span>Заявления</span><span>Квоты и мероприятия</span><span>Отказы и отмены</span></div></div><a class="soc-export" href="{{ url_for('admin.messenger_monitoring_student_events_export', **activity.filters) }}">Экспорт CSV ↓</a></div>
+    <form class="soc-event-filters" method="get" action="{{ url_for('admin.messenger_monitoring') }}">
+      <label><span>Поиск участника или действия</span><input name="q" type="search" value="{{ activity.filters.q }}" placeholder="ФИО, группа, направление, квота"></label>
+      <label><span>Категория операции</span><select name="event_type"><option value="">Все категории</option><option value="registration" {% if activity.filters.event_type == 'registration' %}selected{% endif %}>Регистрация</option><option value="application" {% if activity.filters.event_type == 'application' %}selected{% endif %}>Заявления</option><option value="accepted" {% if activity.filters.event_type == 'accepted' %}selected{% endif %}>Заявление принято</option><option value="rejected" {% if activity.filters.event_type == 'rejected' %}selected{% endif %}>Заявление отклонено</option><option value="event_signup" {% if activity.filters.event_type == 'event_signup' %}selected{% endif %}>Запись на квоту / мероприятие</option><option value="event_decline" {% if activity.filters.event_type == 'event_decline' %}selected{% endif %}>Отказы и отмены</option><option value="withdrawal" {% if activity.filters.event_type == 'withdrawal' %}selected{% endif %}>Отзыв / возврат</option></select></label>
+      <label><span>Источник</span><select name="platform"><option value="">Все источники</option><option value="telegram" {% if activity.filters.platform == 'telegram' %}selected{% endif %}>Telegram</option><option value="vk" {% if activity.filters.platform == 'vk' %}selected{% endif %}>VK</option><option value="max" {% if activity.filters.platform == 'max' %}selected{% endif %}>MAX</option><option value="student_app" {% if activity.filters.platform == 'student_app' %}selected{% endif %}>Student App</option><option value="site" {% if activity.filters.platform == 'site' %}selected{% endif %}>Сайт</option></select></label>
+      <label><span>Дата от · UTC</span><input type="date" name="start" value="{{ activity.filters.start }}"></label>
+      <label><span>Дата до · UTC</span><input type="date" name="end" value="{{ activity.filters.end }}"></label>
+      <input type="hidden" name="page" value="1"><div class="soc-filter-actions"><button type="submit">Применить</button><a href="{{ url_for('admin.messenger_monitoring') }}#bot-actions">Сбросить</a></div>
+    </form>
+    <div class="soc-table-meta"><span>{{ activity.total }} бизнес-действий · страница {{ activity.page }} из {{ activity.pages }}</span><span>Включены только подтверждённые зарегистрированные профили</span></div>
+    <div class="soc-data-table-wrap"><table class="soc-data-table soc-business-actions"><thead><tr><th>Время · UTC</th><th>Участник</th><th>Платформа</th><th>Раздел действий</th><th>Что произошло</th><th>Направление / квота</th><th>Запись</th></tr></thead><tbody>
+      {% for event in activity.events %}
+      <tr>
+        <td class="soc-event-time"><strong>{{ event.created_at.strftime('%d.%m.%Y') if event.created_at else '—' }}</strong><span>{{ event.created_at.strftime('%H:%M:%S') if event.created_at else '—' }}</span></td>
+        <td class="soc-event-person"><strong>{{ event.student_name }}</strong><small>{{ event.student_group }} · ST-{{ event.student_id }}</small></td>
+        <td><span class="soc-source-tag">{{ event.platform }}</span></td>
+        <td><span class="soc-business-group">{{ event.event_group_label }}</span></td>
+        <td><strong>{{ event.action_label }}</strong><small>{{ event.description }}</small></td>
+        <td>{{ event.direction or event.quota or '—' }}</td>
+        <td><code>B-{{ event.id }}</code></td>
+      </tr>
+      {% else %}<tr><td colspan="7" class="soc-empty-row">Нет зарегистрированных бизнес-действий по выбранным условиям.</td></tr>{% endfor %}
+    </tbody></table></div>
+    {% if activity.pages > 1 %}<nav class="soc-pagination">{% if activity.page > 1 %}<a href="{{ url_for('admin.messenger_monitoring', page=activity.page-1, **activity.filters) }}#bot-actions">← Назад</a>{% else %}<span></span>{% endif %}<span>Страница {{ activity.page }} из {{ activity.pages }}</span>{% if activity.page < activity.pages %}<a href="{{ url_for('admin.messenger_monitoring', page=activity.page+1, **activity.filters) }}#bot-actions">Далее →</a>{% else %}<span></span>{% endif %}</nav>{% endif %}
+  </section>
+
+  <section class="soc-section soc-transport-section" id="transport-incidents" aria-labelledby="soc-transport-heading">
+    <div class="soc-section-heading"><div><span class="mm-eyebrow">DELIVERY ERRORS</span><h2 id="soc-transport-heading">Ошибки отправки и доставки</h2><p>Последние ошибки, сохранённые журналом доставки. Тексты пользовательских сообщений, адресаты и токены не отображаются.</p></div><span class="soc-window-label">Последние события</span></div>
+    <div class="soc-data-table-wrap"><table class="soc-data-table soc-transport-table"><thead><tr><th>Время · UTC</th><th>Платформа</th><th>Тип</th><th>Событие</th><th>Результат</th><th>Время обработки</th></tr></thead><tbody>
+      {% for item in transport_incidents %}<tr class="is-risk"><td>{{ item.created_at.strftime('%d.%m.%Y %H:%M:%S') if item.created_at else '—' }}</td><td>{{ platform_names.get(item.platform, item.platform) }}</td><td>{{ {'incoming':'Входящее','outgoing':'Отправка','chat':'Чат','system':'Система'}.get(item.kind, item.kind) }}</td><td><strong>{{ transport_action_names.get(item.action, item.action) }}</strong><small>{{ item.safe_summary or 'Без дополнительного описания' }}</small></td><td><span class="soc-result-tag is-risk">Ошибка</span></td><td>{{ item.duration_ms if item.duration_ms is not none else '—' }}{% if item.duration_ms is not none %} мс{% endif %}</td></tr>
+      {% else %}<tr><td colspan="6" class="soc-empty-row">За период сохранённых ошибок интеграций нет.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <p class="soc-integrity-note">Метрики отражают записи в локальных журналах и очереди. Наличие успешных событий не является проверкой доступности внешнего API. История регистраций и заявлений строится по StudentActivity и фильтруется по Student.council_registered = true. Для аудита доступны только фактически сохранённые поля.</p>
+</div>
+{% endblock %}

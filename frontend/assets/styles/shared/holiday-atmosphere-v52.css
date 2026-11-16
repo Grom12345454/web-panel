@@ -1,0 +1,288 @@
+/* V56 · Cinematic seasonal smoke for Student App + the admin shell.
+   The tricolour is expressed only through animated volumetric smoke, never a flag image or flag-shaped element. */
+.student-theme-atmosphere,
+.portal-theme-atmosphere {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: paint;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+}
+body.student-app-body .student-theme-atmosphere {
+  z-index: 1;
+}
+body.uc-body.role-super_admin[data-page]:not([data-page^="orders-"]) .portal-theme-atmosphere {
+  z-index: 0;
+}
+body.student-app-body[data-season] .student-theme-atmosphere,
+body.uc-body.role-super_admin[data-theme]:not([data-page^="orders-"]) .portal-theme-atmosphere {
+  opacity: 1;
+  visibility: visible;
+}
+body.student-app-body #app { position: relative; z-index: 2; }
+
+/* Tricolour-inspired smoke: white, deep blue and red vapor layers replace the former flag graphic. */
+.holiday-smoke {
+  position: absolute;
+  display: none;
+  width: min(82vw, 1040px);
+  height: min(48vw, 520px);
+  border-radius: 50%;
+  filter: blur(clamp(30px, 4vw, 50px)) saturate(1.65);
+  opacity: 0;
+  transform: translate3d(0, 24px, 0) scale(.88);
+  will-change: transform, opacity;
+  pointer-events: none;
+  --smoke-accent-rgb: var(--season-accent-rgb, var(--office-accent-rgb, 142,203,255));
+  --smoke-secondary-rgb: var(--season-secondary-rgb, var(--office-secondary-rgb, 180,140,255));
+}
+.holiday-smoke--white {
+  top: 8%; left: -22%;
+  background:
+    radial-gradient(ellipse 42% 38% at 35% 48%, rgba(255,255,255,.42), transparent 72%),
+    radial-gradient(ellipse 36% 44% at 64% 38%, rgba(var(--smoke-accent-rgb),.24), transparent 74%),
+    radial-gradient(ellipse, rgba(255,255,255,.26), rgba(var(--smoke-accent-rgb),.12) 38%, transparent 74%);
+  animation: holiday-smoke-drift 15s ease-in-out infinite alternate;
+}
+.holiday-smoke--blue {
+  top: 18%; right: -24%;
+  background:
+    radial-gradient(ellipse 44% 38% at 38% 43%, rgba(var(--smoke-accent-rgb),.48), transparent 72%),
+    radial-gradient(ellipse 36% 48% at 70% 62%, rgba(var(--smoke-accent-rgb),.34), transparent 76%),
+    radial-gradient(ellipse, rgba(var(--smoke-accent-rgb),.40), rgba(var(--smoke-accent-rgb),.16) 44%, transparent 76%);
+  animation: holiday-smoke-drift 18s ease-in-out -4s infinite alternate-reverse;
+}
+.holiday-smoke--red {
+  top: 34%; left: 14%;
+  background:
+    radial-gradient(ellipse 42% 36% at 40% 46%, rgba(var(--smoke-secondary-rgb),.40), transparent 72%),
+    radial-gradient(ellipse 36% 46% at 68% 57%, rgba(var(--smoke-secondary-rgb),.28), transparent 76%),
+    radial-gradient(ellipse, rgba(var(--smoke-secondary-rgb),.34), rgba(var(--smoke-secondary-rgb),.14) 42%, transparent 76%);
+  animation: holiday-smoke-drift 17s ease-in-out -8s infinite alternate;
+}
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .holiday-smoke,
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"], [data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke {
+  display: block;
+  opacity: .62;
+}
+
+/* National-holiday smoke keeps the tricolour identity as flowing vapor, not a rectangular flag.
+   Each cloud overlaps and curls independently to avoid rigid horizontal stripes. */
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .holiday-smoke,
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"], [data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke {
+  --smoke-accent-rgb: 0,57,166;
+  --smoke-secondary-rgb: 213,43,30;
+  filter: blur(clamp(34px, 5vw, 62px)) saturate(2.05) brightness(1.12);
+  opacity: .9;
+}
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .holiday-smoke--white,
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"], [data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke--white {
+  background: radial-gradient(ellipse 50% 42% at 42% 48%, rgba(255,255,255,.64), transparent 74%), radial-gradient(ellipse 36% 42% at 66% 54%, rgba(255,255,255,.34), transparent 78%);
+}
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .holiday-smoke--blue,
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"], [data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke--blue {
+  background: radial-gradient(ellipse 48% 40% at 38% 48%, rgba(0,57,166,.72), transparent 74%), radial-gradient(ellipse 40% 44% at 66% 56%, rgba(40,112,255,.40), transparent 78%);
+}
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .holiday-smoke--red,
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"], [data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke--red {
+  background: radial-gradient(ellipse 48% 40% at 38% 48%, rgba(213,43,30,.62), transparent 74%), radial-gradient(ellipse 40% 44% at 66% 56%, rgba(244,83,65,.34), transparent 78%);
+}
+
+/* Unified atmosphere: every saved theme gets the same smoke + luminous-ribbon language.
+   Seasonal glyph/leaf/snow/ember/orbit particle variants are intentionally disabled. */
+.holiday-particle { display: none !important; }
+body.student-app-body[data-season] .student-theme-atmosphere,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .portal-theme-atmosphere {
+  opacity: 1;
+  visibility: visible;
+}
+body.student-app-body[data-season] .holiday-smoke,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke {
+  display: block;
+  opacity: .92;
+}
+/* Stronger colored ambient glow across all themes, driven by the active theme palette. */
+.student-theme-atmosphere::before,
+.portal-theme-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(ellipse at 12% 28%, color-mix(in srgb, var(--season-accent, var(--office-accent, #8ecbff)) 30%, transparent), transparent 44%),
+    radial-gradient(ellipse at 86% 66%, color-mix(in srgb, var(--season-secondary, var(--office-secondary, #b48cff)) 27%, transparent), transparent 43%),
+    radial-gradient(ellipse at 50% 100%, rgba(80,145,255,.13), transparent 48%);
+  filter: blur(34px) saturate(1.28);
+  opacity: .82;
+  animation: theme-atmosphere-breathe 12s ease-in-out infinite alternate;
+}
+/* A broad moving light ribbon adds depth while staying behind the app surface. */
+.student-theme-atmosphere::after,
+.portal-theme-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    linear-gradient(112deg, transparent 28%, rgba(var(--season-accent-rgb, var(--office-accent-rgb, 142,203,255)),.025) 39%, rgba(var(--season-accent-rgb, var(--office-accent-rgb, 142,203,255)),.12) 48%, rgba(var(--season-secondary-rgb, var(--office-secondary-rgb, 180,140,255)),.055) 54%, transparent 66%),
+    radial-gradient(ellipse at 22% 72%, rgba(var(--season-accent-rgb, var(--office-accent-rgb, 142,203,255)),.12), transparent 42%),
+    radial-gradient(ellipse at 78% 26%, rgba(var(--season-secondary-rgb, var(--office-secondary-rgb, 180,140,255)),.10), transparent 40%);
+  filter: blur(26px) saturate(1.4);
+  mix-blend-mode: screen;
+  opacity: .62;
+  transform: translate3d(-3%, 1%, 0) rotate(-7deg);
+  animation: theme-light-ribbon 24s ease-in-out infinite alternate;
+}
+/* Volumetric wisps add soft internal structure without making an opaque layer. */
+.holiday-smoke { filter: blur(clamp(30px, 4vw, 50px)) saturate(1.8) brightness(1.08); mix-blend-mode: screen; isolation: isolate; }
+.holiday-smoke::before,
+.holiday-smoke::after {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  display: block;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(clamp(18px, 2.8vw, 38px));
+}
+.holiday-smoke::before {
+  background:
+    radial-gradient(ellipse 31% 30% at 28% 53%, rgba(255,255,255,.36), transparent 76%),
+    radial-gradient(ellipse 38% 34% at 62% 39%, rgba(var(--smoke-accent-rgb),.26), transparent 78%),
+    radial-gradient(ellipse 26% 35% at 78% 66%, rgba(var(--smoke-secondary-rgb),.16), transparent 76%);
+  opacity: .92;
+  animation: holiday-smoke-wisp 19s ease-in-out infinite alternate;
+}
+.holiday-smoke::after {
+  inset: 7% -15%;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.18), transparent 70%),
+    radial-gradient(ellipse at 70% 42%, rgba(var(--smoke-secondary-rgb),.16), transparent 72%);
+  opacity: .7;
+  transform: rotate(-12deg) scaleX(1.12);
+  animation: holiday-smoke-wisp 23s ease-in-out -7s infinite alternate-reverse;
+}
+.holiday-smoke--white { opacity: .84; }
+.holiday-smoke--white::before { background:
+  radial-gradient(ellipse 38% 30% at 25% 52%, rgba(255,255,255,.46), transparent 76%),
+  radial-gradient(ellipse 34% 37% at 61% 40%, rgba(var(--smoke-accent-rgb),.30), transparent 78%),
+  radial-gradient(ellipse 28% 31% at 78% 65%, rgba(255,255,255,.24), transparent 76%); }
+.holiday-smoke--blue { opacity: .94; }
+.holiday-smoke--blue::before { background:
+  radial-gradient(ellipse 38% 31% at 27% 48%, rgba(var(--smoke-accent-rgb),.58), transparent 76%),
+  radial-gradient(ellipse 36% 36% at 65% 42%, rgba(var(--smoke-accent-rgb),.42), transparent 78%),
+  radial-gradient(ellipse 28% 34% at 80% 67%, rgba(var(--smoke-accent-rgb),.30), transparent 76%); }
+.holiday-smoke--red { opacity: .86; }
+.holiday-smoke--red::before { background:
+  radial-gradient(ellipse 38% 31% at 27% 48%, rgba(var(--smoke-secondary-rgb),.46), transparent 76%),
+  radial-gradient(ellipse 36% 36% at 65% 42%, rgba(var(--smoke-secondary-rgb),.34), transparent 78%),
+  radial-gradient(ellipse 28% 34% at 80% 67%, rgba(var(--smoke-secondary-rgb),.26), transparent 76%); }
+@keyframes theme-atmosphere-breathe {
+  from { transform: translate3d(-1.5%, 1%, 0) scale(.96); opacity: .58; }
+  to { transform: translate3d(1.5%, -1%, 0) scale(1.06); opacity: .9; }
+}
+@keyframes theme-light-ribbon {
+  from { transform: translate3d(-4%, 1%, 0) rotate(-9deg) scale(.98); opacity: .42; }
+  to { transform: translate3d(4%, -2%, 0) rotate(-4deg) scale(1.06); opacity: .72; }
+}
+
+@keyframes holiday-smoke-drift {
+  0% { transform: translate3d(-6%, 22px, 0) scale(.84) rotate(-9deg); opacity: .22; }
+  48% { opacity: .68; }
+  100% { transform: translate3d(11%, -34px, 0) scale(1.22) rotate(9deg); opacity: .42; }
+}
+@keyframes holiday-smoke-wisp {
+  0% { transform: translate3d(-3%, 3%, 0) rotate(-8deg) scale(.92); opacity: .62; }
+  100% { transform: translate3d(5%, -4%, 0) rotate(7deg) scale(1.10); opacity: 1; }
+}
+@keyframes holiday-particle-float { 0%, 100% { transform: translate3d(0, 0, 0) scale(.7); opacity: .28; } 50% { transform: translate3d(12px, -24px, 0) scale(1.25); opacity: .9; } }
+@keyframes holiday-petal-fall { 0% { transform: translate3d(0, -18px, 0) rotate(0) scale(.72); opacity: 0; } 18% { opacity: .82; } 100% { transform: translate3d(45px, 70vh, 0) rotate(250deg) scale(1.12); opacity: 0; } }
+@keyframes holiday-sun-glow { 0%, 100% { transform: translate3d(0, 0, 0) scale(.55); opacity: .25; } 50% { transform: translate3d(-18px, -30px, 0) scale(1.45); opacity: .95; } }
+@keyframes holiday-ember-rise { 0% { transform: translate3d(0, 22px, 0) scale(.55); opacity: 0; } 18% { opacity: .9; } 100% { transform: translate3d(-22px, -68vh, 0) scale(.2); opacity: 0; } }
+@keyframes holiday-snow-fall { 0% { transform: translate3d(0, -22px, 0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate3d(24px, 72vh, 0) rotate(160deg); opacity: 0; } }
+@keyframes holiday-orbit-streak { 0% { transform: translate3d(-34vw, 20vh, 0) rotate(-24deg); opacity: 0; } 24% { opacity: .85; } 100% { transform: translate3d(48vw, -22vh, 0) rotate(-24deg); opacity: 0; } }
+@keyframes holiday-spark-drift { 0%, 100% { transform: translate3d(0, 10px, 0) scale(.45); opacity: .15; } 50% { transform: translate3d(10px, -20px, 0) scale(1.35); opacity: .95; } }
+
+/* Admin-panel entry: short starfield reveal, behind all clickable controls. */
+.admin-entry-sky, .student-entry-sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  background:
+    radial-gradient(ellipse 65% 48% at 50% 6%, rgba(111,159,255,.18), transparent 76%),
+    radial-gradient(ellipse 48% 40% at 85% 78%, rgba(139,93,255,.13), transparent 78%),
+    linear-gradient(145deg, rgba(2,8,25,.08), rgba(5,12,34,.30));
+}
+.admin-entry-sky.is-live, .student-entry-sky.is-live {
+  visibility: visible;
+  animation: admin-entry-sky-reveal 2.55s cubic-bezier(.2,.75,.2,1) both;
+}
+.admin-entry-sky__flare {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-image:
+    radial-gradient(2px 2px at 8% 17%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 18% 66%, #cde7ff 98%, transparent),
+    radial-gradient(2px 2px at 31% 29%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 44% 81%, #c5d6ff 98%, transparent),
+    radial-gradient(2px 2px at 59% 18%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 72% 52%, #d5ebff 98%, transparent),
+    radial-gradient(2px 2px at 87% 26%, #fff 98%, transparent),
+    radial-gradient(1px 1px at 94% 79%, #b9d5ff 98%, transparent);
+  animation: admin-entry-stars 2.55s ease-out both;
+}
+.admin-entry-sky__star {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 12px 3px rgba(181,218,255,.75), 0 0 28px rgba(97,143,255,.35);
+  opacity: 0;
+  animation: admin-entry-star-pop 1.8s ease-out both;
+}
+.admin-entry-sky__star:nth-of-type(2) { top: 19%; left: 17%; animation-delay: .12s; }
+.admin-entry-sky__star:nth-of-type(3) { top: 35%; left: 38%; animation-delay: .28s; }
+.admin-entry-sky__star:nth-of-type(4) { top: 13%; left: 68%; animation-delay: .42s; }
+.admin-entry-sky__star:nth-of-type(5) { top: 62%; left: 78%; animation-delay: .24s; }
+.admin-entry-sky__star:nth-of-type(6) { top: 74%; left: 27%; animation-delay: .5s; }
+.admin-entry-sky__star:nth-of-type(7) { top: 48%; left: 91%; animation-delay: .34s; }
+.admin-entry-sky__streak {
+  position: absolute;
+  top: 24%; left: 68%;
+  width: min(28vw, 260px); height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,231,255,.95), transparent);
+  box-shadow: 0 0 12px rgba(117,186,255,.85);
+  transform: rotate(-24deg) translateX(-45vw);
+  opacity: 0;
+  animation: admin-entry-streak 1.2s .45s ease-out both;
+}
+@keyframes admin-entry-sky-reveal { 0% { opacity: 0; } 24% { opacity: .9; } 68% { opacity: .55; } 100% { opacity: 0; visibility: hidden; } }
+@keyframes admin-entry-stars { 0% { opacity: 0; transform: scale(.96); } 28% { opacity: .72; } 65% { opacity: .34; } 100% { opacity: 0; transform: scale(1.025); } }
+@keyframes admin-entry-star-pop { 0% { opacity: 0; transform: scale(.1); } 35% { opacity: 1; transform: scale(1.8); } 100% { opacity: 0; transform: scale(.4); } }
+@keyframes admin-entry-streak { 0% { opacity: 0; transform: rotate(-24deg) translateX(-45vw); } 24% { opacity: .95; } 100% { opacity: 0; transform: rotate(-24deg) translateX(42vw); } }
+
+@media (max-width: 640px) {
+  .holiday-smoke { width: 112vw; height: 66vw; filter: blur(clamp(18px, 5vw, 30px)) saturate(1.65) brightness(1.04); }
+  .holiday-smoke::before, .holiday-smoke::after { filter: blur(clamp(14px, 4vw, 24px)); }
+  .student-theme-atmosphere::after, .portal-theme-atmosphere::after { inset: -12%; filter: blur(18px) saturate(1.3); opacity: .42; }
+  body.student-app-body .holiday-particle { opacity: .55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .holiday-smoke, .holiday-smoke::before, .holiday-smoke::after, .holiday-particle,
+  .student-theme-atmosphere::before, .student-theme-atmosphere::after,
+  .portal-theme-atmosphere::before, .portal-theme-atmosphere::after,
+  .admin-entry-sky, .admin-entry-sky *, .student-entry-sky, .student-entry-sky * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .holiday-smoke { opacity: .26 !important; }
+  .holiday-particle { opacity: .25 !important; }
+  .admin-entry-sky, .student-entry-sky { display: none !important; }
+}

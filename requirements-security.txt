@@ -1,0 +1,3 @@
+# Optional development/CI security scanners. Not required at runtime.
+pip-audit
+bandit

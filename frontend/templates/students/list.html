@@ -1,0 +1,73 @@
+{% extends "shared/base.html" %}
+{% block title %}Студенты | Управление студенческим советом{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<div class="galaxy-students">
+<section class="galaxy-students-hero">
+  <div class="galaxy-students-hero-copy">
+    <span class="galaxy-kicker">СТУДЕНТЫ / ЕДИНЫЙ РЕЕСТР</span>
+    <h1>Люди, которые <em>двигают вперёд.</em></h1>
+    <p>Каждая карточка — уникальная история. На одной орбите собраны профили, команды и результаты участия.</p>
+    <div class="galaxy-students-hero-actions">
+      <a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← На главную</a>
+      {% if session.get('user_role') == 'super_admin' %}<a class="btn btn-primary" href="{{ url_for('admin.student_groups') }}">Выпуск и удаление групп ↗</a>{% endif %}
+    </div>
+  </div>
+  <div class="galaxy-students-crest" aria-hidden="true"><span class="galaxy-students-crest-core">◎</span><span class="galaxy-students-crest-ring"></span><span class="galaxy-students-crest-spark">✦</span></div>
+</section>
+<div class="grid-4 galaxy-student-metrics">
+  <article class="card card-pad"><div class="stat-top"><span>Всего профилей</span><span>◎</span></div><div class="stat-number">{{ stats.total }}</div><small>В единой базе</small></article>
+  <article class="card card-pad"><div class="stat-top"><span>На рассмотрении</span><span>◷</span></div><div class="stat-number">{{ stats.pending }}</div><small>Ожидают решения</small></article>
+  <article class="card card-pad"><div class="stat-top"><span>В команде</span><span>✦</span></div><div class="stat-number">{{ stats.active }}</div><small>Активные участники</small></article>
+</div>
+
+<div class="galaxy-list-title"><div><span class="galaxy-kicker">СОСТАВ КОМАНДЫ</span><h2>Каталог студентов</h2><p>Выберите статус, чтобы быстро найти нужные профили.</p></div><span class="galaxy-list-count">{{ students|length }} на странице</span></div>
+<div class="filter-row galaxy-status-filters">
+  <a class="filter-pill {% if status_filter=='all' %}active{% endif %}" href="?status=all">Все</a>
+  <a class="filter-pill {% if status_filter=='pending' %}active{% endif %}" href="?status=pending">Ожидают</a>
+  <a class="filter-pill {% if status_filter=='active' %}active{% endif %}" href="?status=active">Активны</a>
+  <a class="filter-pill {% if status_filter=='rejected' %}active{% endif %}" href="?status=rejected">Отклонены</a>
+</div>
+
+<div class="card table-wrap galaxy-student-table"><div class="table-scroll"><table><thead><tr>
+  <th>Студент</th><th>Группа</th><th>Телефон</th><th>Руководитель</th><th>Направления</th><th>Посещения</th><th>Отказы</th><th>Статус</th><th>Действия</th>
+</tr></thead><tbody>
+{% for student in students %}
+<tr class="galaxy-student-row">
+  <td data-label="Студент"><div class="galaxy-student-person"><span class="galaxy-student-avatar" aria-hidden="true">{{ (student.full_name.split()[0][:1] if student.full_name else 'С')|upper }}</span><div><div class="name-cell">{{ student.full_name }}</div><div class="subtle">ID {{ student.id }} · {% if student.education_type=='college' %}Колледж{% else %}Институт{% endif %}</div>
+  {% set accounts = messenger_by_student.get(student.id, {}) %}
+  <div class="student-social-links" aria-label="Подтверждённые мессенджеры">
+    {% for platform, label in [('vk','VK'),('max','MAX')] %}
+    {% set profile = accounts.get(platform) %}
+    {% if profile %}{% if profile.url %}<a class="student-social-chip student-social-{{ platform }}" href="{{ profile.url }}" target="_blank" rel="noopener noreferrer">{{ label }} · {{ profile.label }} ↗</a>{% else %}<span class="student-social-chip student-social-{{ platform }}">{{ label }} · {{ profile.label }}</span>{% endif %}{% endif %}
+    {% endfor %}
+  </div></div></div></td>
+  <td data-label="Группа">{{ student.group or '—' }}</td>
+  <td data-label="Телефон">{{ student.phone or 'Не указан' }}</td>
+  <td data-label="Руководитель">{% for role in student.leadership_labels %}<span class="badge badge-approved leadership-position-badge">{{ role }}</span>{% else %}<span class="subtle">Не назначен</span>{% endfor %}</td>
+  <td data-label="Направления">{% for direction in student.directions %}<span class="badge badge-approved" style="margin:2px">{{ direction.name }}</span>{% else %}<span class="subtle">—</span>{% endfor %}</td>
+  <td data-label="Посещения"><span class="attendance-count {% if student.attended_events %}attendance-count-active{% endif %}">{{ student.attended_events|length }}</span></td>
+  <td data-label="Отказы"><span class="attendance-count {% if decline_counts.get(student.id, 0) > 1 %}attendance-count-active{% endif %}">{{ decline_counts.get(student.id, 0) }}</span></td>
+  <td data-label="Статус"><span class="badge {% if student.status=='active' %}badge-active{% elif student.status=='pending' %}badge-pending{% else %}badge-rejected{% endif %}">{% if student.status == 'active' %}Активен{% elif student.status == 'pending' %}Ожидает{% elif student.status == 'rejected' %}Отклонён{% elif student.status == 'interview' %}Собеседование{% else %}{{ student.status }}{% endif %}</span></td>
+  <td data-label="Действия"><div class="student-list-actions">
+    {% if session.user_role == 'observer' %}<a class="btn btn-soft" href="{{ url_for('admin.student_detail', sid=student.id) }}">Просмотреть</a>{% else %}<a class="btn btn-soft" href="{{ url_for('admin.edit_student', sid=student.id) }}">Изменить</a>{% endif %}
+    {% if session.user_role == 'super_admin' %}<a class="btn btn-primary" href="{{url_for('staff.accounts',student_id=student.id)}}" title="Создать панельный доступ для этого студента">↑ Повысить</a>{% endif %}
+    {% if session.user_role != 'observer' %}
+      {% set first_direction = student.directions[0] if student.directions else None %}
+      {% if first_direction and student.status == 'pending' and session.user_role == 'super_admin' %}
+        <form method="POST" action="{{ url_for('directions.approve_student', did=first_direction.id, sid=student.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-success" type="submit">Принять и активировать</button></form>
+        <details style="min-width:210px"><summary class="btn btn-danger" style="cursor:pointer;list-style:none">Отклонить</summary><form method="POST" action="{{ url_for('directions.reject_student', did=first_direction.id, sid=student.id) }}" style="display:grid;gap:6px;margin-top:8px"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><textarea class="input" name="reason" required minlength="5" maxlength="2000" rows="2" placeholder="Причина отказа"></textarea><button class="btn btn-danger" type="submit">Подтвердить отказ</button></form></details>
+      {% endif %}
+      {% if session.user_role == 'super_admin' %}<form method="POST" action="{{ url_for('admin.delete_student', sid=student.id) }}" data-confirm="Удалить студента и все связанные с ним заявки и отметки посещаемости?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger" type="submit">Удалить</button></form>{% endif %}
+    {% endif %}
+  </div></td>
+</tr>
+{% else %}
+<tr><td colspan="9"><div class="empty"><div class="empty-icon">◎</div><h3>Студенты не найдены</h3><p>Измените фильтр или зарегистрируйте первого участника через Telegram.</p></div></td></tr>
+{% endfor %}
+</tbody></table></div></div>
+</div>
+{% endblock %}

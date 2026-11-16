@@ -1,0 +1,70 @@
+{% extends "shared/base.html" %}
+{% block title %}Занятия | Студенческий совет{% endblock %}
+{% block content %}
+<div class="section-title">
+  <div>
+    <div class="eyebrow">РАСПИСАНИЕ И ЗАНЯТИЯ</div>
+    <h2>Занятия</h2>
+    <p>Занятия создаются и редактируются только в веб-панели. Студенческий кабинет показывает опубликованное расписание в режиме просмотра.</p>
+  </div>
+  {% if can_manage_lessons %}
+  <a class="btn btn-primary" href="{{ url_for('lessons.create_lesson', direction_id=selected_direction) if selected_direction else url_for('lessons.create_lesson') }}">＋ Создать занятие</a>
+  {% else %}
+  <span class="hero-badge">Режим просмотра</span>
+  {% endif %}
+</div>
+
+<div class="card card-pad" style="margin-bottom:16px">
+  <form method="GET" class="form-grid" style="align-items:end">
+    <div class="field">
+      <label class="label">Направление</label>
+      <select class="select" name="direction_id">
+        <option value="">Все направления</option>
+        {% for direction in directions %}
+        <option value="{{ direction.id }}" {% if selected_direction == direction.id %}selected{% endif %}>{{ direction.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-foot" style="margin:0;justify-content:flex-start">
+      <button class="btn btn-soft" type="submit">Применить фильтр</button>
+      <a class="btn btn-soft" href="{{ url_for('lessons.list_lessons') }}">Сбросить</a>
+    </div>
+  </form>
+</div>
+
+<div style="display:grid;gap:12px">
+{% for lesson in lessons %}
+  <article class="card card-pad">
+    <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap">
+      <div style="min-width:0;flex:1">
+        <div class="eyebrow">{{ lesson.direction.name if lesson.direction else 'Направление не указано' }}</div>
+        <h3 style="margin:8px 0 6px;font-size:20px">{{ lesson.title }}</h3>
+        {% if lesson.description %}<p class="subtle" style="white-space:pre-line">{{ lesson.description }}</p>{% endif %}
+        <div class="hero-meta" style="margin-top:12px">
+          <span class="hero-badge">{{ lesson.starts_at.strftime('%d.%m.%Y') }}</span>
+          <span class="hero-badge">{{ lesson.starts_at.strftime('%H:%M') }}–{{ lesson.end_at.strftime('%H:%M') }}</span>
+          {% if lesson.room %}<span class="hero-badge">{{ lesson.room }}</span>{% endif %}
+          {% if lesson.teacher %}<span class="hero-badge">Ответственный: {{ lesson.teacher }}</span>{% endif %}
+          <span class="hero-badge">{{ lesson.duration_minutes }} мин.</span>
+        </div>
+      </div>
+      {% if can_manage_lessons %}
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn btn-soft" href="{{ url_for('lessons.edit_lesson', lesson_id=lesson.id) }}">Изменить</a>
+        <form method="POST" action="{{ url_for('lessons.publish_lesson', lesson_id=lesson.id) }}" data-confirm="Опубликовать объявление в активных чатах направления?">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-primary" type="submit">Опубликовать</button>
+        </form>
+        <form method="POST" action="{{ url_for('lessons.delete_lesson', lesson_id=lesson.id) }}" data-confirm="Удалить занятие из расписания?">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-danger" type="submit">Удалить</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </article>
+{% else %}
+  <div class="card empty"><div class="empty-icon">◷</div><h3>Занятия не добавлены</h3><p>{% if can_manage_lessons %}Создайте занятие, указав направление, дату и время. При необходимости можно опубликовать объявление в подключённых Telegram-чатах.{% else %}Здесь появится расписание занятий. Создание и изменение доступны уполномоченным сотрудникам в веб-панели.{% endif %}</p></div>
+{% endfor %}
+</div>
+{% endblock %}

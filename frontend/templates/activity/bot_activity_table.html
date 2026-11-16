@@ -1,0 +1,207 @@
+{% extends "shared/base.html" %}
+{% block title %}{{ category.title }} · Активность бота{% endblock %}
+{% block content %}
+{% include "activity/_admin_monitor_tabs.html" %}
+<div class="activity-workspace">
+  <div class="activity-heading">
+    <div>
+      <a class="activity-back" href="{{ url_for('admin.bot_activity') }}">← Сводка действий студентов в ботах</a>
+      <div class="eyebrow">ЖУРНАЛ ДЕЙСТВИЙ</div>
+      <h1>{{ category.title }}</h1>
+      <p>{{ category.subtitle }}</p>
+    </div>
+    <div class="activity-header-actions">
+      <div class="activity-total"><strong data-filter-total>{{ total }}</strong><span>записей по фильтру</span></div>
+      <div class="activity-live-status" data-activity-live-status role="status" aria-live="polite"><span class="activity-live-dot"></span><span data-live-copy>Подключение…</span></div>
+    </div>
+  </div>
+
+  <nav class="activity-tabs" aria-label="Разделы активности">
+    <a class="{% if category_key == 'registrations' %}active{% endif %}" href="{{ url_for('admin.bot_activity_registrations') }}">Регистрации</a>
+    <a class="{% if category_key == 'applications' %}active{% endif %}" href="{{ url_for('admin.bot_activity_applications') }}">Заявления</a>
+    <a class="{% if category_key == 'events' %}active{% endif %}" href="{{ url_for('admin.bot_activity_events') }}">Квоты и мероприятия</a>
+    <a class="{% if category_key == 'history' %}active{% endif %}" href="{{ url_for('admin.bot_activity_history') }}">Полный журнал</a>
+  </nav>
+
+  <section class="activity-panel">
+    <form class="activity-filters" method="get" action="{{ url_for(category.endpoint) }}">
+      <label class="activity-search"><span>Поиск</span><input type="search" name="q" value="{{ search }}" placeholder="ФИО, группа, направление…"></label>
+      <label><span>С даты</span><input type="date" name="start" value="{{ start_value }}"></label>
+      <label><span>По дату</span><input type="date" name="end" value="{{ end_value }}"></label>
+      <label><span>Тип события</span><select name="action"><option value="">Все типы</option>{% for key, label in action_options %}<option value="{{ key }}" {% if selected_action == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+      <input type="hidden" name="page" value="1">
+      <div class="activity-filter-actions"><button type="submit" class="btn btn-primary">Применить фильтры</button><a class="btn btn-soft" href="{{ url_for(category.endpoint) }}">Сбросить</a></div>
+    </form>
+
+    <div class="activity-table-meta"><span>Показаны записи {{ ((page - 1) * 40 + 1) if total else 0 }}–{{ [page * 40, total]|min }} из {{ total }}</span><span>40 записей на странице</span></div>
+    <div class="activity-table-scroll">
+      <table class="activity-table" id="live-activity-table"
+             data-live-url="{{ url_for('admin.bot_activity_live', category_key=category_key) }}"
+             data-last-id="{{ latest_id }}">
+        <thead><tr><th>Дата и время</th><th>Событие</th><th>Студент</th><th>Направление / квота</th><th>Подробности</th></tr></thead>
+        <tbody>
+        {% for item in items %}
+          <tr data-activity-id="{{ item.activity.id }}">
+            <td class="activity-date">{{ item.activity.created_at.strftime('%d.%m.%Y %H:%M:%S') if item.activity.created_at else '—' }}</td>
+            <td><span class="activity-pill {% if 'declined' in item.activity.action %}pill-rose{% elif 'event_registered' in item.activity.action %}pill-blue{% elif 'application' in item.activity.action %}pill-violet{% else %}pill-cyan{% endif %}">{{ item.action_label }}</span></td>
+            <td>{% if item.student %}<strong>{{ item.student.full_name }}</strong><small>{{ item.student.group or 'Группа не указана' }}</small>{% else %}<span class="activity-muted">—</span>{% endif %}</td>
+            <td>{% if item.direction %}<span class="activity-object">{{ item.direction.name }}</span>{% elif item.quota %}<span class="activity-object">◉ {{ item.quota.event_title }}</span>{% else %}<span class="activity-muted">—</span>{% endif %}</td>
+            <td class="activity-description">{{ item.safe_description }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5"><div class="activity-empty"><span>◌</span><strong>По выбранным условиям ничего не найдено</strong><p>Измените поисковую фразу, тип события или диапазон дат.</p></div></td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if pages > 1 %}
+    <div class="activity-pagination">
+      {% if page > 1 %}<a class="btn btn-soft" href="{{ url_for(category.endpoint, q=search, start=start_value, end=end_value, action=selected_action, page=page-1) }}">← Назад</a>{% else %}<span></span>{% endif %}
+      <span>Страница <strong>{{ page }}</strong> из {{ pages }}</span>
+      {% if page < pages %}<a class="btn btn-soft" href="{{ url_for(category.endpoint, q=search, start=start_value, end=end_value, action=selected_action, page=page+1) }}">Вперёд →</a>{% else %}<span></span>{% endif %}
+    </div>
+    {% endif %}
+  </section>
+  <p class="activity-footnote">В таблице собраны регистрационные события и решения по заявлениям. Новые записи появляются автоматически, без перезагрузки страницы. Просмотр и фильтрация не меняют профили или заявления.</p>
+</div>
+<script>
+(() => {
+  const table = document.getElementById('live-activity-table');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  const form = document.querySelector('.activity-filters');
+  const status = document.querySelector('[data-activity-live-status]');
+  const statusCopy = status?.querySelector('[data-live-copy]');
+  const totalNode = document.querySelector('[data-filter-total]');
+  const metaNode = document.querySelector('.activity-table-meta span:first-child');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let timer = 0;
+  let busy = false;
+  let connectionFailures = 0;
+  const setStatus = (kind, text) => {
+    if (!status) return;
+    status.classList.toggle('is-error', kind === 'error');
+    status.classList.toggle('is-waiting', kind === 'waiting');
+    if (statusCopy) statusCopy.textContent = text;
+  };
+  const addCell = (row, className, value) => {
+    const cell = document.createElement('td');
+    if (className) cell.className = className;
+    cell.textContent = value || '—';
+    row.appendChild(cell);
+    return cell;
+  };
+  const buildRow = (event) => {
+    const row = document.createElement('tr');
+    row.dataset.activityId = String(event.id);
+    if (!reduceMotion) row.classList.add('activity-live-row');
+    addCell(row, 'activity-date', event.timestamp);
+    const actionCell = document.createElement('td');
+    const pill = document.createElement('span');
+    let tone = 'pill-cyan';
+    if (event.action?.includes('declined')) tone = 'pill-rose';
+    else if (event.action?.includes('event_registered')) tone = 'pill-blue';
+    else if (event.action?.includes('application')) tone = 'pill-violet';
+    pill.className = `activity-pill ${tone}`;
+    pill.textContent = event.action_label || event.action || 'Событие';
+    actionCell.appendChild(pill);
+    row.appendChild(actionCell);
+    const studentCell = document.createElement('td');
+    if (event.student) {
+      const name = document.createElement('strong');
+      name.textContent = event.student;
+      const group = document.createElement('small');
+      group.textContent = event.group || 'Группа не указана';
+      studentCell.append(name, group);
+    } else {
+      const muted = document.createElement('span');
+      muted.className = 'activity-muted';
+      muted.textContent = '—';
+      studentCell.appendChild(muted);
+    }
+    row.appendChild(studentCell);
+    const objectCell = document.createElement('td');
+    if (event.direction) {
+      const label = document.createElement('span');
+      label.className = 'activity-object';
+      label.textContent = event.direction;
+      objectCell.appendChild(label);
+    } else if (event.quota) {
+      const label = document.createElement('span');
+      label.className = 'activity-object';
+      label.textContent = `◉ ${event.quota}`;
+      objectCell.appendChild(label);
+    } else {
+      const muted = document.createElement('span');
+      muted.className = 'activity-muted';
+      muted.textContent = '—';
+      objectCell.appendChild(muted);
+    }
+    row.appendChild(objectCell);
+    addCell(row, 'activity-description', event.description);
+    return row;
+  };
+  const poll = async () => {
+    if (busy || document.visibilityState === 'hidden') {
+      timer = window.setTimeout(poll, 3000);
+      return;
+    }
+    // Live insertions apply only to the newest page; later pages remain a stable historical view.
+    const currentPage = Number(new URLSearchParams(window.location.search).get('page') || '1');
+    if (currentPage > 1) {
+      setStatus('waiting', 'Новые записи доступны на первой странице');
+      timer = window.setTimeout(poll, 3000);
+      return;
+    }
+    busy = true;
+    try {
+      const url = new URL(table.dataset.liveUrl, window.location.origin);
+      if (form) {
+        for (const [key, value] of new FormData(form).entries()) {
+          if (key !== 'page' && String(value).trim()) url.searchParams.set(key, value);
+        }
+      }
+      url.searchParams.set('after_id', table.dataset.lastId || '0');
+      const response = await fetch(url.toString(), {cache: 'no-store', credentials: 'same-origin', headers: {'Accept': 'application/json'}});
+      if (response.status === 401 || response.status === 403) throw new Error('Требуется вход администратора');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json();
+      if (!payload?.ok) throw new Error('Некорректный ответ сервера');
+      let added = 0;
+      (payload.events || []).forEach((event) => {
+        const id = Number(event.id || 0);
+        if (!id || tbody.querySelector(`[data-activity-id="${id}"]`)) return;
+        const emptyRow = tbody.querySelector('tr:not([data-activity-id])');
+        if (emptyRow && emptyRow.querySelector('.activity-empty')) emptyRow.remove();
+        tbody.prepend(buildRow(event));
+        added += 1;
+      });
+      table.dataset.lastId = String(Math.max(Number(table.dataset.lastId || 0), Number(payload.cursor || 0)));
+      if (added) {
+        while (tbody.querySelectorAll('tr[data-activity-id]').length > 40) tbody.querySelector('tr[data-activity-id]:last-child')?.remove();
+        const total = Number(totalNode?.textContent || 0) + added;
+        if (totalNode) totalNode.textContent = String(total);
+        if (metaNode) metaNode.textContent = `Показаны последние ${Math.min(40, total)} из ${total}`;
+        setStatus('live', `+${added} · обновлено`);
+      } else {
+        setStatus('live', 'Обновление каждые 3 сек');
+      }
+      connectionFailures = 0;
+    } catch (error) {
+      connectionFailures += 1;
+      setStatus('error', connectionFailures > 2 ? 'Нет связи · повторяем' : 'Переподключение…');
+    } finally {
+      busy = false;
+      timer = window.setTimeout(poll, 3000);
+    }
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      window.clearTimeout(timer);
+      poll();
+    }
+  });
+  poll();
+})();
+</script>
+{% endblock %}

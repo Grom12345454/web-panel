@@ -1,0 +1,69 @@
+{% extends "shared/base.html" %}
+{% block title %}Направления института и колледжа{% endblock %}
+{% block content %}
+<section class="directions-intro">
+  <div class="directions-intro-mark">◈</div>
+  <div class="directions-intro-copy"><div class="eyebrow">НАПРАВЛЕНИЯ И РАБОЧИЕ ГРУППЫ</div><h1>Разделы института</h1><p>Выберите направление, чтобы посмотреть участников, мероприятия, посещаемость и рабочие вопросы.</p></div>
+  <div class="directions-total"><strong>{{ directions|length }}</strong><span>направлений</span></div>
+</section>
+{% if is_admin %}
+<section class="card direction-management-panel"><header class="section-title"><div><h2>Управление направлениями</h2><p>Добавляйте направления. Удаление выполняется безопасным архивированием: направление исчезает из рабочих списков, историю можно восстановить.</p></div><button type="button" class="btn btn-primary" data-open-direction-modal>＋ Новое направление</button></header>
+{% if archived_directions %}<details><summary>Архив направлений ({{ archived_directions|length }})</summary><div class="archived-directions">{% for d in archived_directions %}<form method="post" action="{{ url_for('directions.restore_direction',did=d.id) }}"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><span>{{d.name}} · {{d.code}}</span><button class="btn btn-soft">Восстановить</button></form>{% endfor %}</div></details>{% endif %}</section>
+<dialog id="direction-create-dialog" class="management-dialog" aria-labelledby="direction-create-title"><form class="management-dialog-body" method="post" action="{{url_for('directions.create_direction')}}"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><div class="management-dialog-header"><h2 id="direction-create-title">Новое направление</h2><button type="button" class="btn btn-soft" data-close-direction-modal>✕</button></div><label>Название</label><input class="input" name="name" maxlength="255" required placeholder="Название направления"><label>Уникальный код латиницей</label><input class="input" name="code" pattern="[A-Za-z0-9_]{2,30}" maxlength="30" required placeholder="NEW_DIRECTION"><label>Для кого</label><select class="input" name="education_scope"><option value="both">Институт и колледж</option><option value="institute">Институт</option><option value="college">Колледж</option></select><label>Описание</label><textarea class="input" name="description" maxlength="1000" rows="3"></textarea><div class="management-dialog-actions"><button type="button" class="btn btn-soft" data-close-direction-modal>Отмена</button><button class="btn btn-primary">Создать направление</button></div></form></dialog>
+<script>(()=>{const d=document.getElementById('direction-create-dialog');document.querySelector('[data-open-direction-modal]')?.addEventListener('click',()=>d.showModal());document.querySelectorAll('[data-close-direction-modal]').forEach(b=>b.addEventListener('click',()=>d.close()));d?.addEventListener('click',e=>{if(e.target===d)d.close();});})();</script>
+{% endif %}
+<section class="directions-controls" aria-label="Поиск по направлениям">
+  <label class="directions-search"><span>⌕</span><input type="search" id="direction-search" placeholder="Найти направление…" autocomplete="off" aria-label="Найти направление"></label>
+  <span class="directions-result-count" data-direction-results>{{ directions|length }} направлений</span>
+</section>
+<div class="directions-gallery" id="directions-gallery">
+{% for d in directions %}
+  {% set scope = d.education_scope or 'both' %}
+  <article class="direction-work-card" data-direction-card data-search="{{ (d.name ~ ' ' ~ d.code ~ ' ' ~ (d.description or ''))|lower }}">
+    <div class="direction-work-accent"></div>
+    <div class="direction-work-top"><div class="direction-work-icon">{{ d.icon or '✦' }}</div><span class="direction-work-code">{{ d.code }}</span></div>
+    <div class="direction-work-body">
+      <div class="direction-work-scope">{% if scope == 'college' %}Колледж{% elif scope == 'institute' %}Институт{% else %}Институт и колледж{% endif %}</div>
+      <h2>{{ d.name }}</h2>
+      <p class="direction-work-description">{{ d.description or 'Направление воспитательной и общественной работы студентов.' }}</p>
+    </div>
+    <div class="direction-work-metrics">
+      <div><span>Участники</span><strong>{{ d.students|length }}</strong></div>
+      <div><span>Мероприятия</span><strong>{{ direction_visit_counts[d.id].events }}</strong></div>
+      <div><span>Посещения</span><strong>{{ direction_visit_counts[d.id].visits }}</strong></div>
+    </div>
+    <div class="direction-work-footer"><span class="direction-work-attenders">{{ direction_visit_counts[d.id].attenders }} уникальных посетителей</span><div class="direction-work-actions"><a class="btn btn-primary" href="{{ url_for('directions.direction_detail', did=d.id) }}">Открыть раздел <span aria-hidden="true">→</span></a>{% if not is_staff %}<a class="direction-questions-link" href="{{ url_for('directions.manage_questions', did=d.id) }}" title="Вопросы направления" aria-label="Вопросы направления {{ d.name }}">?</a>{% endif %}</div></div>
+    {% if is_admin %}<form class="direction-archive-form" method="post" action="{{url_for('directions.archive_direction',did=d.id)}}" onsubmit="return confirm('Удалить направление из активного списка? Данные и история сохранятся в архиве.')"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><label>Удалить направление: введите {{d.code}}</label><div class="archive-action"><input name="confirm" class="input" required autocomplete="off" placeholder="{{d.code}}"><button class="btn btn-soft" type="submit">Удалить</button></div></form>{% endif %}
+  </article>
+{% else %}
+  <div class="card empty directions-no-data"><div class="empty-icon">◌</div><h3>Пока нет направлений</h3><p>Добавьте данные о направлениях — список отобразится здесь автоматически.</p></div>
+{% endfor %}
+</div>
+<div class="card empty directions-no-results" data-direction-empty hidden><div class="empty-icon">⌕</div><h3>Ничего не найдено</h3><p>Попробуйте изменить запрос или очистить строку поиска.</p><button class="btn btn-soft" type="button" data-reset-directions>Очистить поиск</button></div>
+<script>
+(() => {
+  const search = document.getElementById('direction-search');
+  const cards = [...document.querySelectorAll('[data-direction-card]')];
+  const count = document.querySelector('[data-direction-results]');
+  const empty = document.querySelector('[data-direction-empty]');
+  const gallery = document.getElementById('directions-gallery');
+  const reset = document.querySelector('[data-reset-directions]');
+  const normalize = value => (value || '').toLocaleLowerCase('ru').replace(/ё/g,'е').trim();
+  const apply = () => {
+    const needle = normalize(search?.value);
+    let visible = 0;
+    cards.forEach(card => {
+      const show = normalize(card.dataset.search).includes(needle);
+      card.hidden = !show;
+      if (show) visible += 1;
+    });
+    if (count) count.textContent = `${visible} из ${cards.length} направлений`;
+    if (empty) empty.hidden = visible !== 0 || cards.length === 0;
+    if (gallery) gallery.hidden = cards.length === 0;
+  };
+  search?.addEventListener('input', apply);
+  reset?.addEventListener('click', () => { if (search) { search.value = ''; search.focus(); } apply(); });
+  apply();
+})();
+</script>
+{% endblock %}

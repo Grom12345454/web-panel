@@ -1,0 +1,75 @@
+{% extends "shared/base.html" %}
+{% set editing = lesson is not none %}
+{% block title %}{{ 'Изменение занятия' if editing else 'Новое занятие' }} | Студенческий совет{% endblock %}
+{% block content %}
+<div class="section-title">
+  <div>
+    <div class="eyebrow">РАСПИСАНИЕ И ЗАНЯТИЯ</div>
+    <h2>{{ 'Изменение занятия' if editing else 'Добавление занятия' }}</h2>
+    <p>Укажите параметры занятия и настройте публикацию объявления для выбранного направления.</p>
+  </div>
+  <a class="btn btn-soft" href="{{ url_for('admin.calendar', date=selected_calendar_date) if return_to_calendar else (url_for('lessons.list_lessons', direction_id=selected_direction) if selected_direction else url_for('lessons.list_lessons')) }}">← Назад</a>
+</div>
+<form method="POST" class="card card-pad">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% if return_to_calendar %}<input type="hidden" name="return_to" value="calendar"><input type="hidden" name="calendar_date" value="{{ selected_calendar_date or (lesson.starts_at.strftime('%Y-%m-%d') if editing else selected_datetime[:10]) }}">{% endif %}
+  <div class="form-grid">
+    <div class="field field-full">
+      <label class="label" for="lesson-title">Название занятия</label>
+      <input class="input" id="lesson-title" name="title" required minlength="3" maxlength="255" value="{{ lesson.title if editing else '' }}" placeholder="Например, организационная встреча">
+    </div>
+    <div class="field field-full">
+      <fieldset class="direction-choice-fieldset">
+        <legend class="label">Направление занятия</legend>
+        <p class="subtle direction-choice-hint" id="lesson-direction-hint">Выберите одно направление, к которому относится занятие.</p>
+        <div class="direction-choice-grid direction-choice-grid--single" role="radiogroup" aria-describedby="lesson-direction-hint">
+          {% for direction in directions %}
+          <label class="direction-choice-card direction-choice-card--radio">
+            <input type="radio" id="direction-id-{{ direction.id }}" name="direction_id" value="{{ direction.id }}" class="direction-choice-input" required {% if (lesson.direction_id if editing else selected_direction) == direction.id %}checked{% endif %}>
+            <span class="direction-choice-icon" aria-hidden="true">{{ direction.icon or '✦' }}</span>
+            <span class="direction-choice-copy"><strong>{{ direction.name }}</strong><small>Направление занятия</small></span>
+          </label>
+          {% else %}
+          <p class="empty-state">Нет доступных направлений для создания занятия.</p>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </div>
+    <div class="field">
+      <label class="label" for="starts-at">Дата и время</label>
+      <input class="input" id="starts-at" name="starts_at" type="datetime-local" required value="{{ lesson.starts_at.strftime('%Y-%m-%dT%H:%M') if editing else (selected_datetime or '') }}">
+    </div>
+    <div class="field">
+      <label class="label" for="duration">Продолжительность, минут</label>
+      <input class="input" id="duration" name="duration_minutes" type="number" min="15" max="600" step="15" required value="{{ lesson.duration_minutes if editing else 90 }}">
+    </div>
+    <div class="field">
+      <label class="label" for="capacity">Количество мест (0 — без ограничения)</label>
+      <input class="input" id="capacity" name="capacity" type="number" min="0" max="100000" value="{{ lesson.capacity if editing else 0 }}">
+    </div>
+    <div class="field">
+      <label class="label" for="room">Аудитория / место проведения</label>
+      <input class="input" id="room" name="room" maxlength="255" value="{{ lesson.room if editing else '' }}" placeholder="Корпус, аудитория или онлайн">
+    </div>
+    <div class="field">
+      <label class="label" for="teacher">Ответственный</label>
+      <input class="input" id="teacher" name="teacher" maxlength="255" value="{{ lesson.teacher if editing else '' }}" placeholder="ФИО ответственного">
+    </div>
+    <div class="field field-full">
+      <label class="label" for="description">Описание и дополнительная информация</label>
+      <textarea class="textarea" id="description" name="description" maxlength="10000" placeholder="Повестка, подготовительные материалы, требования к участникам">{{ lesson.description if editing and lesson.description else '' }}</textarea>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:18px">
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+      <input type="checkbox" name="announce" value="1" {% if not editing %}checked{% endif %} style="margin-top:4px;accent-color:#62a6ff">
+      <span><strong>{{ 'Отправить изменения во все чаты направления' if editing else 'Опубликовать объявление во все чаты направления' }}</strong><br><span class="subtle">Объявление отправляется в активные чаты выбранного направления. Telegram, VK и MAX: сообщение ставится в надёжную очередь и доставляется во все подключённые администратором чаты. Проверьте токены и права каждого бота.</span></span>
+    </label>
+  </div>
+  <div class="form-foot">
+    <a class="btn btn-soft" href="{{ url_for('lessons.list_lessons') }}">Отмена</a>
+    <button class="btn btn-primary" type="submit">{{ 'Сохранить изменения' if editing else 'Создать занятие' }}</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,41 @@
+/* One monitoring workspace with independent site and messenger views. */
+.uc-body .unified-log-tabs{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px;
+}
+.uc-body .unified-log-tab{
+  display:flex;align-items:center;gap:14px;min-width:0;padding:17px 21px;
+  border:1px solid rgba(146,165,231,.25);border-radius:17px;
+  color:#b5c8ec;text-decoration:none;
+  background:linear-gradient(125deg,rgba(13,28,55,.94),rgba(27,24,63,.82));
+  transition:transform .25s,border-color .25s,box-shadow .25s,background .25s;
+}
+.uc-body .unified-log-tab .tab-glyph{
+  flex:none;width:42px;height:42px;display:grid;place-items:center;font-size:23px;
+  border-radius:13px;background:rgba(120,122,216,.13);border:1px solid rgba(145,170,249,.17);
+  color:#83dfff;
+}
+.uc-body .unified-log-tab span:last-child{min-width:0;display:grid;gap:2px}
+.uc-body .unified-log-tab b{font-size:15px;color:#e4f3ff}
+.uc-body .unified-log-tab small{font-size:11px;line-height:1.4;color:#91afcb}
+.uc-body .unified-log-tab.is-active{
+  border-color:rgba(105,233,254,.65);
+  background:linear-gradient(110deg,rgba(31,103,150,.35),rgba(113,57,167,.3));
+  box-shadow:inset 0 -3px #69e4fb,0 9px 30px rgba(45,121,198,.18);
+}
+.uc-body .unified-log-tab.is-active .tab-glyph{background:linear-gradient(120deg,#209cc8,#7656bc);color:white}
+@media(hover:hover) and (pointer:fine){.uc-body .unified-log-tab:hover{transform:translateY(-3px);border-color:rgba(119,213,250,.57);box-shadow:0 12px 34px rgba(29,83,169,.2)}}
+.uc-body .audit-context{display:block;padding:2px 0;color:#bcdcef}
+.uc-body .audit-record-number{color:#90dbfc;font-weight:700}
+.uc-body .audit-tech-id{display:block;margin-top:6px;color:#86aac9;font-size:10px}
+.uc-body .audit-operations-form{gap:11px}
+.uc-body .audit-table details[open]{color:#e7f7ff}
+.uc-body .audit-table details[open] summary{color:#6ee7fa}
+.uc-body .audit-console-metric.is-error{border-color:rgba(250,113,165,.32)}
+@media(max-width:700px){
+ .uc-body .unified-log-tabs{gap:8px}
+ .uc-body .unified-log-tab{padding:12px 10px;gap:8px;border-radius:13px}
+ .uc-body .unified-log-tab .tab-glyph{width:31px;height:34px;font-size:16px;border-radius:9px}
+ .uc-body .unified-log-tab b{font-size:12px}
+ .uc-body .unified-log-tab small{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.uc-body .unified-log-tab{transition:none!important;transform:none!important}}

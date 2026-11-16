@@ -1,0 +1,26 @@
+{% extends "shared/base.html" %}
+{% block title %}Мероприятия | Управление студенческим советом{% endblock %}
+{% block content %}
+<div class="section-title"><div><h1>Мероприятия</h1><p>Квоты, даты, места, участники и закрытие события.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap">{% if session.user_role != 'observer' %}<a class="btn btn-primary" href="{{ url_for('quotas.create_quota') }}">＋ Создать мероприятие</a>{% endif %}</div></div>
+<div class="grid-3">
+{% for q in quotas %}
+<article class="card card-pad tilt-card" data-tilt><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><div class="eyebrow">EVENT #{{ q.id }}</div><h3 style="font-size:18px;letter-spacing:-.03em;margin:7px 0">{{ q.event_title }}</h3></div><span class="badge {% if q.is_closed %}badge-rejected{% else %}badge-active{% endif %}">{% if q.is_closed %}Закрыто{% else %}Активно{% endif %}</span></div><p style="color:#8fa2bd;font-size:12px;line-height:1.55;min-height:57px">{{ q.event_description or 'Без описания' }}</p><div class="direction-meta"><div class="metric"><div class="metric-label">Места</div><div class="metric-value">{{ q.total_places }}</div></div><div class="metric"><div class="metric-label">Дат</div><div class="metric-value">{{ q.days|length }}</div></div><div class="metric"><div class="metric-label">Направлений</div><div class="metric-value">{{ q.directions|length }}</div></div></div><div style="margin-top:12px;color:#91a4bd;font-size:11px">📍 {{ q.location or 'Место уточняется' }} · 🕒 {{ q.time_range or 'Время уточняется' }}</div><div style="margin-top:8px;color:#a9bbd2;font-size:11px">📣 Публикация: {% if q.is_published %}опубликовано{% elif q.publish_mode == 'scheduled' %}автоматически {{ q.publish_at.strftime('%d.%m.%Y %H:%M') if q.publish_at else '—' }}{% elif q.publish_mode == 'manual' %}ожидает публикации сотрудником{% else %}не опубликовано{% endif %}</div><div class="quota-delivery-status" aria-label="Состояние доставки объявления">
+  {% set delivery = delivery_by_quota.get(q.id, {}) %}
+  <span class="quota-delivery-label">📨 Чаты TG · VK · MAX:</span>
+  {% if delivery %}
+    {% if delivery.get('delivered', 0) %}<span class="quota-delivery-pill done">Доставлено {{ delivery.delivered }}</span>{% endif %}
+    {% set waiting = delivery.get('pending', 0) + delivery.get('retry', 0) + delivery.get('sending', 0) %}
+    {% if waiting %}<span class="quota-delivery-pill waiting">В очереди {{ waiting }}</span>{% endif %}
+    {% if delivery.get('blocked', 0) %}<span class="quota-delivery-pill blocked">Нет токена {{ delivery.blocked }}</span>{% endif %}
+    {% if delivery.get('failed', 0) %}<span class="quota-delivery-pill failed">Ошибка {{ delivery.failed }}</span>{% endif %}
+  {% elif q.is_published %}
+    <span class="quota-delivery-pill blocked">Нет записей доставки · проверьте подключённые чаты</span>
+  {% else %}
+    <span class="quota-delivery-pill">Публикация ещё не запускалась</span>
+  {% endif %}
+</div><div style="margin-top:8px;color:#a9bbd2;font-size:11px">👑 Главный: {% if leaders.get(q.id) %}<b>{{ leaders.get(q.id).student.full_name }}</b> · {{ leaders.get(q.id).position_name }}{% else %}<span style="color:#7187a4">не назначен</span>{% endif %}</div><div class="card-actions"><a class="btn btn-primary" style="flex:1" href="{{ url_for('quotas.quota_participants', qid=q.id) }}">Участники →</a>{% if session.user_role != 'observer' %}<form method="POST" action="{{ url_for('quotas.publish_quota', qid=q.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit">📡 Объявить в чатах</button></form>{% if not q.is_closed %}<form method="POST" action="{{ url_for('quotas.close_quota', qid=q.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="reason" value="Завершение мероприятия"><button class="btn btn-soft" type="submit">Закрыть</button></form>{% endif %}{% endif %}</div></article>
+{% else %}<div class="card empty" style="grid-column:1/-1"><div class="empty-icon">◫</div><h3>Мероприятий пока нет</h3><p>Создайте первое событие и система начнёт учитывать запись на даты.</p></div>{% endfor %}
+</div>
+{% endblock %}

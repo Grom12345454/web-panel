@@ -1,0 +1,101 @@
+{% extends "shared/base.html" %}
+{% block title %}Уведомления | Студенческий совет{% endblock %}
+{% block content %}
+<section class="section-title alerts-title">
+  <div><div class="eyebrow">ЦЕНТР УВЕДОМЛЕНИЙ</div><h1>Уведомления</h1><p>Заявки, решения, мероприятия и системные сообщения для вашей роли.</p></div>
+  <div class="alerts-heading-actions">
+    <span class="alerts-stat" aria-live="polite">{{ unread_count }} непрочитанных</span>
+    {% if can_broadcast %}<button type="button" class="btn btn-primary alerts-open-compose" data-open-broadcast>＋ Отправить системное уведомление</button>{% endif %}
+  </div>
+</section>
+<div class="card card-pad alerts-filter-card">
+  <form class="alerts-filters" method="get" action="{{ url_for('admin.notifications') }}" aria-label="Фильтры уведомлений">
+    <label>Тип уведомления
+      <select name="category" class="input"><option value="">Все категории</option>
+        {% for value,label in categories.items() %}<option value="{{ value }}" {% if value == category %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Состояние
+      <select name="state" class="input"><option value="all" {% if state == 'all' %}selected{% endif %}>Все</option><option value="unread" {% if state == 'unread' %}selected{% endif %}>Непрочитанные</option><option value="read" {% if state == 'read' %}selected{% endif %}>Прочитанные</option></select>
+    </label>
+    <label>Направление
+      <select name="direction" class="input"><option value="">Все направления</option>
+        {% for direction in directions %}<option value="{{ direction.id }}" {% if direction_id == direction.id %}selected{% endif %}>{{ direction.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <div class="alerts-filter-actions"><button class="btn btn-primary" type="submit">Применить</button><a class="btn btn-soft" href="{{ url_for('admin.notifications') }}">Сбросить</a></div>
+  </form>
+</div>
+{% if alerts %}
+<div class="alerts-list" aria-label="Список уведомлений" data-notifications-center>
+  {% for alert,is_read in alerts %}
+  <article class="card alert-item {% if not is_read %}is-unread{% endif %}" data-notification-item data-expires-at="{{ (alert.created_at + notification_ttl).isoformat() }}Z">
+    <div class="alert-item-marker alert-severity-{{ alert.severity }}" aria-hidden="true">{% if alert.category == 'applications' %}✉{% elif alert.category == 'events' %}▦{% elif alert.category == 'lessons' %}▤{% elif alert.category == 'leadership' %}♙{% else %}✦{% endif %}</div>
+    <div class="alert-item-body">
+      <div class="alert-item-meta"><span>{{ categories.get(alert.category, 'Система') }}</span><span>·</span><time datetime="{{ alert.created_at.isoformat() }}">{{ alert.created_at.strftime('%d.%m.%Y %H:%M') }}</time>{% if not is_read %}<span class="alert-new-label">Новое</span>{% endif %}</div>
+      <button type="button" class="alert-open-details" data-alert-open data-alert-title="{{ alert.title|e }}" data-alert-body="{{ alert.body|e }}" data-alert-date="{{ alert.created_at.strftime('%d.%m.%Y %H:%M') }}"><strong>{{ alert.title }}</strong><span>Подробнее ↗</span></button>
+      <div class="alert-item-actions">
+        {% if alert.link_path and alert.link_path != '/notifications' %}<a class="btn btn-soft" href="{{ alert.link_path }}">Перейти →</a>{% endif %}
+        {% if not is_read %}<form method="post" data-notification-read action="{{ url_for('admin.notification_read', notification_id=alert.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit">✓ Отметить прочитанным</button></form>{% else %}<span class="alert-read-confirmation">✓ Прочитано</span>{% endif %}
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+<div class="card card-pad alerts-empty" data-notifications-empty hidden><h2>Непрочитанных на этой странице больше нет</h2><p>Можно посмотреть прочитанные уведомления или снять фильтр.</p></div>
+<form method="post" data-notification-read-all action="{{ url_for('admin.notifications_read_all') }}" class="alerts-read-all">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="category" value="{{ category }}"><input type="hidden" name="state" value="{{ state }}"><input type="hidden" name="direction" value="{{ direction_id or '' }}">
+  <button class="btn btn-soft" type="submit">Отметить показанные как прочитанные</button>
+</form>
+<p class="alerts-operation-status" data-notification-status role="status" aria-live="polite" hidden></p>
+{% else %}
+<div class="card card-pad alerts-empty"><div aria-hidden="true">✧</div><h2>Пока нет уведомлений</h2><p>Попробуйте снять фильтры или вернитесь позже.</p></div>
+{% endif %}
+<dialog id="notification-details-dialog" class="alerts-dialog" aria-label="Просмотр уведомления">
+  <div class="alerts-dialog-head"><div><h2 data-alert-modal-title></h2><small data-alert-modal-date></small></div><button type="button" class="alerts-dialog-close" data-alert-modal-close>×</button></div>
+  <p class="alert-modal-body" data-alert-modal-body></p>
+</dialog>
+{% if can_broadcast %}
+<dialog id="broadcast-dialog" class="alerts-dialog" aria-labelledby="broadcast-title" aria-describedby="broadcast-intro">
+  <div class="alerts-dialog-head">
+    <div><div class="eyebrow">РАССЫЛКА / СТУДЕНЧЕСКИЙ СОВЕТ</div><h2 id="broadcast-title">Системное уведомление</h2><p id="broadcast-intro">Выберите, кому и куда бот должен отправить сообщение.</p></div>
+    <button type="button" class="alerts-dialog-close" data-close-broadcast aria-label="Закрыть окно">×</button>
+  </div>
+  <form method="post" action="{{ url_for('admin.notifications_publish') }}" class="alerts-compose-form" id="broadcast-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <fieldset class="alerts-channel-group alerts-wide">
+      <legend>Способы доставки</legend>
+      <div class="space-channel-shortcut"><button class="btn btn-soft" type="button" data-select-three-chats>📡 Выбрать чаты Telegram, VK и MAX</button><span>Чаты направлений уже настраиваются в карточке каждого направления</span></div>
+      <div class="alerts-channel-options">
+        {% if is_superadmin %}<label class="alerts-channel-option"><input type="checkbox" name="channels" value="site" checked><span><strong>На сайте</strong><small>В Student App и в панели сотрудников</small></span></label>{% endif %}
+        <label class="alerts-channel-option"><input type="checkbox" name="channels" value="chats" checked><span><strong>В чаты направлений</strong><small>В подключённые Telegram-чаты через бота</small></span></label>
+        <label class="alerts-channel-option"><input type="checkbox" name="channels" value="dm" checked><span><strong>В личные сообщения</strong><small>Студентам, открывшим Telegram-бота</small></span></label>
+        <label class="alerts-channel-option"><input type="checkbox" name="channels" value="vk_chats" checked><span><strong>VK · чаты направлений</strong><small>Чаты VK назначенных направлений</small></span></label>
+        <label class="alerts-channel-option"><input type="checkbox" name="channels" value="vk_dm" checked><span><strong>VK · личные сообщения</strong><small>Привязанные аккаунты студентов</small></span></label>
+        <label class="alerts-channel-option"><input type="checkbox" name="channels" value="max_chats" checked><span><strong>MAX · чаты направлений</strong><small>Чаты MAX назначенных направлений</small></span></label>
+        <label class="alerts-channel-option"><input type="checkbox" name="channels" value="max_dm" checked><span><strong>MAX · личные сообщения</strong><small>Привязанные аккаунты студентов</small></span></label>
+        {% if is_superadmin %}<label class="alerts-channel-option"><input type="checkbox" name="channels" value="staff_dm" checked><span><strong>Сотрудникам · Telegram</strong><small>При наличии привязанного Telegram ID</small></span></label>{% endif %}
+      </div>
+      <p class="alerts-channel-hint" data-broadcast-hint aria-live="polite">{% if is_superadmin %}Сообщение может появиться на сайте и быть отправлено ботами.{% else %}Сотрудник отправляет сообщения только через ботов Telegram, VK и MAX — в подключённые чаты и личные сообщения. Публикация на сайте недоступна.{% endif %}</p>
+    </fieldset>
+    <label>Заголовок<input name="title" class="input" maxlength="180" required placeholder="Важное сообщение"></label>
+    <input type="hidden" name="category" value="system">
+    <label class="alerts-wide">Текст сообщения<textarea name="body" class="input" maxlength="2000" rows="5" required placeholder="Что нужно знать получателям"></textarea></label>
+    <label>Учебный контур<select name="education_type" class="input"><option value="">Колледж и институт</option><option value="college">Только колледж</option><option value="institute">Только институт</option></select></label>
+    <fieldset class="alerts-directions-field alerts-wide" data-broadcast-directions>
+      <legend>Направления рассылки</legend>
+      {% if is_superadmin %}<label class="alerts-global-toggle"><input type="checkbox" name="scope" value="all" data-broadcast-global> Общая рассылка — во все направления и всем участникам</label>{% endif %}
+      <div class="alerts-direction-checks" data-broadcast-direction-list>
+        {% for direction in broadcast_directions %}<label class="alerts-direction-check"><input type="checkbox" name="direction_ids" value="{{ direction.id }}"> <span>{{ direction.name }}</span></label>{% endfor %}
+      </div>
+      <p class="muted">{% if is_superadmin %}Выберите одно или несколько направлений либо включите общую рассылку.{% else %}Доступны только ваши направления с правом управления уведомлениями.{% endif %}</p>
+    </fieldset>
+    {% if is_superadmin %}<label data-site-audience>Аудитория на сайте<select name="audience" class="input"><option value="staff">Только сотрудники панели</option><option value="all" selected>Student App и сотрудники панели</option><option value="managers">Руководители и наблюдатель</option><option value="leaders">Руководители</option><option value="admins">Только администраторы</option></select></label>
+    <label data-site-severity>Важность на сайте<select name="severity" class="input"><option value="info">Обычное</option><option value="success">Успех</option><option value="warning">Внимание</option></select></label>{% endif %}
+    <p class="alerts-dialog-note alerts-wide">{% if not is_superadmin %}Сотрудники не публикуют уведомления на сайте: доступна только доставка через подключённых ботов Telegram, VK и MAX — в чаты и личные сообщения. {% endif %}При выборе направления личное сообщение получат только активные участники. Для рассылки только колледжу или институту в чаты используются отмеченные чаты соответствующего учебного контура. Отправка Telegram, VK и MAX выполняется от имени соответствующего бота и зависит от его прав. Права и учебный контур проверяются на сервере. Публикации сохраняются в очереди, даже если бот временно недоступен.</p>
+    <div class="alerts-dialog-actions alerts-wide"><button class="btn btn-soft" type="button" data-close-broadcast>Отмена</button><button class="btn btn-primary" type="submit" data-broadcast-submit>Отправить уведомление</button></div>
+  </form>
+</dialog>
+{% endif %}
+{% endblock %}

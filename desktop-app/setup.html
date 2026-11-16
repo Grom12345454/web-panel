@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Настройка StudSovet Messenger</title>
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <main class="setup-shell">
+    <div class="brand-row">
+      <div class="brand-mark">S</div>
+      <div><strong>StudSovet</strong><span>DESKTOP MESSENGER</span></div>
+    </div>
+    <div class="eyebrow">ПОДКЛЮЧЕНИЕ К КОМАНДЕ</div>
+    <h1>Ваш мессенджер.<br><em>Отдельное приложение.</em></h1>
+    <p class="intro">Приложение работает независимо от сайта и подключается к серверу StudSovet. Укажите адрес сервера, чтобы открыть чаты, каналы и уведомления.</p>
+    <form id="connect-form">
+      <label for="server-address">Адрес сервера StudSovet</label>
+      <input id="server-address" name="server" type="url" autocomplete="url" placeholder="http://127.0.0.1:5000" required>
+      <small>На этом компьютере — localhost с портом сервера. На других компьютерах — IP-адрес или HTTPS-домен вашего сервера.</small>
+      <button id="connect-button" type="submit"><span>Подключиться</span><b>↗</b></button>
+      <div id="status" role="status" aria-live="polite"></div>
+    </form>
+    <div class="setup-footer">
+      <span class="status-dot"></span>
+      <span>Защищённая авторизация · Права доступа чатов сохраняются</span>
+    </div>
+    <div class="version" id="version"></div>
+  </main>
+  <script>
+    const form = document.getElementById('connect-form');
+    const input = document.getElementById('server-address');
+    const button = document.getElementById('connect-button');
+    const status = document.getElementById('status');
+    window.studsovetDesktop.getServerConfig().then(config => {
+      if (config.serverOrigin) input.value = config.serverOrigin;
+    });
+    window.studsovetDesktop.getVersion().then(version => {
+      document.getElementById('version').textContent = `Версия ${version}`;
+    });
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      button.disabled = true;
+      button.querySelector('span').textContent = 'Проверяем сервер…';
+      status.className = '';
+      status.textContent = '';
+      try {
+        const result = await window.studsovetDesktop.connectToServer(input.value);
+        status.className = 'success';
+        status.textContent = `Подключено: ${result.serverOrigin}`;
+      } catch (error) {
+        status.className = 'error';
+        status.textContent = error.message || 'Не удалось подключиться к серверу.';
+      } finally {
+        button.disabled = false;
+        button.querySelector('span').textContent = 'Подключиться';
+      }
+    });
+  </script>
+</body>
+</html>

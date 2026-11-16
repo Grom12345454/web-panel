@@ -1,0 +1,26 @@
+{% if dashboard_show_overview_panels|default(true) %}
+<div class="mission-workspace-grid">
+  <section class="mission-panel mission-attention" aria-labelledby="mission-attention-title">
+    <div class="mission-panel-top"><div><h2 id="mission-attention-title">Требует внимания</h2></div><span class="mission-panel-count">{{ dashboard_attention_items|default([])|length }}</span></div>
+    {% if dashboard_attention_items %}
+      <div class="mission-attention-list">
+        {% for item in dashboard_attention_items %}
+        <a href="{{ item.href }}" class="mission-alert mission-alert-{{ item.level|default('info') }}"><span class="mission-alert-dot" aria-hidden="true"></span><span><strong>{{ item.title }}</strong><small>{{ item.detail }}</small></span><b aria-hidden="true">↗</b></a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mission-clear-state"><span aria-hidden="true">✓</span><div><strong>Нет срочных задач</strong><p>Новых сигналов, требующих внимания, сейчас нет.</p></div></div>
+    {% endif %}
+  </section>
+  <section class="mission-panel mission-upcoming" aria-labelledby="mission-upcoming-title">
+    <div class="mission-panel-top"><div><h2 id="mission-upcoming-title">Ближайшие события</h2></div>{% if dashboard_calendar_href %}<a href="{{ dashboard_calendar_href }}">Календарь ↗</a>{% endif %}</div>
+    {% if dashboard_upcoming_items %}
+      <div class="mission-event-list">
+        {% for item in dashboard_upcoming_items %}
+        <div class="mission-event"><time datetime="{{ item.date.strftime('%Y-%m-%dT%H:%M') }}"><strong>{{ item.date.strftime('%d') }}</strong><small>{{ item.date.strftime('%m.%Y') }}</small></time><div><strong>{{ item.title }}</strong><span>{% if item.kind is defined and item.kind %}{{ item.kind }} · {% endif %}{{ item.detail|default(item.location|default('Место уточняется')) }}{% if item.free is defined %} · Свободно: {{ item.free }}{% endif %}{% if item.published is defined and not item.published %} · Не опубликовано{% endif %}</span></div></div>
+        {% endfor %}
+      </div>
+    {% else %}<div class="mission-empty-small">Предстоящих дат мероприятий пока нет.</div>{% endif %}
+  </section>
+</div>
+{% endif %}

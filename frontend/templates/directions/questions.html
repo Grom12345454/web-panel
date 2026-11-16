@@ -1,0 +1,11 @@
+{% extends "shared/base.html" %}
+{% block title %}Вопросы · {{ direction.name }}{% endblock %}
+{% block content %}
+<div class="section-title"><div><div class="eyebrow">QUESTION BUILDER</div><h2>{{ direction.icon or '✦' }} Вопросы анкеты</h2><p>{{ direction.name }} · управляйте вопросами перед подачей заявки.</p></div><a class="btn btn-soft" href="{{ url_for('directions.direction_detail', did=direction.id) }}">← Назад</a></div>
+<div class="{{ 'grid-2' if can_manage_questions else 'grid-1' }}">
+{% if can_manage_questions %}<div class="card card-pad"><div class="eyebrow">НОВЫЙ ВОПРОС</div><h3 style="font-size:17px;margin:8px 0 14px">Добавить вопрос</h3><form method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="add"><div class="field"><label class="label">Текст вопроса</label><textarea class="textarea" name="question_text" maxlength="255" placeholder="Например: Почему вы хотите присоединиться к направлению?" required></textarea></div><div class="form-foot"><button class="btn btn-primary" type="submit">Добавить вопрос</button></div></form></div>{% endif %}
+<div class="card card-pad"><div class="eyebrow">АНКЕТА НАПРАВЛЕНИЯ</div><h3 style="font-size:17px;margin:8px 0 14px">Текущие вопросы</h3>{% for q in questions %}<div style="display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.09)"><div class="avatar" style="flex:0 0 auto">{{ loop.index }}</div><div style="flex:1;color:#d8e3f1;font-size:12px;line-height:1.55">{{ q.question_text }}</div>{% if can_manage_questions %}<form method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="delete"><input type="hidden" name="question_id" value="{{ q.id }}"><button class="btn btn-danger" type="submit">Удалить</button></form>{% endif %}</div>{% else %}<div class="empty"><div class="empty-icon">?</div><h3>Вопросов нет</h3><p>{% if can_manage_questions %}Создайте первый вопрос для анкеты.{% else %}Вопросы для этого направления ещё не добавлены.{% endif %}</p></div>{% endfor %}</div>
+</div>
+{% endblock %}

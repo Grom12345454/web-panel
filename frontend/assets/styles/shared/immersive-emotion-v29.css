@@ -1,0 +1,211 @@
+/* V29 — Aurora / deep-space design language shared by the staff site and Student App.
+   Dynamic accents follow the saved theme; effects are ambient and avoid layout shifts. */
+:root {
+  --v29-ease: cubic-bezier(.2,.78,.22,1);
+  --v29-surface-shadow: 0 18px 48px rgba(0, 4, 17, .30), 0 3px 12px rgba(0, 0, 0, .14);
+}
+body.uc-body[data-theme],
+body.student-app-body[data-season] {
+  --v29-accent: var(--office-accent, var(--season-accent, #79dcff));
+  --v29-secondary: var(--office-secondary, var(--season-secondary, #a8a0ff));
+  --v29-accent-rgb: var(--office-accent-rgb, var(--season-accent-rgb, 121, 220, 255));
+  --v29-secondary-rgb: var(--office-secondary-rgb, var(--season-secondary-rgb, 168, 160, 255));
+  --v29-depth: var(--office-depth, #071225);
+  --v29-edge: color-mix(in srgb, var(--v29-accent) 36%, rgba(190, 221, 255, .12));
+  --v29-glow: color-mix(in srgb, var(--v29-accent) 19%, transparent);
+  --v29-pointer-x: 50%;
+  --v29-pointer-y: 32%;
+}
+
+/* The universe gets depth from three calm layers: distant nebula, stars and a horizon. */
+body.uc-body[data-theme] > .cosmos-field .cosmos-field__nebula,
+body.student-app-body[data-season] > .cosmos-field .cosmos-field__nebula {
+  background:
+    radial-gradient(ellipse 38% 39% at var(--v29-pointer-x, 72%) var(--v29-pointer-y, 15%), color-mix(in srgb, var(--v29-secondary) 26%, transparent), transparent 76%),
+    radial-gradient(ellipse 46% 35% at 12% 78%, color-mix(in srgb, var(--v29-accent) 20%, transparent), transparent 77%),
+    radial-gradient(ellipse 28% 24% at 60% 95%, color-mix(in srgb, var(--v29-secondary) 13%, transparent), transparent 85%);
+  transition: opacity .8s ease, filter .8s ease;
+}
+body.uc-body[data-theme] > .cosmos-field .cosmos-field__horizon,
+body.student-app-body[data-season] > .cosmos-field .cosmos-field__horizon {
+  border-color: color-mix(in srgb, var(--v29-accent) 18%, transparent);
+  box-shadow: 0 0 0 40px color-mix(in srgb, var(--v29-accent) 2%, transparent),
+    0 0 0 95px color-mix(in srgb, var(--v29-secondary) 2%, transparent),
+    0 -18px 64px color-mix(in srgb, var(--v29-accent) 10%, transparent);
+  transition: border-color .7s ease, box-shadow .7s ease;
+}
+body.uc-body[data-theme] .space-visual-scene { filter: drop-shadow(0 16px 50px color-mix(in srgb, var(--v29-accent) 14%, transparent)); }
+body.student-app-body[data-season] .student-orbit-scene { filter: drop-shadow(0 18px 54px color-mix(in srgb, var(--v29-accent) 15%, transparent)); }
+
+/* Site shell: layered metal/glass instead of flat panels. */
+body.uc-body[data-theme] .app-shell { isolation: isolate; }
+body.uc-body[data-theme] .sidebar {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--v29-depth) 78%, #10243b), color-mix(in srgb, var(--v29-depth) 86%, #030711)) !important;
+  border-right-color: color-mix(in srgb, var(--v29-accent) 18%, rgba(151, 190, 221, .08)) !important;
+  box-shadow: 14px 0 48px rgba(0, 0, 0, .17), inset -1px 0 rgba(255,255,255,.035) !important;
+}
+body.uc-body[data-theme] .brand-mark {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--v29-accent) 6%, transparent), 0 0 30px color-mix(in srgb, var(--v29-accent) 22%, transparent) !important;
+  transition: box-shadow .55s ease, filter .55s ease;
+}
+/* The internal staff header stays neutral glass for every theme. Holiday colours
+   belong on accents and content surfaces, never as a red wash across the topbar. */
+body.uc-body:not(.is-login-page) .topbar {
+  background: linear-gradient(120deg, rgba(7, 18, 32, .97), rgba(4, 10, 21, .94)) !important;
+  background-color: rgba(5, 13, 25, .96) !important;
+  border-color: rgba(145, 190, 235, .14) !important;
+  border-bottom-color: rgba(145, 190, 235, .17) !important;
+  box-shadow: 0 14px 44px rgba(0,0,0,.20), inset 0 1px rgba(255,255,255,.055) !important;
+  backdrop-filter: blur(22px) saturate(125%);
+  -webkit-backdrop-filter: blur(22px) saturate(125%);
+}
+body.uc-body[data-theme] .app-shell .main .page :is(.page-header, .page-intro, .mission-hero-20, .galaxy-hero, .hero, .dashboard-hero) {
+  border: 1px solid var(--v29-edge);
+  background:
+    radial-gradient(ellipse at 88% 0%, color-mix(in srgb, var(--v29-secondary) 20%, transparent), transparent 39%),
+    radial-gradient(ellipse at 0% 100%, color-mix(in srgb, var(--v29-accent) 12%, transparent), transparent 46%),
+    linear-gradient(138deg, color-mix(in srgb, var(--v29-depth) 65%, #10223a), color-mix(in srgb, var(--v29-depth) 76%, #050b17)) !important;
+  box-shadow: 0 26px 76px rgba(0,0,0,.27), inset 0 1px rgba(255,255,255,.10), inset 0 -1px rgba(0,0,0,.25), 0 0 42px color-mix(in srgb, var(--v29-accent) 5%, transparent) !important;
+  transition: border-color .65s ease, box-shadow .65s ease, background .65s ease;
+}
+body.uc-body[data-theme] .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .form-card, .notification-card, .calendar-shell, .table-wrap) {
+  border-color: color-mix(in srgb, var(--v29-accent) 20%, rgba(166,198,227,.10)) !important;
+  background-image: linear-gradient(138deg, color-mix(in srgb, var(--v29-accent) 5.5%, transparent), transparent 43%), linear-gradient(150deg, rgba(16,31,50,.84), rgba(5,13,27,.88)) !important;
+  box-shadow: var(--v29-surface-shadow), inset 0 1px rgba(255,255,255,.055), inset 0 -1px rgba(0,0,0,.16) !important;
+  transition: border-color .35s ease, box-shadow .35s ease, background .45s ease, transform .35s var(--v29-ease);
+}
+body.uc-body[data-theme] .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .form-card, .notification-card, .calendar-shell) h1,
+body.uc-body[data-theme] .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .form-card, .notification-card, .calendar-shell) h2 {
+  text-wrap: pretty;
+}
+body.uc-body[data-theme] .nav-link { transition: color .22s ease, border-color .28s ease, background .28s ease, box-shadow .28s ease, transform .28s var(--v29-ease); }
+body.uc-body[data-theme] .nav-link.active {
+  border-color: color-mix(in srgb, var(--v29-accent) 30%, transparent) !important;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--v29-accent) 17%, transparent), color-mix(in srgb, var(--v29-secondary) 9%, transparent)) !important;
+  box-shadow: inset 3px 0 var(--v29-accent), 0 7px 25px color-mix(in srgb, var(--v29-accent) 8%, transparent), inset 0 1px rgba(255,255,255,.07) !important;
+}
+
+/* Student App: command deck, metrics, cards and bottom navigation inherit the same light. */
+body.student-app-body[data-season] #app { perspective: 1400px; }
+body.student-app-body[data-season] .command-hero {
+  border-color: color-mix(in srgb, var(--v29-accent) 42%, rgba(207,231,255,.12)) !important;
+  background:
+    radial-gradient(ellipse at 80% 10%, color-mix(in srgb, var(--v29-secondary) 22%, transparent), transparent 39%),
+    radial-gradient(ellipse at 12% 100%, color-mix(in srgb, var(--v29-accent) 15%, transparent), transparent 47%),
+    linear-gradient(138deg, rgba(13,31,53,.95), color-mix(in srgb, var(--v29-depth) 76%, #030914)) !important;
+  box-shadow: 0 32px 94px rgba(0,3,18,.41), inset 0 1px rgba(255,255,255,.14), inset 0 -1px rgba(0,0,0,.38), 0 0 54px color-mix(in srgb, var(--v29-accent) 9%, transparent) !important;
+  transition: border-color .65s ease, box-shadow .65s ease, background .65s ease;
+}
+body.student-app-body[data-season] :is(.command-metric, .command-next-card, .mission-today-tile, .mission-today-card, .account-tile, .account-journey-step, .student-announcement, .student-notice-modal, .event-modal, .glass.card, .registration .card, .empty) {
+  border-color: color-mix(in srgb, var(--v29-accent) 24%, rgba(171,207,238,.10)) !important;
+  box-shadow: 0 18px 48px rgba(0,4,18,.31), inset 0 1px rgba(255,255,255,.075), inset 0 -1px rgba(0,0,0,.20), 0 0 26px color-mix(in srgb, var(--v29-accent) 4%, transparent) !important;
+  transition: border-color .4s ease, box-shadow .4s ease, background .45s ease, transform .35s var(--v29-ease);
+}
+body.student-app-body[data-season] :is(.command-metric, .command-next-card, .mission-today-tile, .account-tile, .student-announcement, .glass.card) {
+  background-image: linear-gradient(142deg, color-mix(in srgb, var(--v29-accent) 6%, transparent), transparent 48%), linear-gradient(145deg, rgba(var(--season-panel-rgb, 14,39,69), .93), rgba(var(--season-panel-dark-rgb, 4,16,34), .97)) !important;
+}
+body.student-app-body[data-season] :is(.command-metric-icon, .command-next-mark, .mission-today-icon, .account-logo, .avatar, .icon) {
+  filter: drop-shadow(0 5px 10px color-mix(in srgb, var(--v29-accent) 14%, transparent));
+  transition: color .4s ease, border-color .4s ease, filter .4s ease, transform .35s var(--v29-ease);
+}
+body.student-app-body[data-season] .nav,
+body.student-app-body[data-season] .mission-bottom-nav {
+  border-color: color-mix(in srgb, var(--v29-accent) 24%, rgba(170,205,235,.10)) !important;
+  background: linear-gradient(120deg, rgba(7,19,35,.94), rgba(5,12,25,.88)) !important;
+  box-shadow: 0 17px 48px rgba(0,0,0,.33), inset 0 1px rgba(255,255,255,.10), 0 0 26px color-mix(in srgb, var(--v29-accent) 5%, transparent) !important;
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+body.student-app-body[data-season] .nav button.active,
+body.student-app-body[data-season] .mission-bottom-nav button.active {
+  color: #fff !important;
+  background: linear-gradient(130deg, color-mix(in srgb, var(--v29-accent) 24%, rgba(12,26,49,.88)), color-mix(in srgb, var(--v29-secondary) 21%, rgba(9,20,41,.9))) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.17), inset 0 0 0 1px color-mix(in srgb, var(--v29-accent) 24%, transparent), 0 6px 22px color-mix(in srgb, var(--v29-accent) 10%, transparent) !important;
+}
+body.student-app-body[data-season] :is(.btn.primary, .command-hero .btn.primary, button[type="submit"]) {
+  border-color: color-mix(in srgb, var(--v29-accent) 56%, transparent) !important;
+  background: linear-gradient(112deg, color-mix(in srgb, var(--v29-accent) 80%, #173552), color-mix(in srgb, var(--v29-secondary) 76%, #1b2347)) !important;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--v29-accent) 15%, transparent), inset 0 1px rgba(255,255,255,.28), inset 0 -1px rgba(0,0,0,.18) !important;
+}
+body.uc-body[data-theme] :is(.btn-primary, .btn, button[type="submit"]),
+body.student-app-body[data-season] :is(.btn, .command-next-link, button[type="submit"]) {
+  transition: transform .22s var(--v29-ease), box-shadow .28s ease, border-color .28s ease, filter .28s ease;
+}
+body.uc-body[data-theme] :is(input, select, textarea),
+body.student-app-body[data-season] :is(input, select, textarea, .input, .select) {
+  transition: border-color .25s ease, box-shadow .25s ease, background-color .25s ease;
+}
+body.uc-body[data-theme] :is(input, select, textarea):focus-visible,
+body.student-app-body[data-season] :is(input, select, textarea, .input, .select):focus-visible {
+  border-color: color-mix(in srgb, var(--v29-accent) 70%, white 0%) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--v29-accent) 15%, transparent), 0 0 24px color-mix(in srgb, var(--v29-accent) 7%, transparent) !important;
+  outline: none;
+}
+
+/* Pointer-capable screens get a gentle lift; touch screens retain a stable, calm layout. */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  body.uc-body[data-theme] .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .form-card, .notification-card, .calendar-shell):hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--v29-accent) 34%, rgba(180,220,255,.12)) !important;
+    box-shadow: 0 25px 58px rgba(0,3,17,.34), inset 0 1px rgba(255,255,255,.09), 0 0 30px color-mix(in srgb, var(--v29-accent) 7%, transparent) !important;
+  }
+  body.uc-body[data-theme] .nav-link:hover { transform: translateX(3px); }
+  body.student-app-body[data-season] :is(.command-metric, .command-next-card, .mission-today-tile, .account-tile, .student-announcement, .glass.card):hover {
+    transform: translateY(-4px) translateZ(8px);
+    border-color: color-mix(in srgb, var(--v29-accent) 43%, rgba(210,235,255,.14)) !important;
+    box-shadow: 0 27px 58px rgba(0,3,18,.36), inset 0 1px rgba(255,255,255,.10), 0 0 35px color-mix(in srgb, var(--v29-accent) 10%, transparent) !important;
+  }
+  body.uc-body[data-theme] :is(.btn-primary, .btn, button[type="submit"]):hover,
+  body.student-app-body[data-season] :is(.btn, .command-next-link, button[type="submit"]):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.09) saturate(1.08);
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--v29-accent) 15%, transparent), inset 0 1px rgba(255,255,255,.34) !important;
+  }
+}
+body.uc-body.theme-changing .main :is(.page-header, .page-intro, .mission-hero-20, .galaxy-hero, .hero, .card, .dashboard-card, .mission-kpi),
+body.student-app-body.theme-changing #app :is(.command-hero, .command-metric, .command-next-card, .mission-today-tile, .student-announcement, .account-tile) {
+  animation: v29-theme-resonance .88s var(--v29-ease) both;
+}
+body.uc-body.theme-changing .main :is(.mission-kpi, .galaxy-stat):nth-child(2),
+body.student-app-body.theme-changing #app :is(.command-metric, .command-next-card, .mission-today-tile):nth-child(2) { animation-delay: 55ms; }
+body.uc-body.theme-changing .main :is(.mission-kpi, .galaxy-stat):nth-child(3),
+body.student-app-body.theme-changing #app :is(.command-metric, .command-next-card, .mission-today-tile):nth-child(3) { animation-delay: 105ms; }
+@keyframes v29-theme-resonance {
+  0% { filter: saturate(.74) brightness(.95); translate: 0 5px; }
+  42% { filter: saturate(1.28) brightness(1.045); }
+  72% { translate: 0 -1px; }
+  100% { filter: saturate(1) brightness(1); translate: 0 0; }
+}
+@keyframes v29-card-breath { 0%,100% { box-shadow: var(--v29-surface-shadow); } 50% { box-shadow: var(--v29-surface-shadow), 0 0 30px color-mix(in srgb, var(--v29-accent) 5%, transparent); } }
+
+/* A specific ceremonial atmosphere for Russian state holidays, still led by the selected accent. */
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"]) .cosmos-field__nebula,
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"]) .cosmos-field__nebula {
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.065), transparent 30%, rgba(57,119,237,.07) 59%, rgba(221,55,81,.06)),
+    radial-gradient(ellipse 35% 39% at 83% 9%, rgba(63,124,238,.20), transparent 75%),
+    radial-gradient(ellipse 42% 32% at 10% 80%, rgba(229,68,87,.15), transparent 76%),
+    radial-gradient(ellipse 33% 24% at 54% 91%, rgba(245,247,255,.09), transparent 84%);
+}
+body.uc-body[data-theme="constitution_day"] .main :is(.page-header, .page-intro, .mission-hero-20, .galaxy-hero, .hero),
+body.student-app-body[data-season="constitution_day"] .command-hero {
+  border-color: rgba(245,232,194,.38) !important;
+  box-shadow: 0 30px 84px rgba(0,3,18,.37), inset 0 1px rgba(255,255,255,.17), 0 0 38px rgba(245,232,194,.065) !important;
+}
+
+@media (max-width:760px), (pointer:coarse) {
+  body.uc-body[data-theme] .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .form-card, .notification-card, .calendar-shell),
+  body.student-app-body[data-season] :is(.command-metric, .command-next-card, .mission-today-tile, .account-tile, .student-announcement, .glass.card) { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  body.uc-body[data-theme] .main :is(.card, .dashboard-card, .galaxy-tool, .mission-kpi, .galaxy-direction, .galaxy-stat, .stat-card, .direction-card, .panel, .form-card, .notification-card, .calendar-shell):hover,
+  body.student-app-body[data-season] :is(.command-metric, .command-next-card, .mission-today-tile, .account-tile, .student-announcement, .glass.card):hover { transform: none; }
+}
+@media (prefers-reduced-motion:reduce) {
+  body.uc-body[data-theme], body.student-app-body[data-season],
+  body.uc-body[data-theme] *, body.student-app-body[data-season] * {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

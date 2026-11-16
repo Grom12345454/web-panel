@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru" class="student-app-document">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+  <meta name="theme-color" content="{{ student_app_theme.css_vars['season-bg-b']|default('#071522') }}">
+  <meta name="description" content="Личный кабинет студента — цифровой кампус">
+  <title>Студсовет · Личный кабинет</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/student-app.bundle.css', v=asset_version('css/student-app.bundle.css')) }}">
+  <script src="https://telegram.org/js/telegram-web-app.js?63" defer></script>
+  <script src="https://st.max.ru/js/max-web-app.js" defer></script>
+  <script src="{{ url_for('static', filename='js/student-app.bundle.js', v=asset_version('js/student-app.bundle.js')) }}" defer></script>
+</head>
+<body class="student-app-body" data-page="student-app" data-season="{{ student_app_season|default('autumn') }}" data-build="{{ asset_version('js/student-app.bundle.js') }}:{{ asset_version('css/student-app.bundle.css') }}" style="{% for name, value in student_app_theme.css_vars.items() %}--{{ name }}:{{ value }};{% endfor %}">
+    <div class="student-orbit-scene" aria-hidden="true">
+      <span class="student-aurora-cloud student-aurora-cloud--a"></span>
+      <span class="student-aurora-cloud student-aurora-cloud--b"></span>
+      <span class="student-aurora-core"></span>
+      <span class="student-aurora-trail student-aurora-trail--a"></span>
+      <span class="student-aurora-trail student-aurora-trail--b"></span>
+    </div>
+    <div class="cosmos-field" aria-hidden="true">
+        <span class="cosmos-field__nebula"></span>
+        <span class="cosmos-field__stars cosmos-field__stars--distant"></span>
+        <span class="cosmos-field__stars cosmos-field__stars--near"></span>
+        <span class="cosmos-field__horizon"></span>
+        <span class="cosmos-field__comet"></span>
+    </div>
+    <div class="student-entry-sky" data-student-entry-sky aria-hidden="true">
+        <span class="admin-entry-sky__flare"></span>
+        <span class="admin-entry-sky__star"></span><span class="admin-entry-sky__star"></span>
+        <span class="admin-entry-sky__star"></span><span class="admin-entry-sky__star"></span>
+        <span class="admin-entry-sky__star"></span><span class="admin-entry-sky__star"></span>
+        <span class="admin-entry-sky__streak"></span>
+    </div>
+    <div class="student-theme-atmosphere" aria-hidden="true">
+        <span class="holiday-smoke holiday-smoke--white"></span>
+        <span class="holiday-smoke holiday-smoke--blue"></span>
+        <span class="holiday-smoke holiday-smoke--red"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+    </div>
+  <div class="pro-connectivity" id="pro-connectivity" hidden role="status" aria-live="polite">Нет соединения. Проверьте интернет — данные сохранятся на сервере после успешного запроса.</div>
+  <div class="app" id="app"><div class="loading galaxy-loading" role="status" aria-live="polite"><span class="galaxy-loading-planet" aria-hidden="true"><span></span></span><div class="galaxy-loading-copy"><b>Мой кабинет</b><span>Загружаем профиль, расписание и направления…</span><span class="galaxy-loading-progress" aria-hidden="true"></span></div></div></div>
+  <noscript><p class="app-no-script">Для Student App необходимо включить JavaScript в браузере мессенджера.</p></noscript>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

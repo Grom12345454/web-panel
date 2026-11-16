@@ -1,0 +1,121 @@
+{% extends 'shared/base.html' %}
+{% block title %}Приказы по мероприятиям · Архив{% endblock %}
+{% block content %}
+<div class="orders-archive" data-orders-archive>
+  {% set order_metrics = namespace(delivered=0, queued=0, failed=0) %}
+  {% for order in orders %}
+    {% set current_counts = delivery_totals.get(order.id, {}) %}
+    {% set order_metrics.delivered = order_metrics.delivered + current_counts.get('delivered', 0) %}
+    {% set order_metrics.queued = order_metrics.queued + current_counts.get('pending', 0) + current_counts.get('retry', 0) + current_counts.get('sending', 0) + current_counts.get('blocked', 0) %}
+    {% set order_metrics.failed = order_metrics.failed + current_counts.get('failed', 0) %}
+  {% endfor %}
+
+  <header class="orders-hero">
+    <div class="orders-hero-content">
+      <div class="orders-kicker"><span class="orders-kicker-dot" aria-hidden="true"></span> ДОКУМЕНТООБОРОТ · ЗАВЕРШЁННЫЕ МЕРОПРИЯТИЯ</div>
+      <h1>Приказы по прошедшим мероприятиям</h1>
+      <p>Единый архив приказов и документов. Сотрудники своего направления могут просматривать и скачивать файлы; загрузка и рассылка доступны главному администратору и уполномоченным руководителям.</p>
+      <div class="orders-hero-tags"><span>⌁ Закрытый архив</span><span>✓ Проверка формата</span><span>↗ Контроль доставки</span></div>
+    </div>
+    <div class="orders-hero-action">
+      {% if not can_upload_orders %}
+      <div class="orders-action-emblem" aria-hidden="true">◉</div>
+      <strong>Режим просмотра</strong><small>Документы можно открывать и скачивать. Загрузка и рассылка недоступны.</small>
+      {% else %}
+      <div class="orders-action-emblem" aria-hidden="true">⇧</div>
+      <button class="btn btn-primary orders-primary-action" type="button" data-order-modal-open aria-controls="order-upload-modal" {% if not events %}disabled{% endif %}>
+        <span aria-hidden="true">＋</span> Загрузить отчёт
+      </button>
+      {% if not events %}<small>Нет завершённых мероприятий, доступных для загрузки.</small>{% else %}<small>PDF или DOCX · максимум 8 МБ</small>{% endif %}
+      {% endif %}
+    </div>
+    <div class="orders-hero-grid" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  </header>
+
+  <section class="orders-metrics" aria-label="Сводка архива">
+    <article class="orders-metric"><span class="orders-metric-icon orders-metric-icon--violet" aria-hidden="true">▤</span><div><span>Документы</span><strong>{{ orders|length }}</strong><small>в архиве</small></div></article>
+    <article class="orders-metric"><span class="orders-metric-icon orders-metric-icon--blue" aria-hidden="true">◷</span><div><span>Мероприятия</span><strong>{{ events|length }}</strong><small>доступно для отчётов</small></div></article>
+    <article class="orders-metric"><span class="orders-metric-icon orders-metric-icon--green" aria-hidden="true">✓</span><div><span>Доставлено</span><strong>{{ order_metrics.delivered }}</strong><small>успешных отправок</small></div></article>
+    <article class="orders-metric"><span class="orders-metric-icon orders-metric-icon--amber" aria-hidden="true">↻</span><div><span>В работе</span><strong>{{ order_metrics.queued }}</strong><small>включая заблокированные без токена</small></div></article>
+  </section>
+
+  <section class="orders-guidance" aria-label="Правила архива">
+    <span class="orders-guidance-icon" aria-hidden="true">i</span>
+    <div><strong>Документы остаются в закрытом хранилище</strong><p>Доступ к документам и действиям проверяется на сервере. Загружать и отправлять приказы могут только главный администратор, руководители и сотрудники с правом управления мероприятием; назначение студента ведущим мероприятия такого права не даёт. Документы хранятся в закрытом каталоге, публичные ссылки на исходные файлы не создаются.</p></div>
+    <span class="orders-guidance-failed">Ошибки отправки: <b>{{ order_metrics.failed }}</b></span>
+  </section>
+
+  <section class="orders-panel" aria-labelledby="orders-list-title">
+    <header class="orders-panel-heading">
+      <div><span class="orders-section-label">АРХИВ ДОКУМЕНТОВ</span><h2 id="orders-list-title">Отчёты и приказы</h2><p>История загрузок и состояние доставки по каждому документу.</p></div>
+      <div class="orders-list-tools">
+        <label class="orders-search"><span aria-hidden="true">⌕</span><span class="visually-hidden">Поиск по документам</span><input type="search" placeholder="Найти документ…" autocomplete="off" data-order-search></label>
+        <span class="orders-count">{{ orders|length }} {{ 'документов' }}</span>
+      </div>
+    </header>
+
+    {% if orders %}
+      <div class="orders-list" data-order-list>
+      {% for order in orders %}
+        {% set counts = delivery_totals.get(order.id, {}) %}
+        {% set queued_count = counts.get('pending',0) + counts.get('retry',0) + counts.get('sending',0) %}
+        <article class="orders-row" data-order-row data-order-search="{{ (order.original_name ~ ' ' ~ names.get((order.target_kind, order.target_id), 'Без названия') ~ ' ' ~ order.uploaded_by_name)|lower }}">
+          <div class="orders-file-mark {% if order.mime_type == 'application/pdf' %}orders-file-mark--pdf{% else %}orders-file-mark--doc{% endif %}" aria-hidden="true"><span>{% if order.mime_type == 'application/pdf' %}PDF{% else %}DOCX{% endif %}</span><b>↧</b></div>
+          <div class="orders-row-main">
+            <div class="orders-row-title"><h3>{{ order.original_name }}</h3><span class="orders-type-tag">{% if order.mime_type == 'application/pdf' %}PDF-документ{% else %}Документ Word{% endif %}</span></div>
+            <p class="orders-event-name"><span aria-hidden="true">⌁</span> {{ names.get((order.target_kind, order.target_id), 'Без названия') }}</p>
+            <div class="orders-row-meta"><span>Загрузил: <b>{{ order.uploaded_by_name }}</b></span><span>{{ order.uploaded_at.strftime('%d.%m.%Y · %H:%M') }}</span><span>{{ (order.file_size / 1024)|round(1) }} КБ</span></div>
+            <div class="orders-delivery-metrics" aria-label="Состояние доставки">
+              <span class="orders-delivery-pill orders-delivery-pill--success"><i aria-hidden="true"></i> Доставлено <b>{{ counts.get('delivered',0) }}</b></span>
+              <span class="orders-delivery-pill orders-delivery-pill--queued"><i aria-hidden="true"></i> В очереди <b>{{ queued_count }}</b></span>
+              {% if counts.get('blocked',0) %}<span class="orders-delivery-pill orders-delivery-pill--blocked"><i aria-hidden="true"></i> Нет токена <b>{{ counts.get('blocked',0) }}</b></span>{% endif %}
+              {% if counts.get('failed',0) %}<span class="orders-delivery-pill orders-delivery-pill--failed"><i aria-hidden="true"></i> Ошибки <b>{{ counts.get('failed',0) }}</b></span>{% endif %}
+            </div>
+          </div>
+          <div class="orders-row-actions">
+            <a class="btn btn-soft orders-download-action" href="{{ url_for('orders.download_order', order_id=order.id) }}"><span aria-hidden="true">↓</span> Скачать</a>
+            {% if can_upload_orders %}
+            <form method="post" action="{{ url_for('orders.dispatch_order', order_id=order.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit"><span aria-hidden="true">↗</span> В очередь</button></form>
+            {% if counts.get('failed',0) %}<form method="post" action="{{ url_for('orders.retry_order', order_id=order.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-soft" type="submit"><span aria-hidden="true">⟳</span> Повторить</button></form>{% endif %}
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+      </div>
+      <p class="orders-no-results" data-order-no-results hidden>По вашему запросу документы не найдены.</p>
+    {% else %}
+      <div class="orders-empty-state">
+        <div class="orders-empty-orbit" aria-hidden="true"><span>▤</span></div>
+        <h3>Архив пока пуст</h3>
+        <p>После завершения мероприятия загрузите отчёт или приказ. Документ появится здесь вместе с историей отправок.</p>
+        {% if can_upload_orders %}{% if events %}<button class="btn btn-primary" type="button" data-order-modal-open aria-controls="order-upload-modal">＋ Загрузить первый отчёт</button>{% else %}<span class="orders-empty-note">Завершённые мероприятия с правом загрузки не найдены.</span>{% endif %}{% else %}<span class="orders-empty-note">Доступных документов для просмотра пока нет.</span>{% endif %}
+      </div>
+    {% endif %}
+  </section>
+</div>
+
+{% if can_upload_orders %}<div class="orders-modal-backdrop" id="order-upload-modal" data-order-modal hidden aria-hidden="true">
+  <section class="orders-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title" aria-describedby="order-modal-description" tabindex="-1">
+    <button class="orders-modal-close" type="button" data-order-modal-close aria-label="Закрыть окно загрузки">×</button>
+    <div class="orders-modal-icon" aria-hidden="true">⇧</div>
+    <span class="orders-section-label">НОВЫЙ ДОКУМЕНТ</span>
+    <h2 id="order-modal-title">Загрузить отчёт</h2>
+    <p id="order-modal-description" class="orders-modal-description">Выберите завершённое мероприятие и прикрепите файл. После проверки документ сохранится в закрытом архиве.</p>
+    <form action="{{ url_for('orders.upload_order') }}" method="post" enctype="multipart/form-data" class="orders-modal-form" id="orders-upload-form" data-order-upload-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="target_kind" value="event">
+      <label class="orders-field-label" for="orders-target-id">Мероприятие <span>Обязательно</span></label>
+      <select class="orders-field-control" name="target_id" id="orders-target-id" required {% if not events %}disabled{% endif %}>
+        <option value="" selected disabled>Выберите завершённое мероприятие</option>
+        {% for event in events %}<option value="{{ event.id }}">{{ event.event_title }} · №{{ event.id }}</option>{% endfor %}
+      </select>
+      <label class="orders-field-label" for="orders-document">Файл отчёта или приказа <span>Обязательно</span></label>
+      <label class="orders-file-drop" for="orders-document"><span class="orders-file-drop-icon" aria-hidden="true">↑</span><strong>Выберите файл на устройстве</strong><small>PDF или DOCX · до 8 МБ</small><input id="orders-document" type="file" name="document" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required {% if not events %}disabled{% endif %} data-order-file></label>
+      <p class="orders-file-selected" data-order-file-selected aria-live="polite">Файл не выбран</p>
+      <div class="orders-modal-security"><span aria-hidden="true">🔒</span><span>Файл проверяется по формату и размеру. Допустимы только PDF и DOCX.</span></div>
+      <div class="orders-modal-actions"><button class="btn btn-soft" type="button" data-order-modal-close>Отмена</button><button class="btn btn-primary orders-submit" type="submit" {% if not events %}disabled{% endif %} data-order-submit><span aria-hidden="true">⇧</span> Загрузить документ</button></div>
+    </form>
+  </section>
+</div>{% endif %}
+{% endblock %}
+{% block scripts %}{% endblock %}

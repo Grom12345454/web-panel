@@ -1,0 +1,36 @@
+{% extends "shared/base.html" %}
+{% block title %}Самые активные студенты{% endblock %}
+{% block content %}
+<div class="section-title"><div><h1>Самый активный студент каждого направления</h1><p>Рейтинг по числу посещённых мероприятий, доступен всем авторизованным пользователям.</p></div><a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← {{ 'Панель управления' if session.user_role == 'staff' else 'Дашборд' }}</a></div>
+<div class="card" style="margin-top:18px;padding:16px">
+  <label for="active-direction-filter" class="subtle" style="display:block;margin-bottom:7px">Фильтр по направлению</label>
+  <select id="active-direction-filter" class="form-control" style="max-width:420px;width:100%;min-height:42px">
+    <option value="all">Все направления</option>
+    {% for direction in directions %}<option value="{{ direction.id }}">{{ direction.name }}</option>{% endfor %}
+  </select>
+  <div id="active-direction-filter-count" class="subtle" style="margin-top:9px">Показано: {{ ranking|length }} из {{ ranking|length }}</div>
+</div>
+<div class="card table-wrap" style="margin-top:18px"><div class="table-scroll"><table id="active-students-table"><thead><tr><th>Направление</th><th>Студент</th><th>Посещено мероприятий</th></tr></thead><tbody>{% for row in ranking %}<tr data-direction-id="{{ row.direction.id }}"><td>{{ row.direction.name }}</td><td><div class="name-cell">{{ row.student.full_name }}</div><div class="subtle">{{ row.student.group or 'Группа не указана' }}</div></td><td><span class="badge badge-approved">{{ row.count }}</span></td></tr>{% else %}<tr><td colspan="3"><div class="empty"><h3>Пока нет данных</h3><p>Рейтинг появится после обновления статистики посещений.</p></div></td></tr>{% endfor %}<tr id="active-direction-empty" hidden><td colspan="3"><div class="empty">Для выбранного направления пока нет данных о посещениях.</div></td></tr></tbody></table></div></div>
+<script>
+(() => {
+  const filter = document.getElementById('active-direction-filter');
+  const table = document.getElementById('active-students-table');
+  const count = document.getElementById('active-direction-filter-count');
+  const empty = document.getElementById('active-direction-empty');
+  if (!filter || !table || !count || !empty) return;
+  const rows = Array.from(table.querySelectorAll('tbody tr[data-direction-id]'));
+  const update = () => {
+    let visible = 0;
+    rows.forEach(row => {
+      const show = filter.value === 'all' || row.dataset.directionId === filter.value;
+      row.hidden = !show;
+      if (show) visible += 1;
+    });
+    empty.hidden = visible > 0 || rows.length === 0;
+    count.textContent = `Показано: ${visible} из ${rows.length}`;
+  };
+  filter.addEventListener('change', update);
+  update();
+})();
+</script>
+{% endblock %}

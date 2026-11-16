@@ -1,0 +1,50 @@
+{% extends "shared/base.html" %}
+{% block title %}Календарь | Студенческий совет{% endblock %}
+{% block content %}
+<section class="staff-calendar" id="staff-calendar" data-csrf-token="{{ csrf_token_value }}" data-initial-date="{{ selected_date }}" data-initial-direction="{{ selected_direction or '' }}" data-initial-kind="{{ selected_kind|default('all') }}">
+  <header class="calendar-page-header">
+    <div class="calendar-heading-copy">
+      <div class="eyebrow">ПЛАНИРОВАНИЕ И КОМАНДНАЯ РАБОТА</div>
+      <h1>Единый календарь</h1>
+      <p>Занятия и мероприятия в одном расписании. Выберите дату, чтобы увидеть детали и создать новое событие.</p>
+    </div>
+    <div class="calendar-create-actions">
+      {% if can_manage_lessons %}<a class="btn btn-soft" data-calendar-create-lesson href="{{ url_for('lessons.create_lesson', return_to='calendar', date=selected_date) }}"><span aria-hidden="true">＋</span> Создать занятие</a>{% endif %}
+      {% if can_create_events %}<a class="btn btn-primary" data-calendar-create-event href="{{ url_for('quotas.create_quota', return_to='calendar', date=selected_date) }}"><span aria-hidden="true">＋</span> Создать мероприятие</a>{% endif %}
+    </div>
+  </header>
+
+  <div class="calendar-summary" aria-label="Сводка расписания">
+    <article class="calendar-summary-card calendar-summary-card--today"><span class="calendar-summary-icon" aria-hidden="true">◷</span><span class="calendar-summary-copy"><small>На выбранную дату</small><strong id="calendar-count-day">0</strong></span></article>
+    <article class="calendar-summary-card calendar-summary-card--lesson"><span class="calendar-summary-icon" aria-hidden="true">▤</span><span class="calendar-summary-copy"><small>Занятий в месяце</small><strong id="calendar-count-lessons">0</strong></span></article>
+    <article class="calendar-summary-card calendar-summary-card--event"><span class="calendar-summary-icon" aria-hidden="true">✦</span><span class="calendar-summary-copy"><small>Мероприятий в месяце</small><strong id="calendar-count-events">0</strong></span></article>
+  </div>
+
+  <div class="calendar-filter-bar">
+    <label class="calendar-search" aria-label="Поиск по календарю"><span aria-hidden="true">⌕</span><input type="search" id="calendar-search" placeholder="Найти занятие или мероприятие…" autocomplete="off"></label>
+    <label class="calendar-filter-field"><span>Тип</span><select id="calendar-type-filter" class="select"><option value="all" {% if selected_kind == 'all' %}selected{% endif %}>Всё расписание</option><option value="lesson" {% if selected_kind == 'lesson' %}selected{% endif %}>Только занятия</option><option value="event" {% if selected_kind == 'event' %}selected{% endif %}>Только мероприятия</option></select></label>
+    <label class="calendar-filter-field calendar-filter-direction"><span>Направление</span><select id="calendar-direction-filter" class="select"><option value="all">Все направления</option>{% for direction in directions %}<option value="{{ direction.id }}">{{ direction.name }}</option>{% endfor %}</select></label>
+  </div>
+
+  <div class="calendar-workspace">
+    <section class="calendar-board card" aria-label="Календарь занятий и мероприятий">
+      <div class="calendar-toolbar"><div class="calendar-month-navigation"><button type="button" class="calendar-icon-button" id="calendar-prev" aria-label="Предыдущий период">‹</button><button type="button" class="calendar-icon-button" id="calendar-next" aria-label="Следующий период">›</button><button type="button" class="calendar-today-button" id="calendar-today">Сегодня</button><h2 id="calendar-month-title" aria-live="polite">Календарь</h2></div><div class="calendar-view-switch" role="group" aria-label="Вид календаря"><button type="button" class="is-active" data-calendar-view="month" aria-pressed="true">Месяц</button><button type="button" data-calendar-view="agenda" aria-pressed="false">Список</button></div></div>
+      <div class="calendar-legend" aria-label="Обозначения"><span><i class="calendar-legend-dot is-lesson"></i> Занятия</span><span><i class="calendar-legend-dot is-event"></i> Мероприятия</span></div>
+      <div class="calendar-month-view" id="calendar-month-view"><div class="calendar-weekdays" aria-hidden="true"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div><div class="calendar-month-grid" id="calendar-month-grid" role="grid" aria-label="Дни месяца"></div></div>
+      <div class="calendar-agenda-view" id="calendar-agenda-view" hidden><div id="calendar-agenda-list"></div></div>
+      <div class="calendar-board-footer"><span class="calendar-live-dot"></span><span>Расписание объединяет учебные занятия и студенческие мероприятия</span></div>
+    </section>
+
+    <aside class="calendar-detail-panel card" aria-label="События выбранной даты">
+      <div class="calendar-side-header"><div class="eyebrow">ВАШЕ РАСПИСАНИЕ</div><h2 id="calendar-selected-date">Выберите дату</h2><p id="calendar-day-subtitle">Здесь появятся занятия и мероприятия выбранного дня.</p></div>
+      <div id="calendar-day-events" class="calendar-day-events"></div>
+      <section id="calendar-event-detail" class="calendar-event-detail" hidden><button type="button" class="calendar-back-link" id="calendar-back-to-day">← Все события дня</button><div id="calendar-detail-content"></div></section>
+      <div class="calendar-side-create" id="calendar-side-create">
+        {% if can_manage_lessons %}<a data-calendar-create-lesson-side href="{{ url_for('lessons.create_lesson', return_to='calendar', date=selected_date) }}" class="calendar-side-action calendar-side-action--lesson"><span>＋</span><span><strong>Новое занятие</strong><small>В расписание направления</small></span></a>{% endif %}
+        {% if can_create_events %}<a data-calendar-create-event-side href="{{ url_for('quotas.create_quota', return_to='calendar', date=selected_date) }}" class="calendar-side-action calendar-side-action--event"><span>＋</span><span><strong>Новое мероприятие</strong><small>С датами и местами для участников</small></span></a>{% endif %}
+      </div>
+    </aside>
+  </div>
+  <script id="calendar-data" type="application/json">{{ calendar_events|tojson }}</script>
+</section>
+{% endblock %}

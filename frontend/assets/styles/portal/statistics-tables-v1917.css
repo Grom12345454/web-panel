@@ -1,0 +1,187 @@
+/* v1.9.17 — table parity with the Active Students register. */
+body.uc-body:not(.is-auth-page) .page .statistics-panel .stats-data-table-card {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--role-panel-border, rgba(139,190,218,.16)) !important;
+  border-radius: 18px !important;
+  background: var(--role-panel-bg, linear-gradient(145deg, rgba(14,32,51,.94), rgba(6,18,32,.97))) !important;
+  box-shadow: var(--role-panel-shadow, 0 16px 38px rgba(0,5,20,.2)) !important;
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-data-table-scroll,
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .table-scroll {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(139,190,218,.14);
+  background: #11293d !important;
+  color: #b1cbd9 !important;
+  font-size: 10px;
+  font-weight: 820;
+  letter-spacing: .055em;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(139,190,218,.095);
+  color: #c6d8e5;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  text-align: left;
+  vertical-align: middle;
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card tbody tr:last-child td { border-bottom: 0; }
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card tbody tr:not([hidden]):hover td { background: rgba(111,209,222,.035); }
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .name-cell { color: #eff8ff; font-weight: 740; }
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .subtle { color: #8099ad; }
+/* Search, page-size and export controls remain available but sit inside the same table card. */
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-toolbar {
+  margin: 0;
+  padding: 13px 15px;
+  border: 0;
+  border-bottom: 1px solid rgba(139,190,218,.12);
+  border-radius: 0;
+  background: rgba(5,16,29,.2);
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-pagination {
+  margin: 0;
+  padding: 11px 15px;
+  border: 0;
+  border-top: 1px solid rgba(139,190,218,.12);
+  border-radius: 0;
+  background: rgba(5,16,29,.18);
+}
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-result-count { color: #a9c0d0; }
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-search input,
+body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-page-size select {
+  min-height: 36px;
+  border: 1px solid rgba(139,190,218,.18);
+  border-radius: 10px;
+  background: rgba(5,17,31,.72);
+  color: #e8f3fb;
+}
+/* Compact monthly detail follows the same row and header language. */
+body.uc-body:not(.is-auth-page) .page .stats-inline-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(139,190,218,.14);
+  border-radius: 12px;
+}
+body.uc-body:not(.is-auth-page) .page .stats-inline-table-scroll table { width: 100%; min-width: 450px; }
+@media (max-width: 700px) {
+  body.uc-body:not(.is-auth-page) .page .stats-data-table-card thead th,
+  body.uc-body:not(.is-auth-page) .page .stats-data-table-card tbody td { padding: 10px 11px; }
+  body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-toolbar { padding: 11px; }
+  body.uc-body:not(.is-auth-page) .page .stats-data-table-card .stats-table-pagination { padding: 10px 11px; }
+}
+
+
+/* v1.9.18 — table-only statistics workspace. */
+body.uc-body[data-page^="stats-"] .app-shell {
+  min-height: 0 !important;
+  height: auto !important;
+  align-items: stretch !important;
+}
+body.uc-body[data-page^="stats-"] .app-shell > .main {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  align-self: stretch !important;
+}
+body.uc-body[data-page^="stats-"] .app-shell > .main > .page {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  align-self: stretch !important;
+  padding-bottom: 18px !important;
+}
+body.uc-body[data-page^="stats-"] .page:has(.stats-command-header) > * {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+body.uc-body[data-page^="stats-"] .page .stats-data-table-card {
+  margin: 0;
+  transform: none !important;
+}
+body.uc-body[data-page^="stats-"] .page .direction-table-tools {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 13px 15px;
+  border-bottom: 1px solid rgba(139,190,218,.12);
+  background: rgba(5,16,29,.2);
+}
+body.uc-body[data-page^="stats-"] .page .direction-filter-field {
+  display: grid;
+  gap: 5px;
+  min-width: min(230px, 100%);
+  color: #8fa9bd;
+  font-size: 10px;
+  font-weight: 700;
+}
+body.uc-body[data-page^="stats-"] .page .direction-filter-field input,
+body.uc-body[data-page^="stats-"] .page .direction-filter-field select {
+  min-height: 36px;
+  max-width: 100%;
+  padding: 0 10px;
+  border: 1px solid rgba(139,190,218,.18);
+  border-radius: 10px;
+  background: rgba(5,17,31,.72);
+  color: #e8f3fb;
+  font: inherit;
+}
+body.uc-body[data-page^="stats-"] .page .direction-filter-count {
+  margin-left: auto;
+  padding-bottom: 9px;
+  color: #a9c0d0;
+  font-size: 10px;
+  white-space: nowrap;
+}
+@media (max-width: 680px) {
+  body.uc-body[data-page^="stats-"] .page .direction-table-tools { align-items: stretch; padding: 11px; }
+  body.uc-body[data-page^="stats-"] .page .direction-filter-field { flex: 1 1 100%; min-width: 100%; }
+  body.uc-body[data-page^="stats-"] .page .direction-filter-count { margin-left: 0; padding-bottom: 0; }
+}
+
+/* v1.9.18 — one-table statistics page: natural document height only. */
+body.uc-body[data-page^="stats-"] .app-shell,
+body.uc-body[data-page^="stats-"] .app-shell > .main,
+body.uc-body[data-page^="stats-"] .app-shell > .main > .page {
+  min-height: 0 !important;
+  height: auto !important;
+}
+body.uc-body[data-page^="stats-"] .app-shell > .main { flex: 0 0 auto !important; }
+body.uc-body[data-page^="stats-"] .app-shell > .main > .page {
+  flex: 0 0 auto !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 0 !important;
+}

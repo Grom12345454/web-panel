@@ -1,0 +1,152 @@
+/* Student App theme system v28 — a full interface skin driven by the saved server theme. */
+body.student-app-body {
+  --sa-theme-accent: var(--season-accent, #78afff);
+  --sa-theme-secondary: var(--season-secondary, #3978ed);
+  --sa-theme-panel: var(--season-panel-rgb, 14, 39, 69);
+  --sa-theme-panel-dark: var(--season-panel-dark-rgb, 4, 16, 34);
+  --sa-theme-border: var(--season-border-rgb, 120, 175, 255);
+  background-color: #030916 !important;
+  background-image:
+    radial-gradient(ellipse 72% 52% at 92% -3%, rgba(var(--season-secondary-rgb, 120, 175, 255), .26), transparent 68%),
+    radial-gradient(ellipse 68% 58% at -5% 85%, rgba(var(--season-accent-rgb, 120, 175, 255), .18), transparent 72%),
+    linear-gradient(180deg, rgba(var(--season-panel-rgb, 14, 39, 69), .25), rgba(var(--season-panel-dark-rgb, 4, 16, 34), .82)),
+    url("../images/campus-space.webp") !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat !important;
+  background-position: center, center, center, center bottom !important;
+  background-size: cover, cover, cover, cover !important;
+  color: #f2f7ff;
+  transition: background-color .45s ease, color .35s ease;
+}
+body.student-app-body #app { position: relative; z-index: 2; }
+body.student-app-body .cosmos-field { opacity: .38 !important; transition: opacity .5s ease, filter .6s ease; }
+body.student-app-body .student-festive-atmosphere { display: block !important; opacity: .34 !important; transition: opacity .45s ease; }
+body.student-app-body .student-orbit-scene { opacity: .47; filter: drop-shadow(0 20px 55px rgba(var(--season-accent-rgb,120,175,255),.13)); transition: opacity .6s ease, filter .6s ease; }
+
+/* One coherent token system for every content surface in the app. */
+body.student-app-body :is(.command-hero, .command-metric, .command-next-card, .command-today-tile,
+  .mission-today-tile, .mission-student-disclosure, .command-identity-card, .command-edit-card,
+  .command-chats, .student-announcement, .account-tile, .account-card, .glass.card, .event-modal,
+  .decline-modal, .student-notice-modal, .registration .card, .command-profile-card) {
+  border-color: rgba(var(--season-border-rgb, 120, 175, 255), .29) !important;
+  box-shadow: 0 18px 48px rgba(0, 4, 18, .28),
+    inset 0 1px 0 rgba(255,255,255,.075),
+    0 0 28px rgba(var(--season-accent-rgb,120,175,255),.045) !important;
+  transition: background .45s ease, border-color .45s ease, box-shadow .45s ease, transform .22s ease;
+}
+body.student-app-body :is(.command-hero, .command-metric, .command-next-card, .command-today-tile,
+  .mission-today-tile, .mission-student-disclosure, .command-identity-card, .command-edit-card,
+  .command-chats, .student-announcement, .account-tile, .account-card, .glass.card) {
+  background-color: rgba(var(--season-panel-dark-rgb, 4, 16, 34), .92) !important;
+  background-image: linear-gradient(138deg, rgba(var(--season-accent-rgb,120,175,255),.085), transparent 48%),
+    linear-gradient(145deg, rgba(var(--season-panel-rgb,14,39,69),.94), rgba(var(--season-panel-dark-rgb,4,16,34),.96)) !important;
+}
+body.student-app-body .command-hero {
+  border-radius: 28px !important;
+  box-shadow: 0 28px 86px rgba(0,5,24,.4), inset 0 1px rgba(255,255,255,.14),
+    0 0 50px rgba(var(--season-accent-rgb,120,175,255),.085) !important;
+}
+body.student-app-body .command-hero::before {
+  background: linear-gradient(108deg, transparent 18%, rgba(var(--season-accent-rgb,120,175,255),.08) 38%,
+    rgba(var(--season-secondary-rgb,57,120,237),.16) 50%, transparent 76%) !important;
+  background-size: 240% 100% !important;
+}
+body.student-app-body :is(.command-hero h1, .section-title h2, .command-metric strong, .command-next-card strong) { color: #f4f8ff !important; }
+body.student-app-body :is(.command-hero-copy>p, .command-metric-label, .command-metric small, .section-title span, .muted) { color: #afc3da; }
+body.student-app-body .command-metric-icon,
+body.student-app-body :is(.avatar, .icon, .command-next-icon, .command-today-icon, .event-modal-symbol) {
+  color: var(--sa-theme-accent) !important;
+  border-color: rgba(var(--season-border-rgb,120,175,255),.33) !important;
+  background: linear-gradient(145deg, rgba(var(--season-accent-rgb,120,175,255),.20), rgba(var(--season-secondary-rgb,57,120,237),.13)) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.09), 0 7px 24px rgba(var(--season-accent-rgb,120,175,255),.08) !important;
+}
+body.student-app-body .nav {
+  border-color: rgba(var(--season-border-rgb,120,175,255),.27) !important;
+  background: linear-gradient(120deg, rgba(var(--season-panel-dark-rgb,4,16,34),.96), rgba(var(--season-panel-rgb,14,39,69),.89)) !important;
+  box-shadow: 0 13px 34px rgba(0,4,18,.28), inset 0 1px rgba(255,255,255,.07) !important;
+}
+body.student-app-body .nav button.active {
+  color: #fff !important;
+  border-color: rgba(var(--season-border-rgb,120,175,255),.35) !important;
+  background: linear-gradient(135deg, rgba(var(--season-accent-rgb,120,175,255),.36), rgba(var(--season-secondary-rgb,57,120,237),.25)) !important;
+  box-shadow: 0 0 23px rgba(var(--season-accent-rgb,120,175,255),.11), inset 0 1px rgba(255,255,255,.12) !important;
+}
+body.student-app-body .btn.primary {
+  color: #fff !important;
+  border-color: rgba(var(--season-border-rgb,120,175,255),.42) !important;
+  background: linear-gradient(115deg, var(--sa-theme-accent), var(--sa-theme-secondary)) !important;
+  box-shadow: 0 9px 26px rgba(var(--season-accent-rgb,120,175,255),.20), inset 0 1px rgba(255,255,255,.2) !important;
+}
+body.student-app-body :is(.input, .select, input, textarea, select) {
+  accent-color: var(--sa-theme-accent);
+  border-color: rgba(var(--season-border-rgb,120,175,255),.24);
+}
+body.student-app-body :is(.input, .select):focus {
+  border-color: rgba(var(--season-accent-rgb,120,175,255),.72) !important;
+  box-shadow: 0 0 0 3px rgba(var(--season-accent-rgb,120,175,255),.14) !important;
+}
+body.student-app-body :is(.student-announcement-heading, .student-announcement-heading span, .student-announcement-open small) { color: var(--sa-theme-accent); }
+body.student-app-body .student-announcement:hover,
+body.student-app-body .command-metric:hover,
+body.student-app-body .account-tile:hover {
+  border-color: rgba(var(--season-border-rgb,120,175,255),.56) !important;
+  box-shadow: 0 22px 55px rgba(0,4,18,.34), 0 0 30px rgba(var(--season-accent-rgb,120,175,255),.11) !important;
+}
+
+/* A different accent language and motion rhythm for every season. */
+body.student-app-body[data-season="spring"] { --sa-theme-glow: .2; --sa-theme-motion: 8s; }
+body.student-app-body[data-season="summer"] { --sa-theme-glow: .29; --sa-theme-motion: 5s; }
+body.student-app-body[data-season="autumn"] { --sa-theme-glow: .23; --sa-theme-motion: 7s; }
+body.student-app-body[data-season="winter"] { --sa-theme-glow: .32; --sa-theme-motion: 11s; }
+body.student-app-body[data-season="march_8"] .command-hero { box-shadow: 0 28px 86px rgba(0,5,24,.4), 0 0 55px rgba(255,155,201,.11) !important; }
+body.student-app-body[data-season="cosmonautics_day"] .student-orbit-scene { opacity: .68; filter: saturate(1.22) drop-shadow(0 0 46px rgba(var(--season-accent-rgb),.23)); }
+body.student-app-body[data-season="new_year"] .student-festive-glyph { text-shadow: 0 0 22px #fff, 0 0 48px var(--sa-theme-secondary); }
+body.student-app-body[data-season="defender_day"] .command-metric-icon { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 0 24px rgba(205,160,82,.09) !important; }
+
+/* Russian state holidays: restrained white-blue-red signal integrated into panels and controls. */
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .command-hero {
+  box-shadow: 0 28px 86px rgba(0,5,24,.43), inset 0 3px 0 rgba(255,255,255,.98),
+    inset 0 6px 0 rgba(68,126,231,.98), inset 0 9px 0 rgba(221,63,83,.98),
+    0 0 48px rgba(var(--season-accent-rgb,120,175,255),.12) !important;
+}
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .nav {
+  border-bottom: 2px solid transparent !important;
+  border-image: linear-gradient(90deg,#f8fbff 0 33.3%,#3978ed 33.3% 66.6%,#e3485c 66.6% 100%) 1 !important;
+}
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .student-festive-atmosphere::before {
+  content: ""; position: absolute; left: -8%; right: -8%; top: 12%; height: 20px;
+  background: linear-gradient(180deg,rgba(255,255,255,.72) 0 33.3%,rgba(61,119,235,.72) 33.3% 66.6%,rgba(226,65,84,.72) 66.6% 100%);
+  opacity: .15; filter: blur(12px); transform: rotate(-7deg); transform-origin: center;
+  animation: sa-russian-ribbon 12s ease-in-out infinite alternate; pointer-events: none;
+}
+body.student-app-body[data-season="constitution_day"] .command-hero::after {
+  box-shadow: inset 0 0 0 1px rgba(245,232,194,.14), 0 0 42px rgba(245,232,194,.05);
+}
+body.student-app-body[data-season="constitution_day"] .command-metric-icon { color: #f4e9c5 !important; }
+body.student-app-body[data-season="russia_day"] .student-orbit-scene,
+body.student-app-body[data-season="flag_day"] .student-orbit-scene { filter: saturate(1.12) drop-shadow(0 0 40px rgba(61,119,235,.15)); }
+
+body.student-app-body.theme-changing::before { animation: sa-theme-wash .85s ease-out both; }
+body.student-app-body.theme-changing .command-hero { animation: sa-theme-hero .9s cubic-bezier(.2,.8,.2,1) both; }
+body.student-app-body.theme-changing .nav { animation: sa-theme-nav .65s ease-out both; }
+body.student-app-body.theme-changing :is(.command-metric, .student-announcement, .mission-student-disclosure, .account-tile) { animation: sa-theme-card .72s cubic-bezier(.2,.8,.2,1) both; }
+body.student-app-body.theme-changing .command-metric:nth-child(2) { animation-delay: 45ms; }
+body.student-app-body.theme-changing .command-metric:nth-child(3) { animation-delay: 90ms; }
+@keyframes sa-theme-wash { 0%{filter:saturate(.75) brightness(.96)} 45%{filter:saturate(1.35) brightness(1.08)} 100%{filter:none} }
+@keyframes sa-theme-hero { 0%{transform:translateY(4px) scale(.99);filter:saturate(.72)} 55%{transform:translateY(-2px) scale(1.006);filter:saturate(1.3)} 100%{transform:none;filter:none} }
+@keyframes sa-theme-nav { 0%{box-shadow:0 0 0 rgba(var(--season-accent-rgb),0)} 55%{box-shadow:0 0 35px rgba(var(--season-accent-rgb),.18)} 100%{box-shadow:0 13px 34px rgba(0,4,18,.28)} }
+@keyframes sa-theme-card { 0%{filter:saturate(.7);transform:translateY(3px)} 58%{filter:saturate(1.24);transform:translateY(-1px)} 100%{filter:none;transform:none} }
+@keyframes sa-russian-ribbon { from{translate:-1.5% 0;opacity:.09} to{translate:1.5% 6px;opacity:.21} }
+@media(max-width:640px) {
+  body.student-app-body .command-hero { border-radius: 22px !important; }
+  body.student-app-body .student-festive-atmosphere::before { top: 16%; height: 15px; }
+  body.student-app-body .student-orbit-scene { opacity: .29; }
+}
+@media(prefers-reduced-motion:reduce) {
+  body.student-app-body, body.student-app-body *, body.student-app-body::before,
+  body.student-app-body .student-festive-atmosphere::before {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

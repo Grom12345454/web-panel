@@ -1,0 +1,45 @@
+{% extends 'shared/base.html' %}
+{% block title %}Вход — Рабочее пространство{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block login_content %}
+<main class="premium-login premium-login--single" id="login-content">
+  <section class="premium-auth premium-auth--single" aria-labelledby="premium-auth-title">
+    <div class="premium-auth-inner">
+      <div class="premium-auth-topline">
+        <span class="premium-access"><i aria-hidden="true"></i> ЗАКРЫТЫЙ ДОСТУП</span>
+      </div>
+
+      <div class="premium-welcome">
+        <span class="premium-welcome-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5 20 8v8l-8 4.5L4 16V8l8-4.5Z"></path><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg></span>
+        <p class="premium-kicker">РАБОЧЕЕ ПРОСТРАНСТВО</p>
+        <h1 id="premium-auth-title">С возвращением<span>.</span></h1>
+        <p class="premium-auth-intro">Войдите в аккаунт, чтобы продолжить работу над тем, что действительно важно.</p>
+      </div>
+
+      <div class="premium-auth-steps" aria-label="Вход в панель"><span class="is-current"><i>01</i> Логин и пароль</span></div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<div class="premium-alert premium-alert--{{ cat|default('info') }}" role="alert">{{ msg }}</div>{% endfor %}
+      {% endwith %}
+
+      <form method="post" class="premium-form" autocomplete="on" data-login-form aria-label="Форма безопасного входа">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="premium-field">
+          <label for="login-username">Логин сотрудника <span>ОБЯЗАТЕЛЬНО</span></label>
+          <div class="premium-input"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c.7-3.3 3.1-5 7-5s6.3 1.7 7 5"></path></svg><input id="login-username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="255" required placeholder="Ваш логин"></div>
+          <small>Логин выдаёт главный администратор.</small>
+        </div>
+        <div class="premium-field">
+          <label for="login-password">Пароль <span>ЗАЩИЩЁННОЕ ПОЛЕ</span></label>
+          <div class="premium-input premium-input--password"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"></path></svg><input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Введите пароль"><button type="button" id="password-visibility" aria-label="Показать пароль" aria-pressed="false">Показать</button></div>
+        </div>
+        <button class="premium-submit" type="submit" aria-label="Продолжить вход"><span>Продолжить</span><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12h14M12.5 5.5 19 12l-6.5 6.5"></path></svg></i></button>
+      </form>
+
+      
+      <div class="premium-auth-footer"><p><span aria-hidden="true">◇</span> Сотрудники без Telegram-привязки входят по логину и паролю. Для ранее привязанных аккаунтов сохраняется дополнительное подтверждение в Telegram. Не сообщайте пароль другим людям.</p></div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/login-security.js', v=asset_version('js/login-security.js')) }}" defer></script>{% endblock %}

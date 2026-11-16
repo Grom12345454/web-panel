@@ -1,0 +1,31 @@
+/* Student 2026 — cohesive calendar-first space and calmer interaction. */
+.student-app-body{--student-polish-accent:#8de4f4;--student-polish-border:rgba(147,202,238,.24);letter-spacing:.004em}
+.student-app-body .student-orbit-scene,.student-app-body .student-festive-atmosphere{opacity:.55;pointer-events:none}
+.student-app-body .command-hero{background-image:radial-gradient(circle at 80% 25%,rgba(107,149,230,.2),transparent 48%),linear-gradient(126deg,rgba(20,51,79,.96),rgba(9,28,48,.98))}
+.student-app-body .command-dashboard{min-width:0}
+.student-app-body :is(.command-metric,.command-next-card,.mission-today-tile,.mission-student-disclosure,.glass.card){
+ border-color:var(--student-polish-border);box-shadow:0 12px 34px rgba(1,10,27,.2)
+}
+body.student-app-body .mission-today-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+body.student-app-body .mission-today-tile--calendar{grid-column:1/-1;min-height:170px}
+.student-app-body .mission-today-tile{position:relative;overflow:hidden}
+.student-app-body .mission-today-tile::before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(132,222,255,.57),transparent)}
+.student-app-body .mission-today-tile--calendar{background:linear-gradient(140deg,rgba(24,65,99,.9),rgba(10,31,52,.95));text-align:left}
+.student-app-body .mission-today-tile--calendar .mission-combined-items{display:grid;gap:5px;margin-top:12px;color:#b9d8eb;font-size:12px;line-height:1.5}
+.student-app-body .mission-today-tile--calendar .mission-combined-items b{color:#d9f2ff;font-weight:720}
+.student-app-body .mission-today-tile--calendar small:last-child{color:#9feaff}
+.student-app-body .mission-schedule,.student-app-body .mission-list-schedule{border:1px solid var(--student-polish-border)}
+.student-app-body :is(button,a,input,select,textarea,[role="button"]):focus-visible{outline:2px solid #99e9fa!important;outline-offset:3px!important}
+.student-app-body :is(.mission-list-row,.mission-list-card,.event-preview){transition:border-color .22s,background-color .22s,transform .22s}
+@media(hover:hover) and (pointer:fine){.student-app-body :is(.mission-list-row,.mission-list-card,.event-preview):hover{border-color:rgba(155,228,250,.51)}}
+@keyframes student-soft-entry{from{opacity:.01;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+.student-app-body .command-dashboard,.student-app-body .mission-list-schedule{animation:student-soft-entry .43s cubic-bezier(.16,.8,.25,1) both}
+@media(max-width:680px){
+ .student-app-body .mission-today-grid{grid-template-columns:1fr!important}
+ body.student-app-body .mission-today-tile--calendar{grid-column:1;min-height:0}
+ .student-app-body .mission-today-tile--calendar .mission-combined-items{gap:4px}
+}
+@media(prefers-reduced-motion:reduce){
+ .student-app-body .command-dashboard,.student-app-body .mission-list-schedule{animation:none!important}
+ .student-app-body :is(.mission-list-row,.mission-list-card,.event-preview){transition:none!important}
+}

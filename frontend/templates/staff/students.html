@@ -1,0 +1,93 @@
+{% extends 'shared/base.html' %}
+{% block title %}Работа со студентами | Студсовет{% endblock %}
+{% block content %}
+{% set has_actions = sections.students or may_manage('applications') %}
+<div class="staff-workspace staff-students-page" data-staff-students>
+  <div class="section-title">
+    <div>
+      <div class="eyebrow">УЧАСТНИКИ И ЗАЯВЛЕНИЯ</div>
+      <h1>Работа со студентами</h1>
+      <p>{% if selected_direction %}Данные и действия только в направлении «{{ selected_direction.name }}».{% else %}Доступные вам направления и студенческие карточки.{% endif %}</p>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← Панель управления</a>
+  </div>
+
+  {% if directions|length > 1 %}
+  <nav class="staff-dashboard-directions" aria-label="Выбор доступного направления">
+    <span class="staff-dashboard-directions-label">{{ 'ВСЕ НАПРАВЛЕНИЯ' if (is_chief_admin or is_global_employee) else 'НАЗНАЧЕННОЕ НАПРАВЛЕНИЕ' }}</span>
+    {% for direction in directions %}
+    <a class="staff-dashboard-direction-pill{% if direction.id == selected %} is-current{% endif %}"
+       href="{{ url_for('staff.students', direction=direction.id) }}" {% if direction.id == selected %}aria-current="page"{% endif %}>{{ direction.name }}</a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  {% if selected_direction %}
+    {% if is_chief_admin %}
+    <details class="staff-workspace-create staff-dashboard-details" open>
+      <summary><span>＋ Добавить студента</span><small>Создать новую карточку в выбранном направлении</small></summary>
+      <form method="post" action="{{ url_for('staff.create_student', direction_id=selected) }}" class="staff-workspace-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="staff-form-grid">
+          <label>ФИО<input class="input" name="full_name" maxlength="255" minlength="3" required></label>
+          <label>Учебная группа<input class="input" name="group" maxlength="50"></label>
+          <label>Телефон<input class="input" name="phone" maxlength="30" autocomplete="tel"></label>
+          <label>Учебный контур<select class="input" name="education_type"><option value="institute">Институт</option><option value="college">Колледж</option></select></label>
+          <label>Статус участия<select class="input" name="status"><option value="pending" selected>Заявка на рассмотрении</option><option value="interview">Собеседование</option><option value="active">Активный участник</option></select></label>
+        </div>
+        <button class="btn btn-primary" type="submit">Создать карточку</button>
+      </form>
+    </details>
+    {% endif %}
+    <section class="mission-panel staff-dashboard-section">
+      <div class="mission-panel-top">
+        <div><h2>Студенты направления</h2><p>Список ограничен выбранным направлением и вашими разрешениями.</p></div>
+        <span class="mission-panel-count">{{ students|length }}</span>
+      </div>
+      <div class="staff-workspace-table staff-dashboard-table">
+        <table>
+          <thead><tr><th>Студент</th><th>Группа</th><th>Телефон</th>{% if sections.applications %}<th>Статус участия</th>{% endif %}{% if has_actions %}<th>Действия</th>{% endif %}</tr></thead>
+          <tbody>
+          {% for student,status in students if student %}
+            <tr>
+              <td><strong>{{ student.full_name }}</strong><small class="subtle">ID {{ student.id }}</small></td>
+              <td>{{ student.group or '—' }}</td>
+              <td>{{ student.phone or '—' }}</td>
+              {% if sections.applications %}<td><span class="staff-status-pill staff-status-{{ status|replace('_','-') }}">{% if status == 'pending' %}На рассмотрении{% elif status == 'interview' %}Собеседование{% elif status == 'active' %}Участник{% elif status == 'rejected' %}Отклонено{% else %}{{ status }}{% endif %}</span></td>{% endif %}
+              {% if has_actions %}
+              <td class="staff-dashboard-actions">
+                {% if sections.students %}<a class="btn btn-soft" href="{{ url_for('admin.student_detail', sid=student.id) }}">Карточка</a>{% endif %}
+                {% if may_manage('applications') and status in ['pending','interview'] %}
+                <form method="post" action="{{ url_for('staff.application_decision',student_id=student.id,direction_id=selected) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button name="action" value="active" class="btn btn-primary">Принять</button>
+                  <input class="input" name="reason" placeholder="Причина отказа">
+                  <button name="action" value="rejected" class="btn btn-danger">Отклонить</button>
+                </form>
+                {% endif %}
+                {% if may_manage('students') %}
+                <details class="staff-student-edit"><summary class="btn">Изменить данные</summary>
+                  <form method="post" action="{{ url_for('staff.update_student_profile',student_id=student.id,direction_id=selected) }}" class="staff-workspace-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label>ФИО<input class="input" name="full_name" maxlength="255" value="{{ student.full_name or '' }}" required></label>
+                    <label>Группа<input name="group" class="input" maxlength="50" value="{{ student.group or '' }}"></label>
+                    <label>Телефон<input name="phone" class="input" maxlength="30" value="{{ student.phone or '' }}"></label>
+                    <button class="btn btn-primary">Сохранить карточку</button>
+                  </form>
+                </details>
+                {% endif %}
+              </td>
+              {% endif %}
+            </tr>
+          {% else %}
+            <tr><td colspan="{{ 3 + (1 if sections.applications else 0) + (1 if has_actions else 0) }}" class="staff-dashboard-empty-cell">{% if sections.applications %}Заявлений и участников пока нет.{% else %}Участников пока нет.{% endif %}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% else %}
+    <section class="mission-panel staff-dashboard-section"><div class="mission-clear-state"><span aria-hidden="true">◎</span><div><strong>Нет доступных направлений</strong><p>Обратитесь к главному администратору, чтобы получить права на просмотр студентов или заявлений.</p></div></div></section>
+  {% endif %}
+</div>
+{% endblock %}

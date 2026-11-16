@@ -1,0 +1,12 @@
+{% if dashboard_metrics %}
+<section class="galaxy-stats mission-kpis" aria-label="Показатели рабочего пространства">
+  {% for metric in dashboard_metrics %}
+    {% if metric.href %}<a class="galaxy-stat mission-kpi{% if metric.attention %} mission-kpi-attention{% endif %}" href="{{ metric.href }}">
+    {% else %}<div class="galaxy-stat mission-kpi{% if metric.attention %} mission-kpi-attention{% endif %}">{% endif %}
+      <span class="mission-kpi-icon" aria-hidden="true">{{ metric.icon }}</span>
+      <div><small>{{ metric.label }}</small><strong>{{ metric.value if metric.value is not none else '—' }}</strong><span>{{ metric.detail }}</span></div>
+      {% if metric.href %}<span aria-hidden="true">↗</span>{% endif %}
+    {% if metric.href %}</a>{% else %}</div>{% endif %}
+  {% endfor %}
+</section>
+{% endif %}

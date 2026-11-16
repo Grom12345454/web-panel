@@ -1,0 +1,93 @@
+{% extends "shared/base.html" %}
+{% block title %}Действия сотрудников · Мониторинг{% endblock %}
+{% block content %}
+<div class="user-activity-v61" data-user-activity>
+  {% include "activity/_admin_monitor_tabs.html" %}
+  <header class="ua-hero">
+    <div class="ua-hero-copy">
+      <span class="ua-eyebrow"><i></i> АДМИНИСТРИРОВАНИЕ / USER AUDIT</span>
+      <h1>Действия <em>сотрудников</em></h1>
+      <p>Хронология действий сотрудников в пяти рабочих областях: администрирование, аналитика, студенты и участники, работа совета и рабочий стол.</p>
+      <div class="ua-hero-tags"><span>Только зарегистрированные аккаунты</span><span>Авторизованные действия сотрудников</span><span>Просмотры и изменения</span><span>Раздел и конкретная функция</span></div>
+    </div>
+    <div class="ua-hero-orbit" aria-hidden="true"><span></span><i></i><b></b></div>
+  </header>
+
+  <section class="ua-metrics" aria-label="Сводка активности зарегистрированных пользователей">
+    <article class="ua-metric"><span class="ua-metric-icon">⌁</span><small>Действий по фильтру</small><strong>{{ selected_count }}</strong><em>Действия с данными и рабочими объектами</em></article>
+    <article class="ua-metric"><span class="ua-metric-icon">♙</span><small>Пользователей</small><strong>{{ selected_accounts }}</strong><em>Уникальных аккаунтов в выборке</em></article>
+    <article class="ua-metric"><span class="ua-metric-icon">◉</span><small>Просмотров</small><strong>{{ selected_views }}</strong><em>Скрыты в основном журнале</em></article>
+    <article class="ua-metric"><span class="ua-metric-icon">✦</span><small>Изменений и операций</small><strong>{{ selected_changes }}</strong><em>Изменение данных в рабочих разделах</em></article>
+  </section>
+
+  <section class="ua-filter-panel" aria-labelledby="ua-filter-title">
+    <div class="ua-panel-heading">
+      <div><span class="ua-eyebrow">ПОИСК / ФИЛЬТРАЦИЯ</span><h2 id="ua-filter-title">Найти действие аккаунта</h2><p>Поиск по сотруднику и выполненной операции; фильтры по разделу, роли, типу действия, состоянию и периоду.</p></div>
+      <a class="ua-reset" href="{{ url_for('admin.user_activity_log') }}">Сбросить фильтры ↺</a>
+    </div>
+    <form method="get" action="{{ url_for('admin.user_activity_log') }}" class="ua-filters" role="search">
+      <label class="ua-field ua-field--search"><span>Поиск по действиям</span><input type="search" name="q" value="{{ filters.q }}" maxlength="100" placeholder="Сотрудник, действие, подкатегория или ID записи"></label>
+      <label class="ua-field"><span>Раздел сайта</span><select name="section">
+        <option value="all" {% if filters.section == 'all' %}selected{% endif %}>Все разделы</option>
+        {% for key, label in section_labels.items() %}<option value="{{ key }}" {% if filters.section == key %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></label>
+      <label class="ua-field"><span>Роль аккаунта</span><select name="role">
+        <option value="">Все роли</option>
+        <option value="super_admin" {% if filters.role == 'super_admin' %}selected{% endif %}>Главный администратор</option>
+        <option value="admin" {% if filters.role == 'admin' %}selected{% endif %}>Администратор архива</option>
+        <option value="staff" {% if filters.role == 'staff' %}selected{% endif %}>Сотрудник</option>
+        <option value="leader" {% if filters.role == 'leader' %}selected{% endif %}>Руководитель</option>
+        <option value="observer" {% if filters.role == 'observer' %}selected{% endif %}>Наблюдатель</option>
+      </select></label>
+      <label class="ua-field"><span>Конкретный пользователь</span><input type="search" name="actor" value="{{ filters.actor }}" maxlength="80" placeholder="Имя, email или ID аккаунта"></label>
+      <label class="ua-field"><span>Тип действия</span><select name="method">
+        <option value="" {% if not filters.method %}selected{% endif %}>Все типы</option>
+        <option value="POST" {% if filters.method == 'POST' %}selected{% endif %}>Создание / отправка</option>
+        <option value="PUT" {% if filters.method == 'PUT' %}selected{% endif %}>Изменение (PUT)</option>
+        <option value="PATCH" {% if filters.method == 'PATCH' %}selected{% endif %}>Изменение (PATCH)</option>
+        <option value="DELETE" {% if filters.method == 'DELETE' %}selected{% endif %}>Удаление / отмена</option>
+      </select></label>
+      <label class="ua-field"><span>Состояние запроса</span><select name="level">
+        <option value="all" {% if filters.level == 'all' %}selected{% endif %}>Все состояния</option>
+        <option value="success" {% if filters.level == 'success' %}selected{% endif %}>Успешные</option>
+        <option value="errors" {% if filters.level == 'errors' %}selected{% endif %}>Ошибки</option>
+        <option value="slow" {% if filters.level == 'slow' %}selected{% endif %}>Медленные (от 1,5 с)</option>
+      </select></label>
+      <label class="ua-field"><span>Дата от (UTC)</span><input type="date" name="start" value="{{ filters.start }}"></label>
+      <label class="ua-field"><span>Дата до (UTC)</span><input type="date" name="end" value="{{ filters.end }}"></label>
+      <div class="ua-filter-actions"><button type="submit" class="ua-apply">Применить фильтры <b>↗</b></button></div>
+    </form>
+    <div class="ua-active-filters"><span>Быстрые фильтры</span>
+      <a href="{{ url_for('admin.user_activity_log', section='administration') }}">Администрирование</a>
+      <a href="{{ url_for('admin.user_activity_log', section='students') }}">Студенты и участники</a>
+      <a href="{{ url_for('admin.user_activity_log', section='council') }}">Работа совета</a>
+      <a href="{{ url_for('admin.user_activity_log', section='analytics') }}">Аналитика</a>
+      <a href="{{ url_for('admin.user_activity_log', section='dashboard') }}">Рабочий стол</a>
+    </div>
+  </section>
+
+  <section class="ua-table-panel" aria-labelledby="ua-table-title">
+    <div class="ua-table-heading">
+      <div><span class="ua-eyebrow">STAFF ACTIVITY / AUTHENTICATED ACCOUNTS</span><h2 id="ua-table-title">Журнал действий сотрудников</h2></div>
+      <div class="ua-table-tools"><span class="ua-count">{{ selected_count }} записей · UTC</span><a class="ua-export" href="{{ url_for('admin.user_activity_export', **filters) }}">Экспорт CSV ↓</a><a class="ua-export" href="{{ url_for('admin.user_activity_pdf', **filters) }}">Подписанный PDF ↓</a></div>
+    </div>
+    <div class="ua-table-scroll"><table class="ua-table ua-table--simple"><thead><tr><th>Когда (UTC)</th><th>Сотрудник / аккаунт</th><th>Что сделал</th><th>Раздел</th></tr></thead><tbody>
+      {% for row in rows %}
+      <tr>
+        <td class="ua-time"><strong>{{ row.created_at.strftime('%d.%m.%Y') if row.created_at else '—' }}</strong><span>{{ row.created_at.strftime('%H:%M:%S') if row.created_at else '—' }}</span><small>Запись #{{ row.id }}</small></td>
+        <td class="ua-actor"><b>{{ row.account_name }}</b><span>{{ row.account_login }}</span><small>Аккаунт #{{ row.actor_user_id }} · {{ row.role_label }} · {{ row.account_state }}</small></td>
+        <td class="ua-action"><strong>{{ row.action_label }}</strong></td>
+        <td class="ua-section-cell"><span class="ua-section">{{ row.section_label }}</span><small>{{ row.subcategory_label }}</small></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4"><div class="ua-empty"><span>⌁</span><strong>Действий по выбранным фильтрам нет</strong><p>Измените раздел или период. Новые записи появятся после действий авторизованных сотрудников на сайте.</p></div></td></tr>
+      {% endfor %}
+    </tbody></table></div>
+    <div class="ua-pagination"><span>Страница {{ page }} из {{ pages }} · {{ page_size }} записей на страницу</span><div>
+      {% if page > 1 %}<a href="{{ url_for('admin.user_activity_log', page=page-1, **filters) }}">← Новее</a>{% else %}<span></span>{% endif %}
+      {% if page < pages %}<a href="{{ url_for('admin.user_activity_log', page=page+1, **filters) }}">Старее →</a>{% else %}<span></span>{% endif %}
+    </div></div>
+  </section>
+  <p class="ua-privacy">Журнал показывает только действия авторизованных аккаунтов: главного администратора, сотрудников, руководителей и наблюдателей. Технические HTTP-запросы, коды ответов и время обработки не выводятся в таблицу. Содержимое форм, пароли, токены и тексты сообщений не сохраняются.</p>
+</div>
+{% endblock %}

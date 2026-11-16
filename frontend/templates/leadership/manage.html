@@ -1,0 +1,149 @@
+{% extends "shared/base.html" %}
+{% block title %}Руководство студенческого совета {% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-management.css', v=asset_version('css/admin-management.css')) }}">{% endblock %}
+{% block content %}
+<section class="leadership-admin-hero">
+  <div class="leadership-admin-symbol" aria-hidden="true">♙</div>
+  <div class="leadership-admin-heading">
+    <div class="eyebrow">УПРАВЛЕНИЕ СОСТАВОМ</div>
+    <h1>Руководство студенческого совета</h1>
+    <p>Назначайте ответственных, управляйте должностями и отправляйте уведомления в рабочие чаты.</p>
+    <div class="leadership-admin-tags"><span>Текущие назначения: {{ leaders|length }}</span><span>Уведомления Telegram</span><span>Доступ только администратору</span></div>
+  </div>
+  <a class="btn btn-soft leadership-dashboard-link" href="{{ url_for('admin.leadership_public') }}">Открыть публичную страницу ↗</a>
+</section>
+{% if chair_conflict_count %}
+<div class="leadership-conflict-alert" role="alert"><strong>⚠ Обнаружены несколько председателей</strong><p>В старой базе должность председателя выдана нескольким разным людям (лишних назначений: {{ chair_conflict_count }}). В основном списке показана одна карточка, но конфликт в базе ещё существует. Для исправления выберите того, кто должен сохранить должность. Остальные назначения председателя будут сняты, но другие должности и данные студентов сохранятся.</p>
+  <form method="POST" class="leadership-chair-resolve" onsubmit="return confirm('Снять должность председателя со всех остальных людей и оставить выбранного?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="resolve_chair">
+    <p class="leadership-conflict-candidates"><strong>Действующие назначения:</strong>
+      {% for candidate in chair_candidates %}<span>{{ candidate.full_name }}{% if candidate.group %} · {{ candidate.group }}{% endif %}</span>{% endfor %}
+    </p>
+    <label for="chair-student-id">Кто остаётся председателем?</label>
+    <select class="select" name="chair_student_id" id="chair-student-id" required>
+      <option value="">Выберите человека</option>
+      {% for candidate in chair_candidates %}<option value="{{ candidate.id }}">{{ candidate.full_name }} · {{ candidate.group or 'группа не указана' }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Оставить одного председателя</button>
+  </form>
+</div>
+{% endif %}
+<div class="leadership-layout">
+  <section class="card card-pad leadership-current">
+    <div class="leadership-section-top">
+      <div>
+        <h2 class="leadership-section-title">Текущие назначения</h2>
+      </div>
+      <span class="leadership-count">{{ leaders|length }} отображается{% if chair_conflict_count %} · конфликт председателей{% endif %}</span>
+    </div>
+    {% for leader in leaders %}
+      {% set position = leader.position_name|replace('волонтёрки', 'студсовета')|replace('волонтерки', 'студсовета') %}
+      <article class="leadership-person-card">
+        <div class="leadership-avatar">{{ (leader.student.full_name or 'С')[0]|upper }}</div>
+        <div class="leadership-person-main">
+          <div class="leadership-person-name">{{ leader.student.full_name }}</div>
+          <div class="leadership-person-contact">
+            {% if leader.student.telegram_username %}
+              <span class="leadership-username">@{{ leader.student.telegram_username|replace('@', '') }}</span>
+            {% else %}
+              <span class="leadership-no-username">Telegram username не указан</span>
+            {% endif %}
+            <span class="leadership-dot">·</span>
+            <span>{{ 'Колледж' if leader.student.education_type == 'college' else 'Институт' }}</span>
+          </div>
+          <div class="leadership-role-pill">{{ position }}{% if chair_conflict_count and position == 'Председатель студсовета' %} · ⚠ требуется подтверждение{% endif %}</div>
+          <div class="leadership-scope">
+            {% if position in ['Председатель студсовета', 'Представитель студсовета'] %}
+              <span class="leadership-scope-icon">◎</span> Все направления и рабочие чаты
+            {% elif 'по колледжу' in position %}
+              <span class="leadership-scope-icon">⌂</span> Направления и чаты колледжа
+            {% elif 'по институту' in position %}
+              <span class="leadership-scope-icon">⌂</span> Направления и чаты института
+            {% else %}
+              <span class="leadership-scope-icon">↗</span> {{ leader.direction.name if leader.direction else 'Направление не указано' }}
+            {% endif %}
+          </div>
+        </div>
+        <form method="POST" class="leadership-remove-form" onsubmit="return confirm('Снять это назначение?');">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="action" value="remove">
+          <input type="hidden" name="leadership_id" value="{{ leader.id }}">
+          <input class="input leadership-reason" name="removal_reason" placeholder="Основание (необязательно)" aria-label="Основание снятия">
+          <button class="btn btn-danger" type="submit">Снять</button>
+        </form>
+      </article>
+    {% else %}
+      <div class="leadership-empty">
+        <div class="leadership-empty-icon">✦</div>
+        <h3>Назначений пока нет</h3>
+        <p>Выберите студента и должность в форме назначения.</p>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="card card-pad leadership-assign-card leadership-assign-launcher">
+    <div class="leadership-launch-icon">＋</div><h2 class="leadership-section-title">Новое назначение</h2>
+    <p class="leadership-form-description">Назначьте руководителя направления или председателя студсовета. Для большого списка студентов предусмотрен поиск по ФИО и группе.</p>
+    <button class="btn btn-primary" type="button" data-open-dialog="leadership-assign-modal">＋ Назначить должность</button>
+  </section>
+</div>
+<dialog class="admin-modal" id="leadership-assign-modal" aria-labelledby="leadership-modal-title">
+ <form method="POST" id="role-assignment-form" class="admin-modal-panel leadership-modal-panel" data-search-url="{{ url_for('admin.search_students') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="assign">
+  <div class="admin-modal-head"><div><div class="eyebrow">УПРАВЛЕНИЕ СОСТАВОМ</div><h2 id="leadership-modal-title">Новое назначение</h2><p>Выберите студента по ФИО или группе, затем укажите его должность.</p></div><button class="modal-close" type="button" data-close-dialog="leadership-assign-modal" aria-label="Закрыть">×</button></div>
+  <div class="admin-modal-body">
+   <div class="field leadership-field"><label class="label" for="leadership-student-search">Студент</label><input class="input" type="search" id="leadership-student-search" autocomplete="off" minlength="2" placeholder="ФИО или учебная группа" required><input type="hidden" name="student_id" id="leadership-student-id" required><div class="student-search-results" id="leadership-student-results" role="listbox" aria-label="Результаты поиска студентов"></div><div class="selected-student" id="leadership-selected-student" hidden></div></div>
+   <div class="field leadership-field"><label class="label" for="role-code">Должность</label><select class="select" name="role_code" id="role-code" required><option value="council_chair">Председатель студсовета</option><option value="council_deputy_college">Заместитель председателя студсовета по колледжу</option><option value="council_deputy_institute">Заместитель председателя студсовета по институту</option><option value="direction_head" selected>Глава направления</option><option value="direction_deputy">Заместитель главы направления</option></select></div>
+   <div class="field leadership-field" id="education-scope-field"><label class="label" for="education-type">Учебный контингент</label><select class="select" name="education_type" id="education-type"><option value="college">Колледж</option><option value="institute" selected>Институт</option><option value="all">Все контингенты</option></select><small class="admin-help">Для должностей председателя и заместителей контингент задаётся автоматически.</small></div>
+   <div class="field leadership-field" id="direction-field"><label class="label" for="direction-id">Направление</label><select class="select" name="direction_id" id="direction-id">{% for d in directions %}{% if d.code != 'STUDCOUNCIL' %}<option value="{{ d.id }}">{{ d.icon or '✦' }} {{ d.name }}</option>{% endif %}{% endfor %}</select></div>
+   <div class="leadership-preview" id="leadership-preview" aria-live="polite"><div class="leadership-preview-icon">✦</div><div><div class="eyebrow">УВЕДОМЛЕНИЯ TELEGRAM</div><div class="leadership-preview-title" id="preview-title">Глава направления</div><p id="preview-scope">Уведомление будет направлено в активные чаты выбранного направления.</p></div></div>
+  </div>
+  <div class="admin-modal-footer"><span>После назначения система оповестит рабочие чаты и студента через Telegram.</span><button class="btn btn-primary" type="submit">Назначить должность →</button></div>
+ </form>
+</dialog>
+<script>
+(()=>{
+  const role=document.getElementById('role-code');
+  const wrap=document.getElementById('direction-field');
+  const direction=document.getElementById('direction-id');
+  const scope=document.getElementById('education-type');
+  const scopeWrap=document.getElementById('education-scope-field');
+  document.querySelectorAll('[data-open-dialog]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.openDialog)?.showModal()));
+  document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.closeDialog)?.close()));
+  const assignForm=document.getElementById('role-assignment-form');
+  const studentSearch=document.getElementById('leadership-student-search');
+  const studentId=document.getElementById('leadership-student-id');
+  const studentResults=document.getElementById('leadership-student-results');
+  const selectedStudent=document.getElementById('leadership-selected-student');
+  if(assignForm&&studentSearch){let timer,seq=0;const render=items=>{studentResults.replaceChildren();if(!items.length){const empty=document.createElement('div');empty.className='student-search-empty';empty.textContent='Не найдено. Уточните ФИО или группу.';studentResults.append(empty);return;}items.forEach(s=>{const b=document.createElement('button');b.type='button';b.className='student-search-result';b.setAttribute('role','option');const n=document.createElement('strong');n.textContent=s.full_name;const m=document.createElement('span');m.textContent=`${s.group} · ${s.education_type==='college'?'Колледж':'Институт'}${s.telegram_username?' · @'+s.telegram_username:''}`;b.append(n,m);b.addEventListener('click',()=>{studentId.value=s.id;studentSearch.value=s.full_name;selectedStudent.textContent=`✓ ${s.full_name} · ${s.group}`;selectedStudent.hidden=false;studentResults.replaceChildren();if(scope&&['college','institute'].includes(s.education_type))scope.value=s.education_type;update();});studentResults.append(b);});};studentSearch.addEventListener('input',()=>{clearTimeout(timer);studentId.value='';selectedStudent.hidden=true;const q=studentSearch.value.trim(),n=++seq;if(q.length<2){studentResults.replaceChildren();return;}timer=setTimeout(async()=>{try{const r=await fetch(`${assignForm.dataset.searchUrl}?q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}});const d=await r.json();if(n===seq)render(d.items||[]);}catch(_){if(n===seq)render([]);}},180);});assignForm.addEventListener('submit',e=>{if(!studentId.value){e.preventDefault();studentSearch.focus();return;}if(!confirm('Подтвердить назначение выбранному студенту?'))e.preventDefault();});document.getElementById('leadership-assign-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});}
+  const title=document.getElementById('preview-title');
+  const preview=document.getElementById('preview-scope');
+  const labels={
+    council_chair:'Председатель студсовета',
+    council_deputy_college:'Заместитель председателя студсовета по колледжу',
+    council_deputy_institute:'Заместитель председателя студсовета по институту',
+    direction_head:'Глава направления',
+    direction_deputy:'Заместитель главы направления'
+  };
+  function update(){
+    const global=['council_chair','council_deputy_college','council_deputy_institute'].includes(role.value);
+    wrap.hidden=global;
+    direction.required=!global;
+    if(scopeWrap) scopeWrap.hidden=global;
+    if(scope){
+      if(role.value==='council_chair') scope.value='all';
+      else if(role.value==='council_deputy_college') scope.value='college';
+      else if(role.value==='council_deputy_institute') scope.value='institute';
+    }
+    title.textContent=labels[role.value]||'Назначение';
+    if(role.value==='council_chair') preview.textContent='Объявление будет опубликовано во всех активных чатах Студенческого совета.';
+    else if(role.value==='council_deputy_college') preview.textContent='Объявление будет опубликовано в чатах направлений колледжа.';
+    else if(role.value==='council_deputy_institute') preview.textContent='Объявление — в чатах направлений института. Приём заявок: студенты колледжа во всех направлениях.';
+    else preview.textContent='Объявление будет опубликовано в активных чатах выбранного направления: '+(direction.options[direction.selectedIndex]?.textContent.trim()||'выбранного направления')+'.';
+  }
+  role.addEventListener('change',update);
+  direction.addEventListener('change',update);
+  update();
+})();
+</script>
+{% endblock %}

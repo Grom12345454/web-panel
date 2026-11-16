@@ -1,0 +1,10 @@
+/* Private department publication feed. */
+.student-announcements{margin-block:clamp(18px,3vw,30px)}
+.student-announcements-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:13px}
+.student-announcement{padding:clamp(16px,2.5vw,23px);border:1px solid rgba(120,175,234,.20);border-radius:20px;box-shadow:0 10px 32px rgba(0,0,0,.09);background:linear-gradient(145deg,rgba(35,69,105,.43),rgba(12,28,49,.55));transition:transform .24s ease,border-color .24s ease}
+.student-announcement:hover{transform:translateY(-2px);border-color:rgba(126,183,246,.5)}
+.student-announcement-heading{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;color:#c1d7f2;font-size:.78rem;font-weight:650}
+.student-announcement-heading time{opacity:.8;font-weight:400}
+.student-announcement h3{font-size:clamp(1rem,2.5vw,1.15rem);margin:12px 0 8px;overflow-wrap:anywhere}
+.student-announcement p{margin:0;opacity:.88;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){.student-announcement{transition:none}.student-announcement:hover{transform:none}}

@@ -1,0 +1,39 @@
+{% extends "shared/base.html" %}
+{% block title %}Отчёты направлений · Student App{% endblock %}
+{% block head %}
+<style>
+.report-signature-panel{display:flex;gap:14px;align-items:center;padding:14px 18px;border:1px solid rgba(91,133,174,.35);border-radius:14px;background:rgba(28,63,96,.14);margin:16px 0}
+.report-seal{width:62px;height:62px;border:3px double #7d9ebd;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:8px;line-height:1.25;font-weight:800;color:var(--text-primary,#dce8f4);flex:none}
+.report-muted{color:var(--text-muted,#8ba0b6);font-size:12px}.report-event-list{max-height:240px;overflow:auto;min-width:240px}.report-event-list summary{cursor:pointer;font-weight:700}.report-event-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(130,155,180,.16)}.report-event-item:last-child{border-bottom:0}.report-event-item span{min-width:90px;max-width:180px;overflow-wrap:anywhere}.report-event-item a{font-size:11px;padding:5px 8px}.report-actions{display:flex;gap:8px;flex-wrap:wrap}
+.report-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:16px 0}.report-stats .card strong{font-size:26px}
+</style>
+{% endblock %}
+{% block content %}
+<section class="section-title"><div><div class="eyebrow">ГЛАВНЫЙ АДМИНИСТРАТОР / ДОКУМЕНТЫ</div><h1>Создание отчётов</h1><p>Создавайте общие отчёты направления, отдельные отчёты мероприятий и сводки по аналитике, сотрудникам и ботам.</p></div><div class="report-actions"><a class="btn btn-soft" href="{{ url_for('admin.report_archive') }}">Архив отчётов</a><a class="btn btn-soft" href="{{ url_for('admin.calendar') }}">К календарю</a></div></section>
+<div class="report-signature-panel"><div class="report-seal">OFFICIAL<br>REPORT<br>✓</div><div><strong>Подписание главным администратором</strong><div>{{ admin_signer_name }}</div><div class="report-muted">Каждый PDF получает код подписи, SHA-256, водяной знак и печать. Подпись фиксируется в журнале.</div></div></div>
+<div class="report-stats">
+ <article class="card card-pad"><div class="eyebrow">Направлений</div><strong>{{ summary.directions }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Мероприятий</div><strong>{{ summary.events }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Действий направлений</div><strong>{{ summary.actions }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Действий сотрудников</div><strong>{{ summary.staff_actions }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Действий ботов</div><strong>{{ summary.bot_actions }}</strong><div class="report-muted">Технических событий: {{ summary.bot_system_events }}</div></article>
+ <article class="card card-pad"><div class="eyebrow">Выпущено PDF</div><strong>{{ summary.signatures }}</strong></article>
+</div>
+<section class="card card-pad" style="margin-bottom:22px">
+ <div class="eyebrow">АНАЛИТИКА И ЖУРНАЛЫ</div><h2>Дополнительные подписанные отчёты</h2>
+ <p class="report-muted">Все документы формируются по сохранённым данным сайта и подписываются аккаунтом главного администратора.</p>
+ <div class="report-actions">
+  <a class="btn btn-primary" href="{{ url_for('admin.analytics_report_pdf') }}">Сводная аналитика PDF</a>
+  <a class="btn btn-soft" href="{{ url_for('admin.user_activity_log') }}">Журнал сотрудников HTML</a>
+  <a class="btn btn-soft" href="{{ url_for('admin.user_activity_pdf') }}">Действия сотрудников PDF</a>
+  <a class="btn btn-soft" href="{{ url_for('admin.messenger_monitoring') }}">Журнал ботов HTML</a>
+  <a class="btn btn-soft" href="{{ url_for('admin.bot_actions_report_pdf') }}">Действия ботов PDF</a>
+ </div>
+</section>
+<section class="card table-wrap"><div class="card-pad"><div class="eyebrow">ОТЧЁТЫ ПО НАПРАВЛЕНИЯМ</div><h2>Выберите направление</h2><p class="report-muted">HTML открывает подробную страницу. PDF направления включает сводку и подробные отчёты по каждому мероприятию; отдельные HTML/PDF отчёты мероприятий доступны прямо в строке направления.</p></div>
+<div class="table-scroll"><table><thead><tr><th>Направление</th><th>Статус</th><th>Участников</th><th>Занятий</th><th>Действий</th><th>Создать отчёт</th><th>Отчёты мероприятий</th></tr></thead><tbody>
+{% for item in directions %}<tr><td><strong>{{ item.name }}</strong><div class="report-muted">{{ item.code }}</div></td><td>{{ item.status }}</td><td>{{ item.students }}</td><td>{{ item.lessons }}</td><td>{{ item.actions }}</td><td><div class="report-actions"><a class="btn btn-primary" href="{{ url_for('admin.direction_report_html', direction_id=item.id) }}">Открыть HTML</a><a class="btn btn-soft" href="{{ url_for('admin.direction_report_pdf', direction_id=item.id) }}">PDF с подписью</a></div></td><td><details class="report-event-list"><summary>Мероприятия ({{ item.events|length }})</summary>{% for event in item.events %}<div class="report-event-item"><span>{{ event.title }}</span><div class="report-actions"><a class="btn btn-soft" href="{{ url_for('admin.event_report_html', event_id=event.id) }}">HTML</a><a class="btn btn-soft" href="{{ url_for('admin.event_report_pdf', event_id=event.id) }}">PDF</a></div></div>{% else %}<p class="report-muted">Мероприятий нет.</p>{% endfor %}</details></td></tr>
+{% else %}<tr><td colspan="7">Направлений пока нет.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card table-wrap" style="margin-top:22px"><div class="card-pad"><div class="eyebrow">КОНТРОЛЬ ПОДПИСЕЙ</div><h2>Последние выпущенные отчёты</h2></div><div class="table-scroll"><table><thead><tr><th>Дата UTC</th><th>Документ</th><th>Подписал</th><th>Код подписи</th><th>SHA-256</th></tr></thead><tbody>
+{% for item in signature_log %}<tr><td>{{ item.signed_at.strftime('%d.%m.%Y %H:%M:%S') if item.signed_at else '—' }}</td><td>{{ item.report_title }}</td><td>{{ item.signer_name }}</td><td>{{ item.signature_code }}</td><td><code>{{ item.document_sha256[:16] }}…</code></td></tr>{% else %}<tr><td colspan="5">Подписанных отчётов пока нет.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

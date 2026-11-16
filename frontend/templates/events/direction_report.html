@@ -1,0 +1,27 @@
+{% extends "shared/base.html" %}
+{% block title %}Отчёт: {{ report.name }} · Student App{% endblock %}
+{% block head %}<style>
+.report-muted{color:var(--text-muted,#8ba0b6);font-size:12px}.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:16px 0}.report-grid .card strong{font-size:25px}.report-actions{display:flex;gap:8px;flex-wrap:wrap}.report-action-table td,.report-action-table th{vertical-align:top;white-space:normal}
+</style>{% endblock %}
+{% block content %}
+<section class="section-title"><div><div class="eyebrow">ОТЧЁТ НАПРАВЛЕНИЯ</div><h1>{{ report.name }}</h1><p>{{ report.code }} · {{ report.status }}</p></div><div class="report-actions"><a class="btn btn-soft" href="{{ url_for('admin.event_reports') }}">К списку отчётов</a><a class="btn btn-primary" href="{{ url_for('admin.direction_report_pdf', direction_id=report.direction_id) }}">Скачать подписанный PDF</a></div></section>
+<div class="report-grid">
+<article class="card card-pad"><div class="eyebrow">Участников</div><strong>{{ report.student_count }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Мероприятий</div><strong>{{ report.event_count }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Занятий</div><strong>{{ report.lesson_count }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Действий в БД</div><strong>{{ report.action_count }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Действий ботов в направлении</div><strong>{{ report.bot_action_count }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Посещений</div><strong>{{ report.attendance_totals.attended }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Пропусков</div><strong>{{ report.attendance_totals.absent }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Отмен</div><strong>{{ report.attendance_totals.cancelled }}</strong></article>
+<article class="card card-pad"><div class="eyebrow">Отказов по мероприятиям</div><strong>{{ report.attendance_totals.declined }}</strong></article>
+</div>
+<section class="card table-wrap" style="margin-bottom:20px"><div class="card-pad"><h2>Состав участников и статусы заявок</h2><p class="report-muted">Счётчики построены по таблице участников направления и истории решений, без раскрытия личных причин отказа.</p></div><div class="table-scroll"><table><thead><tr><th>Категория</th><th>Статус</th><th>Количество</th></tr></thead><tbody>
+{% for status, count in report.member_status_counts.items() %}<tr><td>Участники</td><td>{{ status }}</td><td>{{ count }}</td></tr>{% endfor %}
+{% for status, count in report.application_counts.items() %}<tr><td>История заявок</td><td>{{ status }}</td><td>{{ count }}</td></tr>{% endfor %}
+{% for status, count in report.lesson_status_counts.items() %}<tr><td>Занятия</td><td>{{ status }}</td><td>{{ count }}</td></tr>{% endfor %}
+</tbody></table></div></section>
+<section class="card table-wrap" style="margin-bottom:20px"><div class="card-pad"><h2>Мероприятия направления</h2><p class="report-muted">Для каждого мероприятия формируется отдельный подписанный PDF с посещаемостью, участниками, отказами и его историей действий.</p></div><div class="table-scroll"><table><thead><tr><th>Мероприятие</th><th>Даты</th><th>Записи</th><th>Посещения</th><th>Пропуски</th><th>Отмены</th><th>Отказы</th><th>Отчёты</th></tr></thead><tbody>{% for item in report.events %}<tr><td>{{ item.title }} <span class="report-muted">#{{ item.id }}</span></td><td>{{ item.dates }}</td><td>{{ item.participants }}</td><td>{{ item.attended }}</td><td>{{ item.absent }}</td><td>{{ item.cancelled }}</td><td>{{ item.declined }}</td><td><a class="btn btn-soft" href="{{ url_for('admin.event_report_html', event_id=item.id) }}">HTML-отчёт</a><a class="btn btn-soft" href="{{ url_for('admin.event_report_pdf', event_id=item.id) }}">PDF с подписью</a></td></tr>{% else %}<tr><td colspan="8">Мероприятий нет.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card table-wrap"><div class="card-pad"><h2>Полная история действий направления</h2><p class="report-muted">Всего записей: {{ report.action_count }}. На странице {{ report.actions|length }} записей; полный архив доступен в подписанном PDF.</p></div><div class="table-scroll"><table class="report-action-table"><thead><tr><th>Дата UTC</th><th>Объект</th><th>Действие</th><th>Описание</th></tr></thead><tbody>{% for row in report.actions|reverse %}<tr><td>{{ row.created_at }}</td><td>{{ row.object }}</td><td>{{ row.action }}</td><td>{{ row.description }}</td></tr>{% else %}<tr><td colspan="4">История действий пуста.</td></tr>{% endfor %}</tbody></table></div>{% if action_pages > 1 %}<div class="card-pad report-actions">{% if action_page > 1 %}<a class="btn btn-soft" href="{{ url_for('admin.direction_report_html', direction_id=report.direction_id, page=action_page-1) }}">Назад</a>{% endif %}<span class="report-muted">Страница {{ action_page }} из {{ action_pages }}</span>{% if action_page < action_pages %}<a class="btn btn-soft" href="{{ url_for('admin.direction_report_html', direction_id=report.direction_id, page=action_page+1) }}">Далее</a>{% endif %}</div>{% endif %}</section>
+<p class="report-muted" style="margin-top:14px">PDF подписывается аккаунтом главного администратора: {{ admin_signer_name }}. В документе сохраняются код подписи и контрольные суммы. Это внутреннее подтверждение системы, не квалифицированная электронная подпись.</p>
+{% endblock %}

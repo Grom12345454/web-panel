@@ -1,0 +1,144 @@
+/* V34 — stable login panel across browser zoom levels and compact desktop viewports.
+   Keep the editorial two-panel composition until the usable CSS viewport is genuinely narrow. */
+body.uc-body.is-login-page .premium-login {
+  display: grid !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 100svh !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  overflow-x: clip !important;
+  background: #f5f7f6 !important;
+}
+body.uc-body.is-login-page .premium-story,
+body.uc-body.is-login-page .premium-auth { min-width: 0 !important; }
+body.uc-body.is-login-page .premium-story { box-sizing: border-box !important; }
+body.uc-body.is-login-page .premium-auth-inner { transform: none !important; }
+
+/* Most desktop zoom settings keep the same split-screen login composition. */
+@media (min-width: 761px) {
+  body.uc-body.is-login-page .premium-login {
+    grid-template-columns: minmax(0, 1.03fr) minmax(0, .97fr) !important;
+  }
+  body.uc-body.is-login-page .premium-story {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-height: max(100svh, 680px) !important;
+    min-height: max(100dvh, 680px) !important;
+    padding-right: clamp(390px, 46vw, 660px) !important;
+    padding-left: clamp(22px, 4.6vw, 72px) !important;
+  }
+  body.uc-body.is-login-page .premium-visual {
+    inset: 7% clamp(330px, 39vw, 570px) 22% 0 !important;
+    min-height: 280px !important;
+  }
+  body.uc-body.is-login-page .premium-story-bottom {
+    width: min(100%, 620px) !important;
+    max-width: 620px !important;
+    padding-top: clamp(180px, 28vh, 310px) !important;
+  }
+  body.uc-body.is-login-page .premium-auth {
+    position: absolute !important;
+    z-index: 8 !important;
+    top: 50% !important;
+    right: clamp(12px, 2.8vw, 42px) !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    width: clamp(340px, 38vw, 470px) !important;
+    max-width: calc(100% - 24px) !important;
+    min-height: 0 !important;
+    max-height: calc(100svh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: clamp(18px, 2.6vw, 34px) clamp(18px, 2.4vw, 32px) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(91, 134, 145, .35) transparent;
+  }
+  body.uc-body.is-login-page .premium-auth-inner {
+    width: 100% !important;
+    max-width: 430px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+  body.uc-body.is-login-page .premium-auth-topline { margin-bottom: clamp(14px, 3.2vh, 36px) !important; }
+  body.uc-body.is-login-page .premium-welcome h2 { font-size: clamp(30px, 2.6vw, 46px) !important; }
+  body.uc-body.is-login-page .premium-auth-steps { margin: clamp(13px, 2.4vh, 25px) 0 clamp(13px, 2vh, 22px) !important; }
+  body.uc-body.is-login-page .premium-form { gap: clamp(10px, 1.6vh, 18px) !important; }
+  body.uc-body.is-login-page .premium-input { min-height: clamp(44px, 5.6vh, 52px) !important; }
+  body.uc-body.is-login-page .premium-input input { min-height: clamp(42px, 5vh, 48px) !important; }
+  body.uc-body.is-login-page .premium-submit { min-height: 48px !important; margin-top: 10px !important; }
+  body.uc-body.is-login-page .premium-verify-note { margin-top: clamp(10px, 1.6vh, 16px) !important; padding: 11px 10px !important; }
+  body.uc-body.is-login-page .premium-auth-footer { margin-top: 10px !important; }
+  body.uc-body.is-login-page .premium-auth-footer p { margin-top: 9px !important; }
+  body.uc-body.is-login-page .premium-auth-bottom { margin-top: 10px !important; }
+}
+
+/* A smaller screen (not an ordinary desktop zoom change) gets the same panel stacked below the story. */
+@media (max-width: 760px) {
+  body.uc-body.is-login-page .premium-login {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+  }
+  body.uc-body.is-login-page .premium-story {
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 20px clamp(16px, 5vw, 24px) 18px !important;
+    overflow: hidden !important;
+  }
+  body.uc-body.is-login-page .premium-visual {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: clamp(190px, 52vw, 270px) !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  body.uc-body.is-login-page .premium-story-bottom {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
+  }
+  body.uc-body.is-login-page .premium-story-bottom h1 { font-size: clamp(36px, 9vw, 54px) !important; }
+  body.uc-body.is-login-page .premium-auth {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    width: min(calc(100% - 28px), 480px) !important;
+    max-width: 480px !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 auto 28px !important;
+    padding: 24px clamp(18px, 5vw, 28px) !important;
+  }
+  body.uc-body.is-login-page .premium-auth-inner { padding: 0 !important; }
+  body.uc-body.is-login-page .premium-auth-topline { margin-bottom: 24px !important; }
+  body.uc-body.is-login-page .premium-auth-steps { margin: 22px 0 20px !important; }
+}
+
+@media (min-width: 761px) and (max-height: 700px) {
+  body.uc-body.is-login-page .premium-story { min-height: 700px !important; }
+  body.uc-body.is-login-page .premium-story-bottom { padding-top: 200px !important; }
+  body.uc-body.is-login-page .premium-auth {
+    top: 12px !important;
+    transform: none !important;
+    max-height: calc(100svh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body.is-login-page .premium-visual-stage,
+  body.uc-body.is-login-page .premium-visual-orbit { animation: none !important; }
+}

@@ -1,0 +1,22 @@
+<section class="galaxy-hero mission-hero-20" aria-labelledby="panel-hero-title">
+  <div class="depth-hero-stars" aria-hidden="true"></div>
+  <div class="galaxy-hero-copy">
+    {% if dashboard_hero.kicker %}<div class="galaxy-overline"><span class="galaxy-online-dot" aria-hidden="true"></span>{{ dashboard_hero.kicker }}</div>{% endif %}
+    <h1 id="panel-hero-title">{{ dashboard_hero.title }} <em>{{ dashboard_hero.accent }}</em></h1>
+    <p>{{ dashboard_hero.description }}</p>
+    {% if dashboard_hero.actions %}
+    <div class="galaxy-hero-actions">
+      {% for action in dashboard_hero.actions %}
+      <a class="btn {% if action.style == 'primary' %}btn-primary{% else %}galaxy-ghost-btn{% endif %}" href="{{ action.href }}">{{ action.label }} ↗</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if dashboard_hero.caption %}<div class="galaxy-hero-caption">{{ dashboard_hero.caption }}</div>{% endif %}
+  </div>
+  <div class="galaxy-hero-visual galaxy-energy-scene" aria-hidden="true">
+    <span class="hero-energy-core"></span><span class="hero-energy-orbit hero-energy-orbit--one"></span>
+    <span class="hero-energy-orbit hero-energy-orbit--two"></span><span class="hero-energy-orbit hero-energy-orbit--three"></span>
+    <span class="hero-energy-spark hero-energy-spark--one"></span><span class="hero-energy-spark hero-energy-spark--two"></span>
+    <span class="hero-energy-spark hero-energy-spark--three"></span><span class="hero-energy-glow"></span>
+  </div>
+</section>

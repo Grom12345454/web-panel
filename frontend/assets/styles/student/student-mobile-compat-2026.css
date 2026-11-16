@@ -1,0 +1,318 @@
+/* Student App · cross-generation device compatibility
+   Last cascade layer. Layout follows the usable viewport and browser capabilities,
+   not phone brand strings or fixed assumptions about one screen size. */
+
+:root {
+  --student-visual-viewport-height: 100vh;
+  --student-visual-viewport-width: 100vw;
+  --student-visual-viewport-offset-top: 0px;
+  --student-safe-top: 0px;
+  --student-safe-right: 0px;
+  --student-safe-bottom: 0px;
+  --student-safe-left: 0px;
+  --student-control-size: 44px;
+}
+
+html.student-app-document,
+body.student-app-body {
+  width: 100%;
+  min-width: 0 !important;
+  min-height: 100%;
+  margin: 0 !important;
+}
+
+html.student-app-document {
+  min-height: 100vh;
+  background: #030916;
+  overflow-x: hidden;
+}
+
+body.student-app-body {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  padding: 0 !important;
+  overflow-x: hidden;
+  overflow-x: clip;
+  -webkit-text-size-adjust: auto;
+  text-size-adjust: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Physical padding is the fallback for older WebKit; env() enhances not replaces it. */
+body.student-app-body .app {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  padding: 12px 12px 24px !important;
+  padding: calc(12px + constant(safe-area-inset-top))
+           calc(12px + constant(safe-area-inset-right))
+           calc(24px + constant(safe-area-inset-bottom))
+           calc(12px + constant(safe-area-inset-left)) !important;
+  padding: calc(12px + env(safe-area-inset-top, 0px))
+           calc(12px + env(safe-area-inset-right, 0px))
+           calc(24px + env(safe-area-inset-bottom, 0px))
+           calc(12px + env(safe-area-inset-left, 0px)) !important;
+}
+
+body.student-app-body #app,
+body.student-app-body .student-main,
+body.student-app-body .student-main > *,
+body.student-app-body .app > *,
+body.student-app-body :is(.card, .glass, .event, .dir-option, .command-next-card, .command-metric) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.student-app-body :is(h1, h2, h3, p, small, strong, span, a, label) {
+  overflow-wrap: anywhere;
+}
+
+body.student-app-body :is(img, video, iframe, svg) {
+  max-width: 100%;
+}
+
+body.student-app-body :is(button, .btn, [role="button"], input, select, textarea) {
+  touch-action: manipulation;
+}
+
+body.student-app-body :is(button, .btn, [role="button"]) {
+  min-height: var(--student-control-size);
+}
+
+/* Form controls stay at 16px to prevent Safari's automatic input zoom. */
+body.student-app-body :is(.input, .select, textarea, .form input:not([type="checkbox"]):not([type="radio"]), .form select) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  font-size: 16px !important;
+  line-height: 1.4;
+  scroll-margin-top: 18px;
+  scroll-margin-bottom: 18px;
+}
+
+body.student-app-body :is(.nav, .mission-bottom-nav) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.student-app-body .nav {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+body.student-app-body .nav button {
+  flex: 0 0 auto;
+  min-width: max-content;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+body.student-app-body :is(.grid, .command-metrics, .command-next-row, .mission-today-grid, .leadership-directory-grid) > * {
+  min-width: 0;
+}
+
+body.student-app-body :is(.event-modal, .decline-modal, .student-notice-modal, [role="dialog"]) {
+  box-sizing: border-box;
+  max-width: calc(100vw - 16px);
+  max-height: 92vh;
+  max-height: calc(var(--student-visual-viewport-height, 100vh) - 20px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+body.student-app-body :is(.event-modal-backdrop, .decline-modal-backdrop, .student-notice-backdrop) {
+  box-sizing: border-box;
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Compact / zoomed / split-screen windows, including sub-320px usable widths. */
+@media (max-width: 359px) {
+  :root { --student-control-size: 44px; }
+  body.student-app-body .app {
+    padding: 8px 8px 96px !important;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.student-app-body .hero {
+    min-height: 0;
+    padding: 14px 12px !important;
+    border-radius: 18px;
+  }
+  body.student-app-body .title { font-size: 22px !important; line-height: 1.15; }
+  body.student-app-body .mission-mark { flex-basis: 54px; width: 54px; height: 54px; border-radius: 16px; }
+  body.student-app-body .mission-mark span { top: 10px; left: 22px; }
+  body.student-app-body .mission-mark b { inset: 21px; }
+  body.student-app-body .mission-mark em { left: 10px; bottom: 10px; }
+  body.student-app-body :is(.grid, .command-metrics, .command-next-row, .mission-today-grid, .leadership-directory-grid) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  body.student-app-body .dir-option { align-items: flex-start; flex-wrap: wrap; }
+  body.student-app-body .dir-option .btn { width: 100%; }
+  body.student-app-body .section-title { align-items: flex-start; flex-wrap: wrap; }
+  body.student-app-body .actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  body.student-app-body .actions > .btn { width: 100%; }
+  body.student-app-body .mission-bottom-nav { gap: 2px !important; }
+  body.student-app-body .mission-bottom-nav button { padding: 5px 2px !important; }
+  body.student-app-body .mission-bottom-nav button > small { font-size: 10px !important; }
+}
+
+/* Regular and large phones: use available width without forcing a brand-specific layout. */
+@media (min-width: 360px) and (max-width: 760px) {
+  body.student-app-body .app {
+    padding: 10px 12px 100px !important;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.student-app-body .hero { padding: clamp(16px, 4vw, 23px) !important; }
+  body.student-app-body .student-main { gap: 16px; }
+  body.student-app-body :is(.card, .glass.card, .command-next-card) { min-width: 0; }
+  body.student-app-body .mission-bottom-nav {
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+  body.student-app-body .mission-bottom-nav button {
+    min-width: 0;
+    min-height: 48px;
+    padding: 5px 3px;
+  }
+  body.student-app-body .mission-bottom-nav button > small {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Tablets, opened foldables and desktop-sized touch windows. */
+@media (min-width: 761px) {
+  body.student-app-body .app {
+    padding: 16px 20px 28px !important;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.student-app-body .app > :is(.hero, .nav),
+  body.student-app-body .student-main {
+    width: 100% !important;
+    max-width: 1120px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Short landscape viewports: controls remain reachable without consuming the page. */
+@media (max-height: 430px) and (orientation: landscape) {
+  body.student-app-body .app { padding-top: 8px !important; }
+  body.student-app-body .hero { min-height: 0 !important; margin-bottom: 8px !important; }
+  body.student-app-body .mission-bottom-nav button { min-height: 42px !important; }
+  body.student-app-body :is(.event-modal-backdrop, .decline-modal-backdrop, .student-notice-backdrop) {
+    place-items: start center;
+  }
+}
+
+/* When a software keyboard is open, hide the fixed dock and give the form room. */
+body.student-app-body.student-keyboard-open .mission-bottom-nav {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(140%) !important;
+}
+body.student-app-body.student-keyboard-open .app {
+  padding-bottom: 20px !important;
+}
+body.student-app-body.student-keyboard-open :is(.event-modal, .decline-modal, .student-notice-modal, [role="dialog"]) {
+  max-height: calc(var(--student-visual-viewport-height, 100vh) - 16px) !important;
+}
+
+/* Foldables with two physical display segments: do not place content over the hinge. */
+@media (horizontal-viewport-segments: 2) {
+  body.student-app-body .app {
+    width: 100% !important;
+    max-width: calc(env(viewport-segment-width 0 0, 50vw) - 16px) !important;
+    margin-left: calc(env(viewport-segment-left 0 0, 0px) + 8px) !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* Legacy browser fallbacks when backdrop-filter is unavailable. */
+@supports not (backdrop-filter: blur(1px)) {
+  @supports not (-webkit-backdrop-filter: blur(1px)) {
+    body.student-app-body :is(.glass, .mission-bottom-nav, .nav) {
+      background-color: rgba(5, 18, 36, .97) !important;
+    }
+  }
+}
+
+/* Touch browsers do not need hover-only motion; accessibility preferences win. */
+@media (hover: none), (pointer: coarse) {
+  body.student-app-body :is(.btn, button, [role="button"]) { cursor: default; }
+  body.student-app-body :is(.btn, .nav button, .mission-bottom-nav button) { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body *,
+  body.student-app-body *::before,
+  body.student-app-body *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  body.student-app-body :is(.card, .glass, .nav, .mission-bottom-nav, .btn, input, select, textarea) {
+    border-color: currentColor !important;
+  }
+}
+
+@media (forced-colors: active) {
+  body.student-app-body :is(.card, .glass, .nav, .mission-bottom-nav, .btn) {
+    border: 1px solid CanvasText !important;
+    forced-color-adjust: auto;
+  }
+}
+
+/* Browsers predating CSS Grid still get a readable, single-column fallback. */
+@supports not (display: grid) {
+  body.student-app-body .student-main { display: block; }
+  body.student-app-body .grid,
+  body.student-app-body .command-metrics,
+  body.student-app-body .command-next-row,
+  body.student-app-body .mission-today-grid,
+  body.student-app-body .leadership-directory-grid {
+    display: block;
+    width: 100%;
+  }
+  body.student-app-body .grid > *,
+  body.student-app-body .command-metrics > *,
+  body.student-app-body .command-next-row > *,
+  body.student-app-body .mission-today-grid > *,
+  body.student-app-body .leadership-directory-grid > * {
+    display: block;
+    width: 100%;
+    margin: 0 0 10px;
+  }
+  body.student-app-body .mission-bottom-nav button {
+    display: inline-block;
+    width: 23%;
+    vertical-align: top;
+  }
+}

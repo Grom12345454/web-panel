@@ -1,0 +1,153 @@
+/* v8: full-height sidebar with a dedicated scroll area for every navigation item. */
+html,
+body {
+  min-height: 100%;
+}
+
+body.uc-body {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-shell {
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* The sidebar itself must not scroll; only its navigation does. */
+.app-shell > .sidebar {
+  display: flex !important;
+  flex: 0 0 auto;
+  flex-direction: column !important;
+  align-self: flex-start;
+  min-width: 0;
+  min-height: 0 !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  padding-bottom: 18px !important; /* Override legacy 154px footer spacer from refresh-design.css. */
+  box-sizing: border-box;
+}
+
+.app-shell > .sidebar > .brand {
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.app-shell > .sidebar > .sidebar-nav {
+  display: block;
+  flex: 1 1 0% !important;
+  width: 100%;
+  min-width: 0;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 169, 205, .35) transparent;
+  padding-top: 0;
+  padding-bottom: max(28px, env(safe-area-inset-bottom, 0px)) !important;
+  scroll-padding-bottom: 28px;
+}
+
+.app-shell > .sidebar > .sidebar-nav > .nav-group {
+  flex-shrink: 0;
+}
+
+.app-shell > .sidebar > .sidebar-nav::after {
+  content: "";
+  display: block;
+  height: 12px;
+  min-height: 12px;
+  width: 100%;
+}
+
+.app-shell > .sidebar > .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-shell > .sidebar > .sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-shell > .sidebar > .sidebar-nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 169, 205, .32);
+}
+
+.app-shell > .sidebar > .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 169, 205, .58);
+}
+
+/* Do not let wide content force the main layout underneath the sidebar. */
+.app-shell > .main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.topbar-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.logout-form {
+  margin: 0;
+}
+
+.flash-heading {
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* The observer cannot submit administrative forms. Read receipts are the
+   exception: they update ONLY this account's notification state. */
+body.role-observer form[method="POST"]:not(.logout-form):not([data-notification-read]):not([data-notification-read-all]) {
+  opacity: .55;
+  pointer-events: none;
+}
+
+body.role-observer .observer-hide {
+  display: none !important;
+}
+
+/* Mobile drawer keeps the brand fixed and makes the full menu independently scrollable. */
+@media (max-width: 820px) {
+  .app-shell > .sidebar:not(.is-open) {
+    display: none !important;
+  }
+
+  .app-shell > .sidebar.is-open {
+    display: flex !important;
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: min(310px, 86vw) !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    z-index: 82 !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell > .sidebar.is-open > .sidebar-nav {
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell > .sidebar > .sidebar-nav {
+    scroll-behavior: auto;
+  }
+}

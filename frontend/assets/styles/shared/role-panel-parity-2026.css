@@ -1,0 +1,192 @@
+/*
+ * Role panel visual parity · 2026
+ *
+ * A final shared presentation layer for every authenticated portal role.
+ * It deliberately styles only shared page primitives: permissions, actions,
+ * role-specific content and route behavior remain defined by the templates
+ * and backend services.
+ */
+body.uc-body:not(.is-auth-page) {
+  --role-panel-bg: linear-gradient(145deg, rgba(14, 32, 51, .94), rgba(6, 18, 32, .97));
+  --role-panel-border: rgba(139, 190, 218, .16);
+  --role-panel-border-strong: rgba(139, 190, 218, .25);
+  --role-panel-shadow: 0 16px 38px rgba(0, 5, 20, .2), inset 0 1px rgba(255, 255, 255, .035);
+  --role-muted: #99b1c4;
+}
+
+body.uc-body:not(.is-auth-page) .page {
+  width: 100%;
+  max-width: 1760px;
+  min-width: 0;
+  margin-inline: auto;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(
+  .card,
+  .stat-card,
+  .panel,
+  .bot-panel,
+  .table-wrap,
+  .table-container,
+  .staff-directory-panel,
+  .staff-workspace-panel,
+  .mission-panel,
+  .report-panel
+) {
+  border-color: var(--role-panel-border);
+  border-radius: 18px;
+  background: var(--role-panel-bg);
+  box-shadow: var(--role-panel-shadow);
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.section-title, .staff-section-heading) {
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.section-title, .staff-section-heading) h1,
+body.uc-body:not(.is-auth-page) .page :is(.section-title, .staff-section-heading) h2 {
+  color: #f0f7ff;
+  font-size: clamp(23px, 2.35vw, 31px);
+  font-weight: 830;
+  letter-spacing: -.04em;
+  line-height: 1.13;
+  text-wrap: balance;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.section-title, .staff-section-heading) p {
+  max-width: 76ch;
+  margin-top: 7px;
+  color: var(--role-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.eyebrow, .section-title .eyebrow) {
+  color: var(--office-accent, #82dce8);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .15em;
+  line-height: 1.55;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.card-pad, .staff-directory-panel, .staff-workspace-panel) {
+  padding: clamp(16px, 1.8vw, 24px);
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.table-wrap, .table-scroll, .table-container, .activity-table, .audit-table) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 1px solid var(--role-panel-border);
+  border-radius: 14px;
+  background: rgba(5, 16, 29, .38);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--office-accent-rgb, 105, 214, 238), .34) transparent;
+}
+
+body.uc-body:not(.is-auth-page) .page table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(th, thead th) {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(139, 190, 218, .14);
+  background: rgba(44, 91, 122, .15);
+  color: var(--office-accent, #91dce7);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .09em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+body.uc-body:not(.is-auth-page) .page td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(139, 190, 218, .095);
+  color: #c6d8e5;
+  font-size: 12px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+body.uc-body:not(.is-auth-page) .page tbody tr:last-child td { border-bottom: 0; }
+body.uc-body:not(.is-auth-page) .page tbody tr:hover td { background: rgba(var(--office-accent-rgb, 105, 214, 238), .035); }
+body.uc-body:not(.is-auth-page) .page :is(.name-cell, td strong) { color: #eff8ff; font-weight: 740; }
+
+body.uc-body:not(.is-auth-page) .page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea, .input) {
+  min-height: 40px;
+  border: 1px solid rgba(139, 190, 218, .18);
+  border-radius: 10px;
+  background-color: rgba(5, 17, 31, .72);
+  color: #e8f3fb;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025);
+}
+
+body.uc-body:not(.is-auth-page) .page :is(input, select, textarea, .input)::placeholder {
+  color: #7892a7;
+  opacity: 1;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(input, select, textarea, .input):focus-visible {
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .62);
+  outline: 2px solid rgba(var(--office-accent-rgb, 105, 214, 238), .28);
+  outline-offset: 2px;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.btn, button.btn, input[type="submit"]) {
+  min-height: 38px;
+  border-radius: 10px;
+  font-weight: 740;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.card-actions, .form-foot, .actions, .staff-directory-header-actions) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.empty, .mission-empty-small) {
+  color: #91aabd;
+  line-height: 1.65;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(.badge, .status-badge) {
+  border-radius: 999px;
+  font-weight: 760;
+}
+
+body.uc-body:not(.is-auth-page) .page a.card,
+body.uc-body:not(.is-auth-page) .page a.stat-card,
+body.uc-body:not(.is-auth-page) .page .direction-work-card {
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+body.uc-body:not(.is-auth-page) .page :is(a.card, a.stat-card, .direction-work-card):hover {
+  border-color: var(--role-panel-border-strong);
+  box-shadow: 0 20px 42px rgba(0, 5, 20, .25), inset 0 1px rgba(255, 255, 255, .045);
+}
+
+@media (max-width: 820px) {
+  body.uc-body:not(.is-auth-page) .page :is(.section-title, .staff-section-heading) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  body.uc-body:not(.is-auth-page) .page :is(.section-title, .staff-section-heading) > :last-child {
+    max-width: 100%;
+  }
+  body.uc-body:not(.is-auth-page) .page :is(.card-pad, .staff-directory-panel, .staff-workspace-panel) {
+    padding: 16px;
+  }
+  body.uc-body:not(.is-auth-page) .page td { padding: 10px 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body:not(.is-auth-page) .page :is(a.card, a.stat-card, .direction-work-card) {
+    transition: none;
+  }
+}

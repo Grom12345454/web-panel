@@ -1,0 +1,44 @@
+{% extends "shared/base.html" %}
+{% block title %}Архив отчётов администрации{% endblock %}
+{% block content %}
+<div class="section-title">
+  <div>
+    <h1>Архив отчётов администрации</h1>
+    <p>Здесь хранятся ZIP-отчёты, созданные перед очисткой базы мероприятий. Только главный администратор может просматривать, скачивать и удалять эти архивы.</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn btn-soft" href="{{ url_for('admin.system_maintenance') }}">← Очистка баз</a>
+    <a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">Дашборд</a>
+  </div>
+</div>
+
+<section class="card" style="padding:22px;margin-top:18px">
+  {% if reports %}
+    <div style="overflow-x:auto">
+      <table class="table">
+        <thead><tr><th>Файл отчёта</th><th>Дата создания</th><th>Размер</th><th>Действия</th></tr></thead>
+        <tbody>
+        {% for report in reports %}
+          <tr>
+            <td><strong>{{ report.filename }}</strong></td>
+            <td>{{ report.modified.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+            <td>{{ (report.size / 1024)|round(1) }} КБ</td>
+            <td>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <a class="btn btn-soft" href="{{ url_for('admin.download_admin_report', filename=report.filename) }}">Скачать ZIP</a>
+                <form method="POST" action="{{ url_for('admin.delete_admin_report', filename=report.filename) }}" data-confirm="Удалить этот отчёт без возможности восстановления?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-danger" type="submit">Удалить</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="subtle">Архивов пока нет. После формирования отчёта перед очисткой базы он появится здесь.</p>
+  {% endif %}
+</section>
+{% endblock %}

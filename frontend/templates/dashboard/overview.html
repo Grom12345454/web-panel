@@ -1,0 +1,99 @@
+{% extends "shared/base.html" %}
+{% block title %}Центр управления | Студсовет{% endblock %}
+{% block content %}
+<div class="galaxy-dashboard unified-role-dashboard" data-dashboard-role="{{ session.user_role|default('unknown') }}">
+  {% include 'dashboard/_dashboard_hero.html' %}
+
+  {% if dashboard_mode == 'archive' %}
+    <section class="galaxy-mission-section" aria-labelledby="dashboard-tools-title">
+      <div class="galaxy-section-heading">
+        <span class="galaxy-kicker">ДОСТУПНЫЕ РАЗДЕЛЫ</span>
+        <h2 id="dashboard-tools-title">Рабочие инструменты</h2>
+        <p>Показываются только функции, разрешённые вашей учётной записи.</p>
+      </div>
+      <div class="galaxy-tools">
+        {% for tool in dashboard_tools %}
+        <a href="{{ tool.href }}" class="galaxy-tool {{ tool.class }}">
+          <span class="galaxy-tool-symbol" aria-hidden="true">{{ tool.icon }}</span>
+          <h3>{{ tool.title }}</h3><p>{{ tool.description }}</p><b>{{ tool.cta }} ↗</b>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    {% include 'dashboard/_dashboard_metrics.html' %}
+    {% include 'dashboard/_dashboard_overview_panels.html' %}
+
+    {% if dashboard_show_analytics %}
+    <section class="mission-panel mission-analytics" aria-labelledby="mission-analytics-title">
+      <div class="mission-panel-top mission-analytics-heading">
+        <div><h2 id="mission-analytics-title">Активность зарегистрированных студентов в ботах</h2><p>Сводные показатели в пределах разрешённой области просмотра. Данные доступны только для чтения.</p></div>
+        <div class="mission-periods" role="group" aria-label="Период графика">
+          <a href="{{ url_for('admin.dashboard', period=7) }}" {% if period == 7 %}aria-current="true"{% endif %}>7 дней</a>
+          <a href="{{ url_for('admin.dashboard', period=30) }}" {% if period == 30 %}aria-current="true"{% endif %}>30 дней</a>
+        </div>
+      </div>
+      <div class="mission-analytics-grid">
+        <div class="mission-trend">
+          <div class="mission-chart-summary">
+            <div><strong>{{ activity_total }}</strong><small>Действий в ботах за {{ period }} дней</small></div>
+            <div><strong>{{ recent_students }}</strong><small>Новых зарегистрированных профилей</small></div>
+          </div>
+          <div class="mission-bars" role="img" aria-label="Действий за {{ period }} дней: {% for day in activity_days %}{{ day.day }} — {{ day.count }}; {% endfor %}">
+            {% for day in activity_days %}<div class="mission-bar-slot" title="{{ day.day }} · {{ day.count }}"><span class="mission-bar" style="height:{{ day.height_pct }}%"></span></div>{% endfor %}
+          </div>
+          <div class="mission-chart-axis"><span>{{ activity_days[0].day }}</span><span>{{ activity_days[-1].day }}</span></div>
+        </div>
+        <div class="mission-direction-metrics">
+          <h3>Зарегистрированные участники по направлениям</h3>
+          <div class="mission-ranking">
+            {% for item in direction_members[:6] %}
+            <div class="mission-rank"><div><span>{{ item.name }}</span><strong>{{ item.count }}</strong></div><span class="mission-rank-track"><span style="width:{{ item.width_pct }}%"></span></span></div>
+            {% else %}<p class="mission-empty-small">Направления пока не добавлены.</p>{% endfor %}
+          </div>
+          {% if session.user_role == 'super_admin' %}<a href="{{ url_for('stats.directions_statistics') }}" class="mission-view-all">Полная статистика ↗</a>{% endif %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="galaxy-mission-section" aria-labelledby="dashboard-tools-title">
+      <div class="galaxy-section-heading">
+        <span class="galaxy-kicker">РАБОЧЕЕ ПРОСТРАНСТВО</span>
+        <h2 id="dashboard-tools-title">Доступные разделы</h2>
+        <p>Единый интерфейс для всех ролей. Состав разделов определяется серверными разрешениями.</p>
+      </div>
+      <div class="galaxy-tools">
+        {% for tool in dashboard_tools %}
+        <a href="{{ tool.href }}" class="galaxy-tool {{ tool.class }}">
+          <span class="galaxy-tool-symbol" aria-hidden="true">{{ tool.icon }}</span>
+          <h3>{{ tool.title }}</h3><p>{{ tool.description }}</p><b>{{ tool.cta }} ↗</b>
+        </a>
+        {% else %}
+        <div class="galaxy-empty"><span aria-hidden="true">◎</span><h3>Нет доступных разделов</h3><p>Обратитесь к главному администратору для назначения разрешений.</p></div>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if dashboard_show_directions %}
+    <section class="galaxy-mission-section" aria-labelledby="galaxy-directions-title">
+      <div class="galaxy-section-heading galaxy-section-heading-row">
+        <div><span class="galaxy-kicker">СТРУКТУРА СТУДЕНЧЕСКОГО СОВЕТА</span><h2 id="galaxy-directions-title">Доступные направления</h2><p>Показаны только направления, входящие в область доступа вашей роли.</p></div>
+        <a class="btn btn-soft" href="{{ url_for('directions.directions_list') }}">Открыть список ↗</a>
+      </div>
+      <div class="galaxy-direction-grid">
+        {% for d in direction_stats %}
+        <article class="galaxy-direction" style="--galaxy-card-index:{{ loop.index0 }}">
+          <div class="galaxy-direction-top"><span class="galaxy-direction-icon" aria-hidden="true">{{ d.icon or '✦' }}</span><span class="galaxy-direction-code">{{ d.code or 'НАПРАВЛЕНИЕ' }}</span></div>
+          <h3>{{ d.name }}</h3><p>{{ d.description or 'Пространство идей, командной работы и развития студентов.' }}</p>
+          <div class="galaxy-direction-foot"><span>{{ d.count }} участников · {% if d.has_questions %}анкета настроена{% else %}общий приём{% endif %}</span><a href="{{ url_for('directions.direction_detail', did=d.id) }}" class="galaxy-direction-link" aria-label="Открыть направление {{ d.name }}">Открыть <span aria-hidden="true">↗</span></a></div>
+        </article>
+        {% else %}
+        <div class="galaxy-empty"><span aria-hidden="true">✦</span><h3>Нет доступных направлений</h3><p>Ваш список направлений появится после назначения доступа.</p></div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

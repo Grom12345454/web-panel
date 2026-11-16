@@ -1,0 +1,53 @@
+{% extends "shared/base.html" %}
+{% block title %}Журнал Telegram-бота | Студенческий совет{% endblock %}
+{% block content %}
+{% include "activity/_admin_monitor_tabs.html" %}
+<section class="bot-activity-hero" data-summary-url="{{ url_for('admin.bot_activity_live_summary') }}">
+  <div class="bot-activity-copy">
+    <div class="eyebrow">ЖУРНАЛ ДЕЙСТВИЙ</div>
+    <h1>Действия зарегистрированных студентов в ботах</h1>
+    <p>Реальные регистрации, заявления и действия с мероприятиями, связанные с зарегистрированными профилями. Незарегистрированные и неидентифицированные обращения не включаются в пользовательскую статистику.</p>
+    <div class="bot-hero-chips"><span>◈ Регистрация</span><span>✦ Направления</span><span>◉ Мероприятия</span></div>
+  </div>
+</section>
+
+<div class="bot-stats-grid">
+  <article class="bot-stat-card stat-cyan"><div class="bot-stat-icon">✧</div><div class="bot-stat-label">Регистрации в боте</div><div class="bot-stat-number" data-live-total="registrations">{{ totals.registrations }}</div><div class="bot-stat-foot">Создание профиля</div></article>
+  <article class="bot-stat-card stat-violet"><div class="bot-stat-icon">↗</div><div class="bot-stat-label">Заявки в направления</div><div class="bot-stat-number" data-live-total="applications">{{ totals.applications }}</div><div class="bot-stat-foot">Подано через бота</div></article>
+  <article class="bot-stat-card stat-blue"><div class="bot-stat-icon">◉</div><div class="bot-stat-label">Записи на мероприятия</div><div class="bot-stat-number" data-live-total="event_signups">{{ totals.event_signups }}</div><div class="bot-stat-foot">Подтверждённые записи на дату</div></article>
+  <article class="bot-stat-card stat-rose"><div class="bot-stat-icon">↘</div><div class="bot-stat-label">Отказы от мероприятий</div><div class="bot-stat-number" data-live-total="declines">{{ totals.declines }}</div><div class="bot-stat-foot">Зафиксированные отказы</div></article>
+</div>
+
+<div class="bot-activity-columns">
+  <section class="bot-panel">
+    <div class="bot-panel-heading"><div><div class="eyebrow">ЗАЯВЛЕНИЯ ПО НАПРАВЛЕНИЯМ</div><h2>Заявления по направлениям</h2><p>События по зарегистрированным профилям из связанных каналов</p></div><span class="bot-panel-icon">◈</span></div>
+    {% if top_directions %}
+      {% set max_direction_count = top_directions|map(attribute='count')|max %}
+      <div class="bot-ranked-list" data-live-ranking="directions">
+      {% for item in top_directions %}
+        <div class="bot-ranked-item"><div class="bot-ranked-top"><span>{{ '%02d'|format(loop.index) }} · {{ item.name }}</span><strong>{{ item.count }}</strong></div><div class="bot-bar-track"><span style="width:{{ (item.count / max_direction_count * 100)|round(1) }}%"></span></div></div>
+      {% endfor %}
+      </div>
+    {% else %}<div class="bot-empty"><span>◌</span><strong>Заявок пока нет</strong><p>Заявки появятся после выбора направления студентом в боте или личном кабинете.</p></div><div class="bot-ranked-list" data-live-ranking="directions" hidden></div>{% endif %}
+  </section>
+
+  <section class="bot-panel">
+    <div class="bot-panel-heading"><div><div class="eyebrow">ЗАПИСИ НА МЕРОПРИЯТИЯ</div><h2>Записи на мероприятия</h2><p>Подтверждённые записи из всех каналов</p></div><span class="bot-panel-icon">◉</span></div>
+    {% if top_quotas %}
+      {% set max_quota_count = top_quotas|map(attribute='count')|max %}
+      <div class="bot-ranked-list" data-live-ranking="quotas">
+      {% for item in top_quotas %}
+        <div class="bot-ranked-item"><div class="bot-ranked-top"><span>{{ '%02d'|format(loop.index) }} · {{ item.name }}</span><strong>{{ item.count }}</strong></div><div class="bot-bar-track bot-bar-purple"><span style="width:{{ (item.count / max_quota_count * 100)|round(1) }}%"></span></div></div>
+      {% endfor %}
+      </div>
+    {% else %}<div class="bot-empty"><span>◌</span><strong>Записей пока нет</strong><p>Когда студенты запишутся на даты мероприятий, статистика появится здесь.</p></div><div class="bot-ranked-list" data-live-ranking="quotas" hidden></div>{% endif %}
+  </section>
+</div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/bot-activity-live.js', v=asset_version('js/bot-activity-live.js')) }}" defer></script>
+{% endblock %}

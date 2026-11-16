@@ -1,0 +1,98 @@
+/* Galaxy Student 2.0 — source stylesheet, appended after existing themed layers. */
+body.student-app-body{--galaxy-20-bg:var(--galaxy-bg-20);--galaxy-20-panel:var(--galaxy-surface-20);--galaxy-20-accent:var(--galaxy-accent-20);--galaxy-20-lilac:var(--galaxy-light-20);--galaxy-20-white:var(--galaxy-text-20);color:var(--galaxy-20-white)}
+body.student-app-body .app{max-width:1120px;margin-inline:auto;padding-bottom:35px}
+body.student-app-body .student-main{display:block;min-width:0}
+body.student-app-body .nav{max-width:100%;margin-bottom:20px;overflow-x:auto}
+body.student-app-body .mission-bottom-nav{display:none}
+body.student-app-body .command-dashboard{display:grid;gap:18px;min-width:0}
+body.student-app-body .command-hero{min-height:245px!important;padding:clamp(23px,4vw,43px)!important;border-radius:25px!important;box-shadow:0 16px 46px rgba(0,6,30,.32)!important;overflow:hidden}
+body.student-app-body .command-hero h1{font-size:clamp(27px,3.7vw,42px)!important;line-height:1.12;letter-spacing:-.04em}
+body.student-app-body .command-hero p{max-width:44ch;font-size:14px;line-height:1.6;color:#c5d9eb}
+body.student-app-body .command-world{transform:scale(.8);transform-origin:center}
+body.student-app-body .command-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+body.student-app-body .command-metric{min-width:0;padding:16px;border-radius:18px;border:1px solid rgba(119,223,255,.22);background:linear-gradient(145deg,rgba(23,49,83,.95),rgba(11,27,52,.95));box-shadow:0 10px 28px rgba(0,7,33,.25)}
+body.student-app-body .command-metric-label{font-size:12px!important}
+body.student-app-body .mission-student-today{padding:22px;border:1px solid rgba(132,197,244,.25);border-radius:24px;background:linear-gradient(140deg,rgba(18,45,77,.95),rgba(10,26,49,.94))}
+body.student-app-body .mission-today-heading{margin-bottom:15px}
+body.student-app-body .mission-today-heading h2{margin:5px 0;color:#f3f8ff;font-size:clamp(20px,2.6vw,28px);letter-spacing:-.035em}
+body.student-app-body .mission-today-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+body.student-app-body .mission-today-tile{display:flex;flex-direction:column;align-items:start;text-align:left;gap:10px;min-width:0;min-height:166px;padding:17px;border:1px solid rgba(139,208,246,.23);border-radius:17px;background:linear-gradient(150deg,rgba(25,52,84,.95),rgba(9,24,48,.98));color:#ecf7ff;cursor:pointer;transition:transform .18s ease,border-color .18s ease}
+body.student-app-body .mission-today-tile:hover{transform:translateY(-3px);border-color:#77dfff}
+body.student-app-body .mission-today-tile>span{font-size:12px;font-weight:700;color:#9fdfff}
+body.student-app-body .mission-today-tile>strong{font-size:clamp(14px,1.6vw,18px);line-height:1.4;overflow-wrap:anywhere}
+body.student-app-body .mission-today-tile>small{margin-top:auto;font-size:12px;color:#bad4ec}
+body.student-app-body .mission-student-settings-heading{margin-top:6px}
+body.student-app-body .mission-student-settings-heading h2{margin:5px 0;font-size:clamp(21px,3vw,28px);color:#f3f8ff;letter-spacing:-.04em}
+body.student-app-body .mission-student-settings-heading p{font-size:13px;line-height:1.5;color:#acc7df;margin:0}
+body.student-app-body .mission-student-disclosure{scroll-margin-top:88px;min-width:0;border:1px solid rgba(127,204,255,.27);border-radius:19px;background:linear-gradient(130deg,rgba(17,41,73,.97),rgba(11,26,50,.97));overflow:hidden}
+body.student-app-body .mission-student-disclosure>summary{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:21px;cursor:pointer;list-style:none}
+body.student-app-body .mission-student-disclosure>summary::-webkit-details-marker{display:none}
+body.student-app-body .mission-student-disclosure>summary>span:first-child{display:grid;gap:6px;min-width:0}
+body.student-app-body .mission-student-disclosure>summary b{font-size:16px;font-weight:780;color:#f3f8ff}
+body.student-app-body .mission-student-disclosure>summary small{font-size:12px;line-height:1.4;color:#acc9e4}
+body.student-app-body .mission-student-disclosure>summary>span:last-child{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:10px;background:rgba(119,223,255,.1);color:#a6e8ff;font-size:20px;transition:transform .2s ease}
+body.student-app-body .mission-student-disclosure[open]>summary>span:last-child{transform:rotate(180deg)}
+body.student-app-body .mission-student-disclosure-body{padding:0 18px 21px}
+body.student-app-body .mission-student-disclosure .command-profile-grid{margin-top:0}
+body.student-app-body .mission-student-disclosure .command-account-wrap{margin:0}
+body.student-app-body .mission-student-disclosure :is(.account-tile,.command-identity-card,.command-edit-card,.command-chats){box-shadow:none;border-color:rgba(127,200,245,.19)}
+body.student-app-body .mission-more .section-title h2{font-size:26px}
+body.student-app-body .mission-more-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+body.student-app-body .mission-more-list>button{display:flex;align-items:center;text-align:left;gap:13px;min-height:86px;padding:15px;border:1px solid rgba(139,205,247,.23);border-radius:16px;background:linear-gradient(125deg,rgba(24,51,85,.96),rgba(10,28,53,.96));color:#f2f8ff;cursor:pointer}
+body.student-app-body .mission-more-list>button:hover{border-color:#77dfff}
+body.student-app-body .mission-more-list>button>span:first-child{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:rgba(119,223,255,.12);color:#98dfff;font-size:20px}
+body.student-app-body .mission-more-list>button>span:nth-child(2){display:grid;gap:5px;flex:1;min-width:0}
+body.student-app-body .mission-more-list strong{font-size:14px}
+body.student-app-body .mission-more-list small{font-size:11px;line-height:1.5;color:#adc8e3}
+body.student-app-body .mission-more-list b{font-size:17px;color:#89defb}
+body.student-app-body .mission-schedule .mission-period-tabs{display:flex;gap:6px;padding:5px;margin:13px 0 20px;width:fit-content;max-width:100%;border:1px solid rgba(125,196,244,.3);border-radius:13px;background:rgba(5,17,39,.65)}
+body.student-app-body .mission-period-tabs button{font-size:12px;font-weight:760;padding:11px 16px;border:0;border-radius:10px;background:none;color:#bbd6ec;cursor:pointer}
+body.student-app-body .mission-period-tabs button.active{background:#77dfff;color:#071225}
+body.student-app-body .mission-lesson{display:flex;gap:15px;align-items:center;min-width:0;padding:18px;margin-bottom:11px;border:1px solid rgba(135,206,248,.22);border-radius:17px;background:rgba(14,36,66,.93)}
+body.student-app-body .mission-lesson-date{display:grid;gap:6px;text-align:center;min-width:66px;flex:none;padding:11px 8px;border-radius:12px;background:rgba(119,223,255,.11)}
+body.student-app-body .mission-lesson-date strong{color:#ebfaff;font-size:17px}
+body.student-app-body .mission-lesson-date span{color:#accce2;font-size:12px}
+body.student-app-body .mission-lesson-details{flex:1;min-width:0}
+body.student-app-body .mission-lesson-details>span{color:#83dfff;font-size:12px}
+body.student-app-body .mission-lesson-details h3{font-size:16px;margin:5px 0 8px;color:#f2f8ff}
+body.student-app-body .mission-lesson-details p{color:#bfd0e3;font-size:12px}
+body.student-app-body .mission-lesson-details .meta{display:flex;flex-wrap:wrap;gap:7px}
+body.student-app-body .mission-lesson .btn{flex:none;white-space:nowrap}
+body.student-app-body.mission-modal-open{overflow:hidden}
+body.student-app-body :is(.mission-student-disclosure>summary,.mission-today-tile,.mission-more-list>button,.mission-period-tabs button,.mission-bottom-nav button):focus-visible{outline:3px solid #77dfff;outline-offset:3px}
+body.student-app-body .command-dashboard :is(.muted,.command-subtitle,.account-security p){font-size:clamp(12px,1.3vw,14px)}
+@media(max-width:760px){
+ body.student-app-body .app{padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+ body.student-app-body .nav{display:none!important}
+ body.student-app-body .mission-bottom-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;z-index:1000;gap:5px;padding:8px max(9px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom,0px)) max(9px,env(safe-area-inset-left));border-top:1px solid rgba(129,203,247,.32);background:rgba(5,18,40,.95);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 -12px 36px rgba(0,6,24,.35)}
+ body.student-app-body .mission-bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:56px;border:1px solid transparent;border-radius:12px;background:transparent;color:#b0c6de;cursor:pointer}
+ body.student-app-body .mission-bottom-nav button.active{border-color:rgba(119,223,255,.42);background:rgba(119,223,255,.13);color:#f3f8ff}
+ body.student-app-body .mission-bottom-nav button>span{font-size:22px;line-height:1}
+ body.student-app-body .mission-bottom-nav button>small{font-size:11px;font-weight:760;white-space:nowrap}
+ body.student-app-body .command-hero{min-height:unset!important;padding:23px!important}
+ body.student-app-body .command-hero h1{font-size:30px!important}
+ body.student-app-body .command-world{opacity:.3;transform:scale(.55);pointer-events:none}
+ body.student-app-body .command-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ body.student-app-body .command-metric{padding:11px;min-width:0}
+ body.student-app-body .command-metric-icon{display:none!important}
+ body.student-app-body .command-metric strong{font-size:24px!important}
+ body.student-app-body .command-metric-label,body.student-app-body .command-metric small{font-size:11px!important}
+ body.student-app-body .mission-student-today{padding:16px}
+ body.student-app-body .mission-today-grid{grid-template-columns:1fr;gap:8px}
+ body.student-app-body .mission-today-tile{min-height:96px;padding:14px;gap:6px}
+ body.student-app-body .mission-today-tile>strong{font-size:15px}
+ body.student-app-body .mission-more-list{grid-template-columns:1fr}
+ body.student-app-body .mission-lesson{align-items:start;flex-wrap:wrap}
+ body.student-app-body .mission-lesson .btn{width:100%}
+ body.student-app-body .mission-student-disclosure-body{padding:0 13px 16px}
+}
+@media(prefers-reduced-motion:reduce){body.student-app-body :is(.mission-today-tile,.mission-student-disclosure>summary>span:last-child){transition:none!important}}
+
+
+body.student-app-body .student-main .muted{font-size:12px!important;line-height:1.55}
+body.student-app-body .student-main .btn{font-size:13px;min-height:40px}
+
+/* Unified student agenda: lessons and approved event dates */
+.mission-schedule .mission-calendar-event{border-color:rgba(169,155,255,.28);background:linear-gradient(110deg,rgba(53,38,92,.32),rgba(9,25,48,.8))}
+.mission-calendar-event .mission-lesson-date{background:linear-gradient(165deg,rgba(169,155,255,.22),rgba(50,37,79,.12));border-color:rgba(169,155,255,.28)}
+.mission-calendar-event .mission-lesson-details>span:first-child{color:#cabfff}

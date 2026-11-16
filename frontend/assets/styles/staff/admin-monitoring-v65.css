@@ -1,0 +1,110 @@
+/* v65 — unified monitoring tables, registered-student-only analytics and refined dashboard masthead. */
+.uc-body .admin-monitor-tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.uc-body .admin-monitor-tab { min-height: 62px; }
+.uc-body .admin-monitor-tab b { font-size: 12px; }
+.uc-body .admin-monitor-tab small { font-size: 10px; }
+
+/* The bot journal follows the same dense, scannable table language as the staff audit. */
+.uc-body .bot-monitor-table-wrap {
+  width: 100%; max-width: 100%; overflow: auto; overscroll-behavior-inline: contain;
+  border: 1px solid rgba(126, 183, 224, .20); border-radius: 0 0 18px 18px;
+  background: rgba(5, 17, 32, .54);
+}
+.uc-body .bot-monitor-table { width: 100%; min-width: 980px; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+.uc-body .bot-monitor-table th {
+  position: sticky; top: 0; z-index: 2; padding: 13px 14px; text-align: left;
+  color: #b9cee4; background: #132b43; border-bottom: 1px solid rgba(129, 192, 231, .23);
+  font-size: 10px; font-weight: 850; letter-spacing: .075em; text-transform: uppercase;
+}
+.uc-body .bot-monitor-table td {
+  padding: 13px 14px; vertical-align: middle; border-bottom: 1px solid rgba(126, 171, 208, .12);
+  color: #d8e7f7; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere;
+}
+.uc-body .bot-monitor-table tbody tr { background: rgba(11, 29, 48, .55); transition: background .18s ease; }
+.uc-body .bot-monitor-table tbody tr:nth-child(even) { background: rgba(17, 39, 61, .56); }
+.uc-body .bot-monitor-table tbody tr:hover { background: rgba(51, 115, 154, .18); }
+.uc-body .bot-monitor-table tbody tr.is-error { background: rgba(116, 39, 58, .18); }
+.uc-body .bot-monitor-table th:nth-child(1) { width: 126px; }
+.uc-body .bot-monitor-table th:nth-child(2) { width: 116px; }
+.uc-body .bot-monitor-table th:nth-child(3) { width: 29%; }
+.uc-body .bot-monitor-table th:nth-child(4) { width: 116px; }
+.uc-body .bot-monitor-table th:nth-child(5) { width: 150px; }
+.uc-body .bot-monitor-table th:nth-child(6) { width: 90px; }
+.uc-body .bot-monitor-table th:nth-child(7) { width: 124px; }
+.uc-body .bot-monitor-time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.uc-body .bot-monitor-time strong,.uc-body .bot-monitor-time span,.uc-body .bot-monitor-time small,
+.uc-body .bot-monitor-action strong,.uc-body .bot-monitor-action span,.uc-body .bot-monitor-action small,
+.uc-body .bot-monitor-table td small { display: block; }
+.uc-body .bot-monitor-time span { color: #a9c5df; margin-top: 3px; }
+.uc-body .bot-monitor-table td small { color: #829bb5; margin-top: 4px; font-size: 10px; }
+.uc-body .bot-monitor-action strong { color: #eef7ff; font-size: 12px; }
+.uc-body .bot-monitor-action span { color: #a8bdd2; margin-top: 3px; }
+.uc-body .bot-monitor-action code { color: #8eddf2; font-size: 10px; }
+.uc-body .bot-monitor-duration { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.uc-body .bot-monitor-muted { color: #92a9c1; }
+.uc-body .bot-monitor-table .journal-status { font-size: 10px; padding: 6px 9px; }
+.uc-body .journal-feed { padding: 0; overflow: hidden; }
+.uc-body .journal-feed-heading { padding: 15px 18px; }
+
+/* A complete, balanced hero: copy stays clear and the decorative planet no longer clips at the bottom. */
+body.uc-body.is-dashboard-page .mission-hero-20 {
+  position: relative; isolation: isolate; min-height: clamp(250px, 28vh, 310px);
+  padding: clamp(26px, 3.2vw, 42px) !important; overflow: hidden;
+  display: flex; align-items: center;
+  border: 1px solid rgba(147, 213, 247, .36) !important;
+  background:
+    radial-gradient(ellipse at 84% 15%, rgba(var(--office-secondary-rgb, 120, 135, 255), .20), transparent 38%),
+    radial-gradient(ellipse at 8% 100%, rgba(var(--office-accent-rgb, 105, 214, 238), .17), transparent 48%),
+    linear-gradient(112deg, #12384a 0%, #0d2a3b 48%, #0b2137 100%) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.13), 0 22px 55px rgba(0,7,25,.28), 0 0 34px rgba(84,190,223,.08);
+}
+body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-copy {
+  position: relative; z-index: 4; width: min(58%, 680px); max-width: 680px;
+  transform: none !important;
+}
+body.uc-body.is-dashboard-page .mission-hero-20 h1 {
+  max-width: 620px; margin: 0 0 12px; font-size: clamp(36px, 4vw, 58px) !important;
+  line-height: .99 !important; letter-spacing: -.055em !important; text-wrap: balance;
+}
+body.uc-body.is-dashboard-page .mission-hero-20 h1 em {
+  display: inline-block; color: #86e7f0 !important; font-style: normal;
+  text-shadow: 0 0 26px rgba(102, 229, 237, .14);
+}
+body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-copy p {
+  max-width: 48ch; color: #c0d7e6; font-size: 13px; line-height: 1.65;
+}
+body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-visual.galaxy-energy-scene {
+  position: absolute; z-index: 2; width: min(39%, 390px); height: auto; aspect-ratio: 1;
+  right: 4%; top: 50%; transform: translateY(-50%) !important; opacity: .94;
+  overflow: visible; filter: drop-shadow(0 14px 28px rgba(59, 177, 220, .18));
+}
+body.uc-body.is-dashboard-page .hero-energy-core { inset: 29%; animation-duration: 7s; }
+body.uc-body.is-dashboard-page .hero-energy-orbit { inset: 18% 2%; }
+body.uc-body.is-dashboard-page .hero-energy-orbit--two { inset: 9% 8%; }
+body.uc-body.is-dashboard-page .hero-energy-orbit--three { inset: 26% -4%; }
+body.uc-body.is-dashboard-page .hero-energy-glow { opacity: .9; }
+body.uc-body.is-dashboard-page .mission-hero-20 .depth-hero-stars { z-index: 1; opacity: .65; }
+
+@media (max-width: 900px) {
+  .uc-body .admin-monitor-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-copy { width: min(66%, 620px); }
+  body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-visual.galaxy-energy-scene { width: min(40%, 320px); right: 0; opacity: .72; }
+}
+@media (max-width: 620px) {
+  .uc-body .admin-monitor-tabs { grid-template-columns: minmax(0, 1fr); position: static; }
+  .uc-body .admin-monitor-tab { min-height: 54px; }
+  body.uc-body.is-dashboard-page .mission-hero-20 { min-height: 260px; padding: 24px 20px !important; align-items: flex-start; }
+  body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-copy { width: 100%; max-width: 100%; }
+  body.uc-body.is-dashboard-page .mission-hero-20 h1 { max-width: 14ch; font-size: clamp(34px, 10vw, 43px) !important; }
+  body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-copy p { max-width: 35ch; padding-right: 10px; }
+  body.uc-body.is-dashboard-page .mission-hero-20 .galaxy-hero-visual.galaxy-energy-scene { width: 210px; right: -60px; top: auto; bottom: -28px; transform: none !important; opacity: .36; }
+  .uc-body .bot-monitor-table-wrap { border-radius: 0 0 14px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uc-body .bot-monitor-table tbody tr { transition: none; }
+  body.uc-body.is-dashboard-page .hero-energy-core,
+  body.uc-body.is-dashboard-page .hero-energy-orbit { animation: none !important; }
+}

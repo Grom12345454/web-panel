@@ -1,0 +1,129 @@
+/* v61 — CSS-only cinematic intensity. No WebGL, 3D meshes, canvas render loops or animated blur. */
+:root {
+  --v61-ease: cubic-bezier(.18,.78,.18,1);
+  --v61-glow-a: rgba(var(--office-accent-rgb, 108,211,255),.24);
+  --v61-glow-b: rgba(var(--office-secondary-rgb, 165,126,255),.2);
+}
+
+/* Abstract atmosphere replaces the old model-based orbital/ship visuals. */
+.uc-body .space-visual-scene {
+  position: fixed; z-index: 0; inset: 0 0 auto auto; width: min(62vw,820px); height: min(80vh,760px);
+  overflow: hidden; pointer-events: none; opacity: .78; contain: layout paint; filter: none !important;
+  mask-image: radial-gradient(ellipse at 62% 39%,#000 12%,rgba(0,0,0,.75) 44%,transparent 78%);
+}
+.space-aurora-wave { position:absolute; display:block; width:84%; height:48%; border-radius:50%; border:1px solid rgba(142,226,255,.22); opacity:.65; transform-origin:center; }
+.space-aurora-wave--one { top:12%; right:-4%; transform:rotate(-24deg); box-shadow:0 0 38px rgba(81,167,255,.1),inset 0 0 32px rgba(91,194,255,.07); animation:v61-aurora-orbit 26s ease-in-out infinite alternate; }
+.space-aurora-wave--two { top:23%; right:-11%; width:94%; height:56%; border-color:rgba(187,151,255,.18); transform:rotate(19deg); animation:v61-aurora-orbit 34s ease-in-out infinite alternate-reverse; }
+.space-aurora-core { position:absolute; top:18%; right:15%; width:42%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle at 35% 34%,rgba(240,252,255,.23),rgba(var(--office-accent-rgb,108,211,255),.14) 17%,rgba(var(--office-secondary-rgb,165,126,255),.1) 42%,transparent 70%); opacity:.85; animation:v61-core-breathe 12s ease-in-out infinite alternate; }
+.space-nebula { position:absolute; inset:4%; border-radius:50%; background:radial-gradient(ellipse at 40% 44%,var(--v61-glow-a),transparent 58%),radial-gradient(ellipse at 76% 32%,var(--v61-glow-b),transparent 52%); opacity:.7; }
+.space-visual-dust { position:absolute; inset:0; background-image:radial-gradient(1px 1px at 22% 30%,#e8faff99 98%,transparent),radial-gradient(2px 2px at 72% 61%,#c4d8ff88 98%,transparent),radial-gradient(1px 1px at 56% 19%,#fff9 98%,transparent); background-size:171px 163px,247px 211px,311px 293px; animation:v61-dust-drift 42s linear infinite; }
+
+/* Dashboard hero: layered energy glyph, not an aircraft/3D model. */
+.uc-body .galaxy-hero-visual.galaxy-energy-scene { position:absolute; z-index:0; width:min(42%,500px); aspect-ratio:1; right:1.5%; top:50%; transform:translateY(-50%); pointer-events:none; isolation:isolate; }
+.hero-energy-core { position:absolute; inset:25%; border-radius:50%; background:radial-gradient(circle at 36% 30%,#f3fdff 0,rgba(var(--office-accent-rgb,108,211,255),.92) 5%,rgba(var(--office-secondary-rgb,165,126,255),.48) 27%,rgba(55,109,214,.18) 51%,transparent 74%); box-shadow:0 0 48px rgba(var(--office-accent-rgb,108,211,255),.34),0 0 110px rgba(var(--office-secondary-rgb,165,126,255),.2); animation:v61-core-breathe 8s ease-in-out infinite alternate; }
+.hero-energy-orbit { position:absolute; inset:18% 3%; border:1px solid rgba(160,228,255,.34); border-radius:50%; transform:rotate(-26deg); box-shadow:0 0 20px rgba(109,195,255,.13),inset 0 0 22px rgba(109,195,255,.08); animation:v61-orbit-spin 36s linear infinite; }
+.hero-energy-orbit--two { inset:9% -3%; border-color:rgba(188,153,255,.26); transform:rotate(33deg); animation-duration:47s; animation-direction:reverse; }
+.hero-energy-orbit--three { inset:28% -8%; border-color:rgba(122,240,224,.25); transform:rotate(62deg); animation-duration:54s; }
+.hero-energy-glow { position:absolute; inset:4%; border-radius:50%; background:radial-gradient(ellipse,rgba(var(--office-accent-rgb,108,211,255),.12),transparent 68%); opacity:.8; animation:v61-glow-pulse 6s ease-in-out infinite; }
+.hero-energy-spark { position:absolute; width:7px; height:7px; border-radius:50%; background:#f4fdff; box-shadow:0 0 11px 4px rgba(var(--office-accent-rgb,108,211,255),.62); animation:v61-spark 7s ease-in-out infinite; }
+.hero-energy-spark--one { top:21%; left:22%; }.hero-energy-spark--two { right:13%; top:54%; animation-delay:-2.4s; }.hero-energy-spark--three { bottom:20%; left:47%; animation-delay:-4.5s; }
+
+/* High-energy polish for dashboard, admin tools and Student App. */
+.uc-body .page :is(.mission-kpi,.galaxy-tool,.galaxy-direction,.mission-panel,.card,.calendar-board,.calendar-detail-panel),
+.student-app-body :is(.glass,.card,.event,.stat,.metric-tile,.quick-action,.command-metric,.mission-lesson) {
+  position:relative; isolation:isolate; transition:transform .28s var(--v61-ease),border-color .28s ease,box-shadow .28s ease;
+}
+.uc-body .page :is(.mission-kpi,.galaxy-tool,.galaxy-direction,.mission-panel,.card)::before,
+.student-app-body :is(.glass,.card,.event,.stat,.metric-tile,.quick-action,.command-metric,.mission-lesson)::before {
+  content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none;
+  background:radial-gradient(ellipse at 0% 0%,rgba(var(--office-accent-rgb,108,211,255),.14),transparent 52%),linear-gradient(118deg,transparent 28%,rgba(255,255,255,.035) 50%,transparent 72%);
+  opacity:.76; transition:opacity .28s ease;
+}
+@media (hover:hover) and (pointer:fine) {
+  .uc-body .page :is(.mission-kpi,.galaxy-tool,.galaxy-direction,.card):hover,
+  .student-app-body :is(.glass,.card,.event,.quick-action,.metric-tile,.command-metric,.mission-lesson):hover {
+    transform:translateY(-4px); border-color:rgba(var(--office-accent-rgb,108,211,255),.52)!important;
+    box-shadow:0 22px 56px rgba(0,5,22,.4),0 0 25px rgba(var(--office-accent-rgb,108,211,255),.12),inset 0 1px rgba(255,255,255,.12)!important;
+  }
+  .uc-body .page :is(.mission-kpi,.galaxy-tool,.galaxy-direction,.card):hover::before,
+  .student-app-body :is(.glass,.card,.event,.quick-action,.metric-tile,.command-metric,.mission-lesson):hover::before { opacity:1; }
+  .uc-body :is(.btn,.btn-primary,.logout-btn,.nav-link),
+  .student-app-body :is(button,.btn,.nav button,.quick-action) { transition:transform .22s var(--v61-ease),box-shadow .22s ease,filter .22s ease; }
+  .uc-body :is(.btn,.btn-primary,.logout-btn):hover,
+  .student-app-body :is(button,.btn,.quick-action):hover { transform:translateY(-2px); filter:brightness(1.09); }
+}
+.uc-body .page :is(.btn-primary,.galaxy-hero-actions .btn),
+.student-app-body :is(.btn-primary,.btn.primary) { position:relative; overflow:hidden; isolation:isolate; }
+.uc-body .page :is(.btn-primary,.galaxy-hero-actions .btn)::after,
+.student-app-body :is(.btn-primary,.btn.primary)::after {
+  content:""; position:absolute; top:-40%; bottom:-40%; left:-45%; width:24%; transform:skewX(-22deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),transparent); animation:v61-button-sheen 6.5s ease-in-out infinite; pointer-events:none;
+}
+.uc-body .sidebar-nav .nav-link.active { box-shadow:inset 3px 0 0 rgb(var(--office-accent-rgb,108,211,255)),0 0 24px rgba(var(--office-accent-rgb,108,211,255),.08); }
+.uc-body .page :is(h1,h2) { text-shadow:0 0 26px rgba(var(--office-accent-rgb,108,211,255),.1); }
+
+/* The actual /auth/login screen: editorial hierarchy, vivid focus and clean mobile form. */
+body.uc-body.is-auth-page .premium-login--single { min-height:100svh; padding:clamp(22px,5vw,72px) 18px; display:grid; place-items:center; overflow:hidden; }
+body.uc-body.is-auth-page .premium-auth--single { width:min(100%,560px); min-height:0; margin:0 auto; padding:clamp(24px,4.2vw,48px); border-radius:28px; backdrop-filter:blur(22px) saturate(1.2); -webkit-backdrop-filter:blur(22px) saturate(1.2); animation:v61-auth-enter .72s var(--v61-ease) both; }
+body.uc-body.is-auth-page .premium-auth-inner { width:100%; max-width:460px; margin:auto; }
+body.uc-body.is-auth-page .premium-welcome h1 { font-size:clamp(36px,5vw,54px); letter-spacing:-.06em; line-height:1.02; }
+body.uc-body.is-auth-page .premium-welcome-mark { width:54px; height:54px; border-radius:17px; animation:v61-mark-float 6s ease-in-out infinite; }
+body.uc-body.is-auth-page .premium-auth-steps { margin-block:26px 30px; }
+body.uc-body.is-auth-page .premium-auth-steps b { position:relative; overflow:hidden; }
+body.uc-body.is-auth-page .premium-auth-steps b::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgb(var(--auth-accent-rgb)),transparent); transform:translateX(-110%); animation:v61-step-line 3.6s ease-in-out infinite; }
+body.uc-body.is-auth-page .premium-field { margin-block:17px; }
+body.uc-body.is-auth-page .premium-field label { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+body.uc-body.is-auth-page .premium-input { min-height:58px; border-radius:15px; }
+body.uc-body.is-auth-page .premium-input input { min-width:0; font-size:16px; }
+body.uc-body.is-auth-page .premium-input:focus-within { transform:translateY(-1px); }
+body.uc-body.is-auth-page .premium-submit { min-height:58px; width:100%; border-radius:15px; margin-top:10px; letter-spacing:.015em; }
+body.uc-body.is-auth-page .premium-verify-note { border-radius:16px; }
+body.uc-body.is-auth-page .premium-auth-footer { margin-top:22px; }
+body.uc-body.is-auth-page .premium-auth--single .premium-alert { padding:13px 15px; line-height:1.5; }
+@media(max-width:520px) {
+  body.uc-body.is-auth-page .premium-login--single { padding:14px 11px; align-items:start; }
+  body.uc-body.is-auth-page .premium-auth--single { padding:24px 19px; border-radius:22px; }
+  body.uc-body.is-auth-page .premium-auth-topline { margin-bottom:22px; }
+  body.uc-body.is-auth-page .premium-welcome h1 { font-size:clamp(34px,10vw,46px); }
+  body.uc-body.is-auth-page .premium-input { min-height:54px; }
+}
+
+@keyframes v61-aurora-orbit { from { translate:-1.5% -1%; rotate:-2deg; } to { translate:2% 1.5%; rotate:3deg; } }
+@keyframes v61-core-breathe { from { scale:.93; opacity:.65; } to { scale:1.08; opacity:1; } }
+@keyframes v61-dust-drift { from { background-position:0 0,0 0,0 0; } to { background-position:38px -24px,-29px 34px,22px 51px; } }
+@keyframes v61-orbit-spin { to { rotate:360deg; } }
+@keyframes v61-glow-pulse { 0%,100% { opacity:.48; scale:.94; } 50% { opacity:.92; scale:1.04; } }
+@keyframes v61-spark { 0%,100% { translate:0 0; opacity:.45; } 50% { translate:9px -13px; opacity:1; } }
+@keyframes v61-button-sheen { 0%,72%,100% { transform:translateX(0) skewX(-22deg); } 86% { transform:translateX(620%) skewX(-22deg); } }
+@keyframes v61-auth-enter { from { opacity:0; translate:0 18px; scale:.985; } to { opacity:1; translate:0 0; scale:1; } }
+@keyframes v61-mark-float { 0%,100% { translate:0 0; } 50% { translate:0 -4px; } }
+@keyframes v61-step-line { 0%,28% { transform:translateX(-110%); } 68%,100% { transform:translateX(110%); } }
+
+@media(max-width:760px) {
+  .uc-body .galaxy-hero-visual.galaxy-energy-scene { width:270px; right:-100px; top:64%; opacity:.34; }
+  .space-visual-scene { width:100vw; height:56vh; opacity:.38; }
+  .student-orbit-scene { width:100vw; height:58vh; right:-35vw; top:-8vh; opacity:.42; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .space-aurora-wave,.space-aurora-core,.space-visual-dust,.hero-energy-core,.hero-energy-orbit,.hero-energy-glow,.hero-energy-spark,
+  .student-aurora-cloud,.student-aurora-core,.student-aurora-trail,.premium-welcome-mark,
+  body.uc-body.is-auth-page .premium-auth--single,body.uc-body.is-auth-page .premium-auth-steps b::after,
+  .uc-body .page :is(.btn-primary,.galaxy-hero-actions .btn)::after,
+  .student-app-body :is(.btn-primary,.btn.primary)::after { animation:none!important; }
+  .uc-body .page :is(.mission-kpi,.galaxy-tool,.galaxy-direction,.mission-panel,.card),
+  .student-app-body :is(.glass,.card,.event,.stat,.metric-tile,.quick-action,.command-metric,.mission-lesson),
+  body.uc-body.is-auth-page .premium-input { transition:none!important; transform:none!important; }
+}
+@media(forced-colors:active) {
+  .space-visual-scene,.student-orbit-scene,.hero-energy-core,.hero-energy-orbit,.hero-energy-glow { display:none!important; }
+}
+/* Student App's old shuttle model stage is now a pure CSS aurora composition. */
+.student-orbit-scene { position:fixed; z-index:0; pointer-events:none; overflow:hidden; contain:layout paint; top:-9vh; right:-8vw; width:min(67vw,760px); height:min(78vh,690px); opacity:.66; perspective:none!important; transform-style:flat!important; }
+.student-aurora-cloud { position:absolute; display:block; width:86%; height:54%; border-radius:50%; background:radial-gradient(ellipse,rgba(var(--season-accent-rgb,123,205,255),.22),rgba(var(--season-secondary-rgb,170,157,255),.12) 42%,transparent 72%); filter:blur(28px); opacity:.8; }
+.student-aurora-cloud--a { top:8%; right:-2%; animation:v61-aurora-orbit 23s ease-in-out infinite alternate; }
+.student-aurora-cloud--b { top:29%; right:10%; width:70%; height:42%; opacity:.7; animation:v61-aurora-orbit 31s ease-in-out infinite alternate-reverse; }
+.student-aurora-core { position:absolute; top:19%; right:18%; width:36%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(245,254,255,.24),rgba(var(--season-accent-rgb,123,205,255),.16) 16%,rgba(var(--season-secondary-rgb,170,157,255),.09) 42%,transparent 70%); animation:v61-core-breathe 11s ease-in-out infinite alternate; }
+.student-aurora-trail { position:absolute; top:24%; right:-7%; width:100%; height:28%; border:1px solid rgba(var(--season-accent-rgb,123,205,255),.24); border-radius:50%; rotate:-24deg; box-shadow:0 0 28px rgba(var(--season-accent-rgb,123,205,255),.09),inset 0 0 18px rgba(var(--season-secondary-rgb,170,157,255),.07); animation:v61-aurora-orbit 38s ease-in-out infinite alternate; }
+.student-aurora-trail--b { top:16%; right:-19%; width:111%; height:35%; border-color:rgba(var(--season-secondary-rgb,170,157,255),.22); rotate:21deg; animation-duration:46s; animation-direction:alternate-reverse; }
+
+@media(prefers-reduced-motion:reduce){.student-aurora-cloud,.student-aurora-core,.student-aurora-trail{animation:none!important;filter:none!important}.ua-hero::before,.ua-hero-orbit{animation:none!important}}

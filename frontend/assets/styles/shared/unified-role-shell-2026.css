@@ -1,0 +1,167 @@
+/*
+ * Unified portal shell for every authenticated role.
+ * The navigation components, header and workspace surfaces share one visual
+ * language; permissions only decide which destinations and actions are shown.
+ */
+body.uc-body .app-shell > .sidebar {
+  border-right-color: rgba(132, 190, 218, .16);
+  background:
+    radial-gradient(ellipse at 4% 0%, rgba(var(--office-accent-rgb, 105, 214, 238), .085), transparent 42%),
+    linear-gradient(180deg, rgba(8, 22, 38, .985), rgba(5, 15, 28, .99));
+  box-shadow: 10px 0 34px rgba(0, 5, 20, .15), inset -1px 0 rgba(255, 255, 255, .018);
+}
+
+body.uc-body .app-shell > .sidebar > .brand {
+  min-height: 62px;
+  align-items: center;
+  border-bottom: 1px solid rgba(139, 190, 216, .105);
+}
+
+body.uc-body .sidebar-nav .nav-section {
+  border-bottom-color: rgba(139, 190, 216, .095) !important;
+}
+
+body.uc-body .sidebar-nav .nav-section-toggle {
+  min-height: 34px;
+  color: #91aabd;
+  border-radius: 10px;
+}
+
+body.uc-body .sidebar-nav .nav-section.is-active-section > .nav-section-toggle {
+  color: #e4f5fb;
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .2);
+  background: linear-gradient(100deg,
+    rgba(var(--office-accent-rgb, 105, 214, 238), .13),
+    rgba(var(--office-secondary-rgb, 120, 135, 255), .065));
+}
+
+body.uc-body .sidebar-nav .nav-link {
+  min-height: 36px;
+  border-radius: 10px !important;
+}
+
+body.uc-body .sidebar-nav .nav-link.active {
+  background: linear-gradient(100deg,
+    rgba(var(--office-accent-rgb, 105, 214, 238), .16),
+    rgba(var(--office-secondary-rgb, 120, 135, 255), .075)) !important;
+}
+
+/* Staff work area uses the same premium surface language as the chief admin console. */
+body.role-staff .staff-workspace {
+  width: 100%;
+  max-width: none;
+  gap: clamp(14px, 1.5vw, 22px);
+  color: #eaf5fb;
+}
+
+body.role-staff .staff-workspace-hero {
+  min-height: clamp(220px, 23vh, 285px);
+  padding: clamp(24px, 3vw, 40px);
+  border: 1px solid rgba(var(--office-accent-rgb, 105, 214, 238), .23);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 88% 10%, rgba(var(--office-accent-rgb, 105, 214, 238), .18), transparent 38%),
+    radial-gradient(ellipse at 8% 112%, rgba(var(--office-secondary-rgb, 120, 135, 255), .13), transparent 43%),
+    linear-gradient(130deg, rgba(13, 34, 54, .97), rgba(7, 18, 34, .98) 68%, rgba(10, 20, 42, .98));
+  box-shadow: 0 22px 54px rgba(0, 4, 18, .22), inset 0 1px rgba(255, 255, 255, .06);
+}
+
+body.role-staff .staff-workspace-hero::before {
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .19);
+  box-shadow:
+    0 0 0 38px rgba(var(--office-accent-rgb, 105, 214, 238), .035),
+    0 0 0 78px rgba(var(--office-secondary-rgb, 120, 135, 255), .025);
+}
+
+body.role-staff .staff-workspace-hero .eyebrow {
+  color: var(--office-accent, #83e6e1);
+}
+
+body.role-staff .staff-workspace-hero h1 {
+  max-width: 900px;
+  color: #f1f8ff;
+  font-size: clamp(30px, 3vw, 42px);
+  letter-spacing: -.045em;
+}
+
+body.role-staff .staff-workspace-hero p {
+  max-width: 760px;
+  color: #9db5c9;
+  font-size: 13px;
+}
+
+body.role-staff .staff-workspace-panel {
+  padding: clamp(18px, 2vw, 26px);
+  border-color: rgba(132, 190, 218, .16);
+  border-radius: 19px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(var(--office-accent-rgb, 105, 214, 238), .055), transparent 44%),
+    linear-gradient(145deg, rgba(13, 31, 49, .96), rgba(6, 17, 31, .98));
+  box-shadow: 0 14px 34px rgba(0, 4, 16, .19), inset 0 1px rgba(255, 255, 255, .04);
+}
+
+body.role-staff .staff-workspace-panel h2 {
+  color: #edf7ff;
+  font-size: 18px;
+  letter-spacing: -.025em;
+}
+
+body.role-staff .staff-workspace-feature {
+  min-height: 136px;
+  border-color: rgba(132, 190, 218, .15);
+  border-radius: 15px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(var(--office-accent-rgb, 105, 214, 238), .09), transparent 52%),
+    linear-gradient(145deg, rgba(16, 39, 59, .95), rgba(7, 20, 35, .98));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .035);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+body.role-staff .staff-workspace-feature > span {
+  color: var(--office-accent, #83e6e1);
+}
+
+body.role-staff .staff-workspace-feature:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .3);
+  box-shadow: 0 14px 28px rgba(0, 5, 20, .18), 0 0 18px rgba(var(--office-accent-rgb, 105, 214, 238), .055);
+}
+
+body.role-staff .staff-workspace-chip {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  border-color: rgba(132, 190, 218, .16);
+  border-radius: 11px;
+  background: rgba(9, 24, 40, .82);
+  color: #a9c0d0;
+}
+
+body.role-staff .staff-workspace-chip.current,
+body.role-staff .staff-workspace-chip:hover {
+  border-color: rgba(var(--office-accent-rgb, 105, 214, 238), .34);
+  background: linear-gradient(110deg,
+    rgba(var(--office-accent-rgb, 105, 214, 238), .15),
+    rgba(var(--office-secondary-rgb, 120, 135, 255), .09));
+  color: #effcff;
+}
+
+body.role-staff .staff-workspace-table th {
+  color: var(--office-accent, #87cbd7);
+}
+
+body.role-staff .staff-workspace-table tr:hover td {
+  background: rgba(var(--office-accent-rgb, 105, 214, 238), .035);
+}
+
+@media (max-width: 820px) {
+  body.role-staff .staff-workspace-hero {
+    min-height: 0;
+    padding: 22px;
+    border-radius: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.role-staff .staff-workspace-feature { transition: none; }
+}

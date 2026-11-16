@@ -1,0 +1,91 @@
+{% extends 'shared/base.html' %}
+{% block title %}Постоянные чаты мероприятий{% endblock %}
+{% block content %}
+<section class="activity-chat-page">
+  <header class="section-title">
+    <div>
+      <span class="eyebrow">КОММУНИКАЦИИ / ПОСТОЯННЫЕ ЧАТЫ</span>
+      <h1>Чаты мероприятий</h1>
+      <p>Чаты подключаются один раз и используются для подходящих мероприятий. Закрытие события не закрывает общий чат.</p>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('orders.archive') }}">Приказы и документы</a>
+  </header>
+  <section class="card activity-chat-info">
+    <h2>Постоянные группы Telegram</h2>
+    <p>Создайте группу в Telegram, добавьте бота с правами приглашать участников и отправьте <code>/chatid</code> в группе. Затем главный администратор добавляет её в общий список. Для одного события не нужно создавать новую группу.</p>
+    <p>Чаты могут быть связаны с мероприятиями или использоваться как общие. После завершения события общий чат <strong>остаётся открытым</strong>; участники не удаляются автоматически.</p>
+  </section>
+  <div class="activity-chat-toolbar">
+    <div>
+      <h2>Добавленные чаты <span class="activity-chat-count">{{ rooms|length }}</span></h2>
+      <p class="subtle">{% if is_observer %}Просмотр активных групп и их состояния; изменение настроек недоступно.{% else %}Управление группами для мероприятий{% endif %}</p>
+    </div>
+    {% if is_admin %}
+    <button type="button" class="btn btn-primary" data-open-chat-modal>＋ Добавить постоянный чат</button>
+    {% endif %}
+  </div>
+  <div class="activity-chat-grid">
+    {% for room in rooms if room.audience != 'science' %}
+    <article class="card activity-chat-card">
+      <header>
+        <span class="activity-chat-tag">{{ '📆' if room.audience == 'event' else '🌐' }} {{ audiences.get(room.audience, 'Все события') }}</span>
+        <h3>{{ room.title }}</h3>
+        <small>Telegram · {{ room.chat_id }}</small>
+      </header>
+      <div class="activity-chat-status {{ 'activity-chat-status--off' if not room.active else '' }}">{{ '● Активный чат' if room.active else '○ Отключён' }}</div>
+      {% if room.active %}
+      <p class="subtle">Работает для всех нынешних и будущих событий выбранной категории.</p>
+      {% if room.invite_link %}<p class="subtle">Приглашение используется для доступа участников.</p>{% endif %}
+      {% if not is_observer %}<form method="post" action="{{ url_for('activity_chats.post_message', chat_id=room.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="room-message-{{ room.id }}">Написать в чат через сайт</label>
+        <textarea class="input" id="room-message-{{ room.id }}" name="body" maxlength="1800" required rows="3" placeholder="Ваше сообщение участникам"></textarea>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </form>{% endif %}
+      {% endif %}
+      {% if is_admin %}
+      <form method="post" action="{{ url_for('activity_chats.deactivate_room' if room.active else 'activity_chats.activate_room', chat_id=room.id) }}" onsubmit="return confirm('{{ 'Отключить выдачу новых приглашений? Существующие участники останутся в группе.' if room.active else 'Повторно подключить постоянный чат и создать новую ссылку?' }}');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-soft" type="submit">{{ 'Отключить чат' if room.active else 'Включить чат' }}</button>
+      </form>
+      {% endif %}
+    </article>
+    {% else %}
+    <div class="card activity-chat-card"><h3>Чатов пока нет</h3><p class="subtle">Главный администратор сможет подключить постоянные Telegram-группы после обнаружения ботом.</p></div>
+    {% endfor %}
+  </div>
+</section>
+{% if is_admin %}
+<dialog id="activity-chat-dialog" class="management-dialog" aria-labelledby="activity-chat-dialog-title">
+  <form method="post" action="{{ url_for('activity_chats.add_room') }}" class="management-dialog-body">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="management-dialog-header"><h2 id="activity-chat-dialog-title">Добавить постоянный чат</h2><button type="button" class="btn btn-soft" data-close-chat-modal aria-label="Закрыть">✕</button></div>
+    <p class="subtle">Группа будет использоваться повторно для мероприятий выбранной категории. Выбирать конкретное событие не требуется.</p>
+    <label for="chat-audience">Для каких событий предназначен чат</label>
+    <select class="input" id="chat-audience" name="audience" required>
+      <option value="all">🌐 Все события</option>
+      <option value="event">📆 Все мероприятия</option>
+    </select>
+    <label for="chat-candidate-id">Обнаруженная Telegram-группа</label>
+    <select class="input" id="chat-candidate-id" name="candidate_id" required>
+      <option value="">Выберите группу после команды /chatid</option>
+      {% for candidate in candidates if candidate.chat_type in ['group','supergroup'] %}
+      <option value="{{ candidate.id }}">{{ candidate.title or 'Группа Telegram' }} ({{ candidate.chat_id }})</option>
+      {% endfor %}
+    </select>
+    <label for="chat-title">Название в панели (необязательно)</label>
+    <input class="input" id="chat-title" name="title" maxlength="255" placeholder="Например, Команда направления">
+    <div class="management-dialog-actions"><button type="button" class="btn btn-soft" data-close-chat-modal>Отмена</button><button type="submit" class="btn btn-primary">Добавить в список</button></div>
+  </form>
+</dialog>
+<script>
+(() => {
+  const dialog = document.getElementById('activity-chat-dialog');
+  if (!dialog) return;
+  document.querySelectorAll('[data-open-chat-modal]').forEach(button => button.addEventListener('click', () => dialog.showModal()));
+  document.querySelectorAll('[data-close-chat-modal]').forEach(button => button.addEventListener('click', () => dialog.close()));
+  dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+})();
+</script>
+{% endif %}
+{% endblock %}

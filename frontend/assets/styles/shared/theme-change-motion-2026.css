@@ -1,0 +1,87 @@
+/* One shared theme-motion layer: palette, geometry and motion change together. */
+/* Exact saved palette drives the page background and surfaces, not just button accents. */
+body.uc-body[data-theme] {
+  background:
+    radial-gradient(ellipse at 80% 8%,rgba(var(--office-secondary-rgb),.16),transparent 31%),
+    radial-gradient(ellipse at 12% 75%,rgba(var(--office-accent-rgb),.13),transparent 36%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--office-depth,#100d1a) 32%,#020711) 0%,
+      color-mix(in srgb,var(--office-depth,#100d1a) 25%,#071426) 52%,
+      color-mix(in srgb,var(--office-depth,#100d1a) 19%,#060d1a) 100%);
+  transition: background-color .5s ease;
+}
+body.uc-body[data-theme] .hero {
+  background:
+    radial-gradient(ellipse at 88% 6%,rgba(var(--office-secondary-rgb),.22),transparent 36%),
+    linear-gradient(125deg,color-mix(in srgb,var(--office-depth,#100d1a) 58%,#0d1d31),color-mix(in srgb,var(--office-depth,#100d1a) 30%,#050d1b) 74%,rgba(var(--office-accent-rgb),.08));
+}
+body.uc-body[data-theme] :is(.card,.stat-card,.direction-card,.table-wrap,.sidebar,.topbar) {
+  background-color: color-mix(in srgb,var(--office-depth,#100d1a) 21%,rgba(8,18,33,.94));
+}
+body.uc-body[data-theme] .space-orb,
+body.uc-body[data-theme] .space-ring-one,
+body.uc-body[data-theme] .space-ring-two,
+body.uc-body[data-theme] .space-nebula {
+  transition: filter .65s ease, border-color .65s ease, opacity .65s ease;
+}
+body.uc-body[data-theme="spring"] .space-orb { filter: hue-rotate(302deg) saturate(1.22) drop-shadow(0 0 26px color-mix(in srgb,var(--office-accent) 30%,transparent)); }
+body.uc-body[data-theme="summer"] .space-orb { filter: hue-rotate(18deg) saturate(1.35) drop-shadow(0 0 30px color-mix(in srgb,var(--office-accent) 34%,transparent)); }
+body.uc-body[data-theme="autumn"] .space-orb { filter: hue-rotate(328deg) saturate(1.28) drop-shadow(0 0 26px color-mix(in srgb,var(--office-accent) 30%,transparent)); }
+body.uc-body[data-theme="winter"] .space-orb { filter: hue-rotate(174deg) saturate(.88) drop-shadow(0 0 34px color-mix(in srgb,var(--office-secondary) 38%,transparent)); }
+body.uc-body[data-theme="march_8"] .space-orb { filter: hue-rotate(288deg) saturate(1.3) drop-shadow(0 0 30px color-mix(in srgb,var(--office-accent) 36%,transparent)); }
+body.uc-body[data-theme="russia_day"] .space-orb,
+body.uc-body[data-theme="flag_day"] .space-orb,
+body.uc-body[data-theme="unity_day"] .space-orb { filter: hue-rotate(192deg) saturate(1.2) drop-shadow(0 0 28px color-mix(in srgb,var(--office-secondary) 32%,transparent)); }
+body.uc-body[data-theme="cosmonautics_day"] .space-orb { filter: hue-rotate(205deg) saturate(1.45) drop-shadow(0 0 36px color-mix(in srgb,var(--office-accent) 40%,transparent)); }
+body.uc-body[data-theme="defender_day"] .space-orb { filter: hue-rotate(98deg) saturate(.8) drop-shadow(0 0 25px color-mix(in srgb,var(--office-secondary) 34%,transparent)); }
+body.uc-body[data-theme="new_year"] .space-orb { filter: hue-rotate(130deg) saturate(1.25) drop-shadow(0 0 38px color-mix(in srgb,var(--office-secondary) 42%,transparent)); }
+body.uc-body[data-theme="student_day"] .space-orb { filter: hue-rotate(12deg) saturate(1.18) drop-shadow(0 0 31px color-mix(in srgb,var(--office-secondary) 34%,transparent)); }
+body.uc-body.theme-changing .space-visual-scene { animation: theme-scene-impact .95s cubic-bezier(.2,.8,.2,1) both; }
+body.uc-body.theme-changing .space-ring-one { animation-duration: 7s !important; }
+body.uc-body.theme-changing .space-ring-two { animation-duration: 9s !important; }
+body.uc-body.theme-changing :is(.hero,.card,.stat-card,.direction-card,.table-wrap,.sidebar,.topbar) { animation: theme-surface-impact .7s ease-out both; }
+
+/* Keep live particles subtle and non-interactive, with a symbol and rhythm per theme. */
+body.student-app-body[data-season] .student-festive-atmosphere { display: block !important; opacity: .26; }
+body.student-app-body[data-season="spring"] { --fest-glyph: "✿"; --theme-particle-speed: 8.8s; --theme-glow-speed: 7.5s; }
+body.student-app-body[data-season="summer"] { --fest-glyph: "✺"; --theme-particle-speed: 4.8s; --theme-glow-speed: 4.1s; }
+body.student-app-body[data-season="autumn"] { --fest-glyph: "🍂"; --theme-particle-speed: 7.2s; --theme-glow-speed: 6.3s; }
+body.student-app-body[data-season="winter"] { --fest-glyph: "❄"; --theme-particle-speed: 11s; --theme-glow-speed: 8.8s; }
+body.student-app-body[data-season="march_8"] { --fest-glyph: "🌷"; --theme-particle-speed: 7.6s; --theme-glow-speed: 6.8s; }
+body.student-app-body[data-season="russia_day"],
+body.student-app-body[data-season="flag_day"] { --fest-glyph: "✦"; --theme-particle-speed: 5.8s; --theme-glow-speed: 4.8s; }
+body.student-app-body[data-season="constitution_day"] { --fest-glyph: "⚖"; --theme-particle-speed: 7.2s; --theme-glow-speed: 5.7s; }
+body.student-app-body[data-season="cosmonautics_day"] { --fest-glyph: "🚀"; --theme-particle-speed: 5.2s; --theme-glow-speed: 4.6s; }
+body.student-app-body[data-season="defender_day"] { --fest-glyph: "✧"; --theme-particle-speed: 9.5s; --theme-glow-speed: 8s; }
+body.student-app-body[data-season="unity_day"] { --fest-glyph: "✣"; --theme-particle-speed: 7.4s; --theme-glow-speed: 6.5s; }
+body.student-app-body[data-season="new_year"] { --fest-glyph: "❄"; --theme-particle-speed: 5.5s; --theme-glow-speed: 4.4s; }
+body.student-app-body[data-season="student_day"] { --fest-glyph: "✦"; --theme-particle-speed: 6.2s; --theme-glow-speed: 5.3s; }
+body.student-app-body[data-season] .student-festive-glyph { animation-duration: var(--theme-particle-speed,6.5s); }
+body.student-app-body[data-season] .student-festive-glow { animation-duration: var(--theme-glow-speed,5s); }
+body.student-app-body[data-season="winter"] .student-festive-glyph,
+body.student-app-body[data-season="new_year"] .student-festive-glyph { text-shadow: 0 0 20px #fff, 0 0 42px var(--season-secondary); }
+body.student-app-body[data-season="summer"] .student-festive-glow { filter: saturate(1.6); }
+body.student-app-body[data-season="autumn"] .student-festive-glyph { text-shadow: 0 0 15px var(--season-accent), 0 0 24px var(--season-secondary); }
+body.student-app-body[data-season="cosmonautics_day"] .student-orbit-scene { filter: hue-rotate(16deg) saturate(1.18); }
+body.student-app-body[data-season="march_8"] .student-orbit-scene { filter: hue-rotate(285deg) saturate(1.12); }
+body.student-app-body[data-season="winter"] .student-orbit-scene { filter: hue-rotate(170deg) saturate(.85); }
+body.student-app-body[data-season="defender_day"] .student-orbit-scene { filter: hue-rotate(96deg) saturate(.82); }
+body.student-app-body[data-season="new_year"] .student-orbit-scene { filter: hue-rotate(125deg) saturate(1.16); }
+body.student-app-body.theme-changing::before { animation: theme-bg-wash .95s ease-out both; }
+body.student-app-body.theme-changing .student-orbit-scene { animation: theme-student-orbit-impact 1.05s cubic-bezier(.2,.8,.2,1) both; }
+body.student-app-body.theme-changing #app { animation: theme-student-content-impact .72s cubic-bezier(.2,.8,.2,1) both; }
+body.student-app-body.theme-changing .student-festive-glow { animation-duration: 1.05s !important; opacity: .85; }
+
+@keyframes theme-scene-impact { 0% { transform: scale(.985); opacity: .65; } 48% { transform: scale(1.018); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes theme-surface-impact { 0% { filter: saturate(.65); } 55% { filter: saturate(1.48); } 100% { filter: saturate(1); } }
+@keyframes theme-bg-wash { 0% { filter: saturate(.7) brightness(.92); } 45% { filter: saturate(1.42) brightness(1.08); } 100% { filter: none; } }
+@keyframes theme-student-orbit-impact { 0% { transform: scale(.985); opacity: .62; } 55% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes theme-student-content-impact { 0% { filter: saturate(.65); transform: translateY(4px); } 58% { filter: saturate(1.38); transform: translateY(-1px); } 100% { filter: saturate(1); transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body.theme-changing .space-visual-scene,
+  body.uc-body.theme-changing :is(.hero,.card,.stat-card,.direction-card,.table-wrap,.sidebar,.topbar),
+  body.student-app-body.theme-changing::before,
+  body.student-app-body.theme-changing .student-orbit-scene,
+  body.student-app-body.theme-changing #app { animation: none !important; }
+  body.student-app-body[data-season] .student-festive-atmosphere { opacity: .12; }
+}

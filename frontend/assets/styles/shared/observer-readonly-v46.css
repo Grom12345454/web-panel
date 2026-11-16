@@ -1,0 +1,50 @@
+/* Observer mode: all operational views, no data-changing controls. Server policy remains authoritative. */
+body.role-observer .observer-readonly-banner {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 18px; padding: 12px 16px;
+  border: 1px solid rgba(108, 174, 255, .24); border-radius: 14px;
+  background: linear-gradient(100deg, rgba(48, 104, 168, .18), rgba(27, 43, 68, .28));
+  color: #d8e9ff; box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+}
+body.role-observer .observer-readonly-banner__icon {
+  width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto;
+  border-radius: 10px; background: rgba(95, 160, 239, .16); color: #9cc9ff; font-size: 17px;
+}
+body.role-observer .observer-readonly-banner strong { display: block; font-size: 13px; letter-spacing: .02em; }
+body.role-observer .observer-readonly-banner small { display: block; margin-top: 2px; color: #9fb5d1; line-height: 1.45; }
+body.role-observer form[method="post" i]:not(.logout-form):not([action*="/auth/change-password"]):not([data-notification-read]):not([data-notification-read-all]):not([data-observer-allow]) { display: none !important; }
+body.role-observer .observer-mutation,
+body.role-observer [data-mutation-control],
+body.role-observer [data-open-dialog],
+body.role-observer [data-delete-group],
+body.role-observer [data-open-student-dialog],
+body.role-observer [data-open-direction-modal],
+body.role-observer [data-calendar-create-event],
+body.role-observer [data-calendar-create-event-side],
+body.role-observer [data-calendar-create-lesson],
+body.role-observer [data-calendar-create-lesson-side],
+body.role-observer [data-open-chat-modal],
+body.role-observer [data-order-modal-open],
+body.role-observer a[href*="/edit"],
+body.role-observer a[href*="/create"],
+body.role-observer a[href*="/manage"],
+body.role-observer a[href*="/delete"],
+body.role-observer a[href*="/publish"],
+body.role-observer a[href*="/archive"],
+body.role-observer a[href*="/retry"],
+body.role-observer a[href*="/dispatch"] { display: none !important; }
+body.role-observer .orders-row-actions { display: flex; }
+body.role-observer .orders-row-actions a.orders-download-action { display: inline-flex !important; }
+body.role-observer .orders-hero-action { max-width: 320px; }
+body.role-observer .orders-hero-action .orders-action-emblem { display: grid; }
+@media (max-width: 640px) {
+  body.role-observer .observer-readonly-banner { align-items: flex-start; padding: 10px 12px; }
+  body.role-observer .observer-readonly-banner__icon { width: 30px; height: 30px; }
+}
+
+body.role-observer .observer-profile-value {
+  min-height: 42px; display: flex; align-items: center; padding: 10px 12px;
+  border: 1px solid rgba(148, 176, 210, .14); border-radius: 10px;
+  background: rgba(8, 18, 34, .42); color: #d8e6f8; line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+body.role-observer .observer-profile-view .form-foot { justify-content: space-between; }

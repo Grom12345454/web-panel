@@ -1,0 +1,491 @@
+/*
+ * Unified administration header.
+ * This layer intentionally uses stable .uc-body selectors instead of a
+ * historical data-ui-version gate, so the header remains styled after UI
+ * version increments without reactivating legacy page styles.
+ */
+body.uc-body .app-shell > .main > .topbar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 82px;
+  height: auto;
+  box-sizing: border-box;
+  padding: 13px clamp(18px, 2.8vw, 46px) !important;
+  overflow: visible;
+  border-bottom: 1px solid rgba(125, 204, 232, .2) !important;
+  background:
+    radial-gradient(ellipse at 6% 0%, rgba(70, 186, 218, .12), transparent 38%),
+    linear-gradient(100deg, rgba(7, 20, 39, .98), rgba(10, 19, 43, .96) 58%, rgba(20, 20, 48, .96)) !important;
+  box-shadow: 0 10px 32px rgba(0, 5, 22, .25), inset 0 1px rgba(255, 255, 255, .045) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+body.uc-body .topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 26px);
+  width: 100%;
+  max-width: 1760px;
+  min-width: 0;
+  min-height: 54px;
+  margin-inline: auto;
+}
+
+body.uc-body .topbar-heading {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  gap: 13px;
+  min-width: 0;
+}
+
+body.uc-body .topbar-workspace {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+body.uc-body .top-title {
+  max-width: 100%;
+  margin: 0 !important;
+  color: #edf7ff !important;
+  font-size: clamp(14px, 1.05vw, 17px) !important;
+  font-weight: 820 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -.035em !important;
+  text-wrap: balance;
+}
+
+body.uc-body .top-title-accent {
+  color: #8de8ef !important;
+  background: linear-gradient(95deg, #72e4f0 0%, #91caff 54%, #c3a4ff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.uc-body .top-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  gap: 10px;
+  min-width: 0;
+}
+
+body.uc-body .alert-top-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  border: 1px solid rgba(128, 203, 229, .2);
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(72, 155, 202, .13), rgba(91, 92, 173, .1));
+  box-shadow: inset 0 1px rgba(255,255,255,.06);
+  text-decoration: none;
+}
+
+body.uc-body .alert-top-link-icon {
+  font-size: 19px;
+  line-height: 1;
+}
+
+body.uc-body .top-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: min(300px, 30vw);
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 5px 13px 5px 6px !important;
+  border: 1px solid rgba(130, 189, 220, .2) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, rgba(84, 149, 189, .13), rgba(255, 255, 255, .035)) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.055), 0 5px 16px rgba(0,0,0,.1) !important;
+}
+
+body.uc-body .top-account-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(116, 218, 231, .3) !important;
+  border-radius: 11px !important;
+  background: linear-gradient(145deg, rgba(67, 190, 200, .22), rgba(108, 119, 220, .2)) !important;
+  color: #d9fbff !important;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+body.uc-body .top-account-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+body.uc-body .top-account-copy strong {
+  display: block;
+  max-width: 190px;
+  overflow: hidden;
+  color: #f0f7ff !important;
+  font-size: 12px !important;
+  font-weight: 820 !important;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.uc-body .top-account-copy small {
+  display: block;
+  max-width: 190px;
+  overflow: hidden;
+  color: #91b4c9 !important;
+  font-size: 10px !important;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.uc-body .logout-form {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+body.uc-body .logout-form .logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 88px;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 0 15px;
+  border: 1px solid rgba(242, 145, 163, .26);
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(177, 70, 105, .14), rgba(98, 38, 69, .12));
+  color: #f2bdc9;
+  font-size: 11px;
+  font-weight: 820;
+  white-space: nowrap;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.uc-body .alert-top-link:hover,
+  body.uc-body .top-account:hover {
+    border-color: rgba(127, 218, 239, .42) !important;
+    background-color: rgba(83, 153, 192, .13) !important;
+  }
+  body.uc-body .logout-form .logout-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(242, 145, 163, .48);
+    background: linear-gradient(145deg, rgba(177, 70, 105, .23), rgba(98, 38, 69, .2));
+  }
+}
+
+@media (max-width: 1100px) {
+  body.uc-body .app-shell > .main > .topbar { min-height: 74px; padding-inline: 18px !important; }
+  body.uc-body .top-account { max-width: 34vw; }
+  body.uc-body .top-account-copy strong { max-width: 140px; }
+}
+
+@media (max-width: 820px) {
+  body.uc-body .app-shell > .main > .topbar {
+    min-height: 68px;
+    padding: 9px 13px !important;
+  }
+  body.uc-body .topbar-inner { gap: 10px; min-height: 48px; }
+  body.uc-body .topbar-heading { gap: 9px; }
+  body.uc-body .top-title { font-size: clamp(13px, 2.2vw, 15px) !important; }
+  body.uc-body .top-actions { gap: 7px; }
+  body.uc-body .alert-top-link { flex-basis: 38px; width: 38px; min-width: 38px; height: 38px; min-height: 38px; }
+  body.uc-body .top-account { min-height: 40px; max-width: 31vw; gap: 7px; padding: 4px 8px 4px 4px !important; }
+  body.uc-body .top-account-avatar { flex-basis: 30px; width: 30px; height: 30px; }
+  body.uc-body .top-account-copy strong { max-width: 105px; font-size: 10px !important; }
+  body.uc-body .top-account-copy small { max-width: 105px; font-size: 9px !important; }
+  body.uc-body .logout-form .logout-btn { min-width: 0; min-height: 38px; padding-inline: 10px; font-size: 10px; }
+}
+
+@media (max-width: 560px) {
+  body.uc-body .app-shell > .main > .topbar { min-height: 62px; padding: 8px 10px !important; }
+  body.uc-body .topbar-inner { gap: 7px; min-height: 44px; }
+  body.uc-body .topbar-heading { gap: 7px; }
+  body.uc-body .top-title { max-width: min(39vw, 165px); font-size: 12px !important; line-height: 1.25 !important; }
+  body.uc-body .top-actions { gap: 5px; }
+  body.uc-body .alert-top-link { flex-basis: 35px; width: 35px; min-width: 35px; height: 35px; min-height: 35px; border-radius: 10px; }
+  body.uc-body .top-account { max-width: 36px; min-height: 36px; padding: 2px !important; border-radius: 10px !important; }
+  body.uc-body .top-account-avatar { flex-basis: 30px; width: 30px; height: 30px; }
+  body.uc-body .top-account-copy { display: none !important; }
+  body.uc-body .logout-form .logout-btn { min-height: 36px; padding-inline: 8px; gap: 5px; border-radius: 10px; }
+}
+
+@media (max-width: 380px) {
+  body.uc-body .top-title { max-width: 31vw; font-size: 11px !important; }
+  body.uc-body .logout-form .logout-btn { min-width: 34px; padding-inline: 8px; }
+  body.uc-body .logout-form .logout-btn span:last-child { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body .logout-form .logout-btn { transition: none; }
+}
+
+/* Centered, theme-reactive header atmosphere.
+   The live theme palette is supplied by body[ data-theme ] inline tokens, so
+   the panel and its title automatically follow every holiday/season. */
+body.uc-body .app-shell > .main > .topbar {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 34% 150% at 50% 0%, rgba(var(--office-accent-rgb, 118, 205, 255), .14), transparent 76%),
+    radial-gradient(ellipse 26% 130% at 86% 100%, rgba(var(--office-secondary-rgb, 177, 145, 255), .12), transparent 78%),
+    linear-gradient(105deg, #07172b 0%, #09172d 48%, #11152e 100%) !important;
+  border-bottom-color: rgba(var(--office-accent-rgb, 118, 205, 255), .32) !important;
+  box-shadow:
+    0 12px 34px rgba(0, 5, 22, .3),
+    inset 0 1px rgba(255, 255, 255, .055),
+    inset 0 -1px rgba(var(--office-secondary-rgb, 177, 145, 255), .13) !important;
+  transition: border-color .55s ease, box-shadow .55s ease, background .55s ease;
+}
+
+body.uc-body .app-shell > .main > .topbar::before,
+body.uc-body .app-shell > .main > .topbar::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+}
+
+/* Broad soft plumes give the entire bar a subtle moving-smoke finish. */
+body.uc-body .app-shell > .main > .topbar::before {
+  inset: -85% -12%;
+  background:
+    radial-gradient(ellipse 22% 52% at 12% 55%, rgba(var(--office-accent-rgb, 118, 205, 255), .24), transparent 76%),
+    radial-gradient(ellipse 26% 58% at 48% 48%, rgba(var(--office-secondary-rgb, 177, 145, 255), .2), transparent 78%),
+    radial-gradient(ellipse 21% 50% at 83% 53%, rgba(var(--office-accent-rgb, 118, 205, 255), .2), transparent 76%),
+    radial-gradient(ellipse 34% 46% at 66% 36%, rgba(255, 255, 255, .055), transparent 78%);
+  filter: blur(23px) saturate(1.5);
+  opacity: .92;
+  mix-blend-mode: screen;
+  transform: translate3d(-2%, 0, 0) scale(1.02);
+  animation: admin-header-smoke-drift 17s ease-in-out infinite alternate;
+}
+
+/* A low-intensity light ribbon travels across the lower edge of the panel. */
+body.uc-body .app-shell > .main > .topbar::after {
+  inset: auto -18% 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(var(--office-accent-rgb, 118, 205, 255), .05) 18%,
+    rgba(var(--office-accent-rgb, 118, 205, 255), .72) 46%,
+    rgba(var(--office-secondary-rgb, 177, 145, 255), .68) 64%,
+    transparent 100%);
+  filter: blur(.6px);
+  opacity: .8;
+  transform: translateX(-13%);
+  animation: admin-header-light-sweep 12s ease-in-out infinite alternate;
+}
+
+body.uc-body .topbar-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: normal;
+  gap: clamp(12px, 2vw, 26px);
+}
+
+body.uc-body .topbar-heading {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: min(100%, 780px);
+  min-width: 0;
+  margin: 0;
+  text-align: center;
+}
+
+body.uc-body .topbar-workspace {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+}
+
+body.uc-body .topbar-workspace::before {
+  position: absolute;
+  inset: -20px -48px;
+  z-index: -1;
+  content: "";
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(var(--office-accent-rgb, 118, 205, 255), .17),
+    rgba(var(--office-secondary-rgb, 177, 145, 255), .1) 44%,
+    transparent 76%);
+  filter: blur(15px);
+  opacity: .9;
+  animation: admin-header-title-aura 8s ease-in-out infinite alternate;
+}
+
+body.uc-body .top-title {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  color: #f8fbff !important;
+  font-size: clamp(20px, 1.48vw, 28px) !important;
+  font-weight: 900 !important;
+  line-height: 1.16 !important;
+  letter-spacing: -.045em !important;
+  text-align: center;
+  text-wrap: balance;
+  text-shadow:
+    0 0 10px rgba(var(--office-accent-rgb, 118, 205, 255), .3),
+    0 0 25px rgba(var(--office-secondary-rgb, 177, 145, 255), .2),
+    0 2px 12px rgba(0, 0, 0, .48);
+  transition: text-shadow .55s ease, color .55s ease;
+}
+
+body.uc-body .top-title-accent {
+  color: var(--office-accent, #8de8ef) !important;
+  background-image: linear-gradient(105deg,
+    var(--office-accent, #8de8ef) 0%,
+    #ffffff 43%,
+    var(--office-secondary, #c3a4ff) 100%);
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 7px rgba(var(--office-accent-rgb, 118, 205, 255), .38));
+  animation: admin-header-title-shimmer 8s ease-in-out infinite;
+  transition: filter .55s ease;
+}
+
+body.uc-body .top-actions {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes admin-header-smoke-drift {
+  0% { transform: translate3d(-3%, 2%, 0) scale(.98) rotate(-1deg); opacity: .72; }
+  50% { opacity: .98; }
+  100% { transform: translate3d(3%, -2%, 0) scale(1.07) rotate(1deg); opacity: .84; }
+}
+
+@keyframes admin-header-light-sweep {
+  0% { transform: translateX(-18%); opacity: .38; }
+  100% { transform: translateX(18%); opacity: .9; }
+}
+
+@keyframes admin-header-title-aura {
+  0% { transform: scale(.88); opacity: .55; }
+  100% { transform: scale(1.12); opacity: 1; }
+}
+
+@keyframes admin-header-title-shimmer {
+  0%, 18% { background-position: 0% 50%; }
+  76%, 100% { background-position: 100% 50%; }
+}
+
+@media (max-width: 820px) {
+  body.uc-body .app-shell > .main > .topbar {
+    min-height: 92px;
+    padding: 9px 13px !important;
+  }
+  body.uc-body .topbar-inner {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    justify-content: center;
+    gap: 8px;
+    min-height: 70px;
+    padding-top: 39px;
+  }
+  body.uc-body .topbar-heading {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    min-height: 25px;
+    padding-inline: 42px;
+  }
+  body.uc-body .topbar-heading .mobile-nav-btn {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+  }
+  body.uc-body .topbar-workspace { width: 100%; }
+  body.uc-body .top-title {
+    max-width: 100%;
+    font-size: clamp(17px, 2.4vw, 21px) !important;
+    text-align: center;
+  }
+  body.uc-body .top-actions {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+  }
+}
+
+@media (max-width: 560px) {
+  body.uc-body .app-shell > .main > .topbar {
+    min-height: 84px;
+    padding: 8px 10px !important;
+  }
+  body.uc-body .topbar-inner { min-height: 66px; padding-top: 36px; gap: 6px; }
+  body.uc-body .topbar-heading { padding-inline: 38px; }
+  body.uc-body .top-title { font-size: clamp(15px, 4vw, 18px) !important; }
+  body.uc-body .top-account { max-width: 36px; min-height: 36px; padding: 2px !important; }
+  body.uc-body .top-account-copy { display: none !important; }
+  body.uc-body .alert-top-link { flex-basis: 35px; width: 35px; min-width: 35px; height: 35px; min-height: 35px; }
+  body.uc-body .logout-form .logout-btn { min-height: 36px; padding-inline: 9px; }
+}
+
+@media (max-width: 380px) {
+  body.uc-body .top-title { font-size: 14px !important; }
+  body.uc-body .top-actions { gap: 5px; }
+  body.uc-body .topbar-heading { padding-inline: 34px; }
+  body.uc-body .logout-form .logout-btn { min-height: 34px; padding-inline: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.uc-body .app-shell > .main > .topbar::before,
+  body.uc-body .app-shell > .main > .topbar::after,
+  body.uc-body .topbar-workspace::before,
+  body.uc-body .top-title-accent {
+    animation: none !important;
+  }
+  body.uc-body .top-title-accent { background-position: 50% 50%; }
+}

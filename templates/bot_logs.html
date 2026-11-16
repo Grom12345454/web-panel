@@ -1,6 +1,0 @@
-{% extends "base.html" %}
-{% block title %}Логи Telegram | University Control{% endblock %}
-{% block content %}
-<div class="section-title" style="margin-top:0"><div><div class="eyebrow">SYSTEM / TELEGRAM</div><h2 style="font-size:30px;margin-top:7px">Логи Telegram-бота</h2><p>Последние записи для диагностики интеграции.</p></div><a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← Дашборд</a></div>
-<div class="card" style="overflow:hidden"><div class="card-pad" style="border-bottom:1px solid var(--line);display:flex;justify-content:space-between"><span class="subtle">Последние 100 строк</span><button class="btn btn-soft" onclick="location.reload()">↻ Обновить</button></div><div style="padding:14px;max-height:650px;overflow:auto;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:11px">{% for log in logs %}<div style="padding:6px 0;border-bottom:1px solid rgba(148,163,184,.05);color:{% if 'ERROR' in log %}#ff9aa8{% elif 'WARNING' in log %}#ffd788{% elif 'INFO' in log %}#94eabb{% else %}#a7b9d0{% endif %}">{{ log.strip() }}</div>{% else %}<div class="empty"><div class="empty-icon">◌</div><h3>Лог пуст</h3><p>Новые записи появятся после запуска бота.</p></div>{% endfor %}</div></div>
-{% endblock %}

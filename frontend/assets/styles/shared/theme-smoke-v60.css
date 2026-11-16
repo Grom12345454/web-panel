@@ -1,0 +1,120 @@
+/* v60 · Stronger volumetric smoke for every saved portal and Student App theme.
+   Palette-bound vapor replaces flag images; all three streams remain independent. */
+body.student-app-body[data-season],
+body.uc-body[data-theme]:not([data-page^="orders-"]) {
+  --theme-smoke-primary: var(--season-accent-rgb, var(--office-accent-rgb, 142, 203, 255));
+  --theme-smoke-secondary: var(--season-secondary-rgb, var(--office-secondary-rgb, 180, 140, 255));
+  --theme-smoke-highlight: 246, 250, 255;
+}
+body.student-app-body[data-season] .student-theme-atmosphere,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .portal-theme-atmosphere {
+  opacity: 1;
+  visibility: visible;
+  isolation: isolate;
+}
+body.student-app-body[data-season] .holiday-smoke,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke {
+  display: block;
+  width: min(112vw, 1440px);
+  height: min(74vw, 760px);
+  min-height: 300px;
+  opacity: 1;
+  filter: blur(clamp(25px, 3.2vw, 48px)) saturate(2.45) contrast(1.12) brightness(1.16);
+  mix-blend-mode: screen;
+  transform: translate3d(0, 0, 0) scale(1.02);
+}
+body.student-app-body[data-season] .holiday-smoke--white,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke--white {
+  background:
+    radial-gradient(ellipse 48% 40% at 29% 51%, rgba(255,255,255,.62), transparent 72%),
+    radial-gradient(ellipse 44% 47% at 62% 38%, rgba(var(--theme-smoke-primary),.58), transparent 75%),
+    radial-gradient(ellipse 32% 34% at 78% 64%, rgba(var(--theme-smoke-highlight),.22), transparent 78%),
+    radial-gradient(ellipse at 52% 52%, rgba(var(--theme-smoke-primary),.34), transparent 78%);
+  animation: theme-smoke-white-v60 11s cubic-bezier(.45,0,.2,1) infinite alternate;
+}
+body.student-app-body[data-season] .holiday-smoke--blue,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke--blue {
+  background:
+    radial-gradient(ellipse 50% 42% at 39% 45%, rgba(var(--theme-smoke-primary),.78), transparent 70%),
+    radial-gradient(ellipse 45% 48% at 70% 60%, rgba(var(--theme-smoke-secondary),.56), transparent 75%),
+    radial-gradient(ellipse 34% 36% at 24% 70%, rgba(var(--theme-smoke-highlight),.18), transparent 76%),
+    radial-gradient(ellipse at 53% 50%, rgba(var(--theme-smoke-primary),.48), transparent 76%);
+  animation: theme-smoke-blue-v60 13s cubic-bezier(.4,0,.3,1) -3s infinite alternate-reverse;
+}
+body.student-app-body[data-season] .holiday-smoke--red,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke--red {
+  background:
+    radial-gradient(ellipse 48% 40% at 37% 47%, rgba(var(--theme-smoke-secondary),.72), transparent 71%),
+    radial-gradient(ellipse 45% 46% at 66% 56%, rgba(var(--theme-smoke-primary),.44), transparent 75%),
+    radial-gradient(ellipse 31% 35% at 78% 30%, rgba(var(--theme-smoke-highlight),.20), transparent 77%),
+    radial-gradient(ellipse at 48% 52%, rgba(var(--theme-smoke-secondary),.40), transparent 79%);
+  animation: theme-smoke-red-v60 12s cubic-bezier(.4,0,.25,1) -5s infinite alternate;
+}
+body.student-app-body[data-season] .holiday-smoke::before,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke::before {
+  inset: -28%;
+  background:
+    radial-gradient(ellipse 38% 32% at 22% 52%, rgba(255,255,255,.32), transparent 76%),
+    radial-gradient(ellipse 42% 40% at 59% 39%, rgba(var(--theme-smoke-primary),.52), transparent 78%),
+    radial-gradient(ellipse 30% 38% at 79% 69%, rgba(var(--theme-smoke-secondary),.38), transparent 76%),
+    radial-gradient(ellipse at 48% 52%, rgba(var(--theme-smoke-highlight),.18), transparent 79%);
+  filter: blur(clamp(15px, 2.1vw, 30px));
+  opacity: .94;
+  animation: theme-smoke-vapor-v60 8.5s ease-in-out infinite alternate;
+}
+body.student-app-body[data-season] .holiday-smoke::after,
+body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke::after {
+  inset: 4% -20%;
+  background:
+    radial-gradient(ellipse 40% 25% at 38% 56%, rgba(255,255,255,.26), transparent 76%),
+    radial-gradient(ellipse 36% 36% at 72% 40%, rgba(var(--theme-smoke-secondary),.42), transparent 78%),
+    radial-gradient(ellipse 31% 30% at 16% 34%, rgba(var(--theme-smoke-primary),.36), transparent 78%);
+  filter: blur(clamp(12px, 1.8vw, 26px));
+  opacity: .82;
+  animation: theme-smoke-vapor-v60 10.5s ease-in-out -4s infinite alternate-reverse;
+}
+/* National themes keep their white/blue/red palette from v52; only motion and volume rise. */
+body.student-app-body:is([data-season="russia_day"],[data-season="flag_day"],[data-season="unity_day"],[data-season="national_unity_day"],[data-season="constitution_day"],[data-season="national_day"]) .holiday-smoke,
+body.uc-body:is([data-theme="russia_day"],[data-theme="flag_day"],[data-theme="unity_day"],[data-theme="national_unity_day"],[data-theme="constitution_day"],[data-theme="national_day"]) .holiday-smoke {
+  filter: blur(clamp(28px, 3.6vw, 54px)) saturate(2.7) contrast(1.13) brightness(1.2);
+  opacity: 1;
+}
+@keyframes theme-smoke-white-v60 {
+  0% { transform: translate3d(-8%, 4%, 0) rotate(-13deg) scale(.88); opacity: .78; }
+  48% { opacity: 1; }
+  100% { transform: translate3d(12%, -9%, 0) rotate(11deg) scale(1.24); opacity: .94; }
+}
+@keyframes theme-smoke-blue-v60 {
+  0% { transform: translate3d(9%, 8%, 0) rotate(12deg) scale(.86); opacity: .76; }
+  52% { opacity: 1; }
+  100% { transform: translate3d(-11%, -8%, 0) rotate(-9deg) scale(1.22); opacity: .96; }
+}
+@keyframes theme-smoke-red-v60 {
+  0% { transform: translate3d(-6%, -5%, 0) rotate(10deg) scale(.9); opacity: .74; }
+  50% { opacity: .98; }
+  100% { transform: translate3d(10%, 7%, 0) rotate(-12deg) scale(1.2); opacity: .94; }
+}
+@keyframes theme-smoke-vapor-v60 {
+  from { transform: translate3d(-5%, 4%, 0) rotate(-9deg) scale(.86); }
+  to { transform: translate3d(7%, -6%, 0) rotate(9deg) scale(1.14); }
+}
+@media (max-width: 760px) {
+  body.student-app-body[data-season] .holiday-smoke,
+  body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke {
+    width: 132vw;
+    height: 92vw;
+    min-height: 260px;
+    filter: blur(24px) saturate(2.15) contrast(1.08) brightness(1.12);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body[data-season] .holiday-smoke,
+  body.uc-body[data-theme] .holiday-smoke,
+  body.student-app-body[data-season] .holiday-smoke::before,
+  body.uc-body[data-theme] .holiday-smoke::before,
+  body.student-app-body[data-season] .holiday-smoke::after,
+  body.uc-body[data-theme] .holiday-smoke::after {
+    animation: none !important;
+    transform: none !important;
+  }
+}

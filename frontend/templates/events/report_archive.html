@@ -1,0 +1,68 @@
+{% extends "shared/base.html" %}
+{% block title %}Архив отчётов · Student App{% endblock %}
+{% block head %}
+<style>
+.report-archive-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.report-archive-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
+.report-archive-filters label{display:block;font-size:12px;color:var(--text-muted,#8ba0b6);margin-bottom:6px}
+.report-archive-filters select{width:100%;min-height:42px}
+.report-archive-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.report-archive-note{font-size:12px;color:var(--text-muted,#8ba0b6);line-height:1.55}
+.report-archive-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:18px 0}
+.report-archive-grid .card{padding:15px}
+.report-archive-empty{padding:30px 16px;text-align:center;color:var(--text-muted,#8ba0b6)}
+@media(max-width:680px){.report-archive-filters{grid-template-columns:1fr 1fr}.report-archive-filters .filter-submit{grid-column:1/-1}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="report-archive-head">
+ <div><div class="eyebrow">ДОКУМЕНТЫ / АРХИВ</div><h1>Архив отчётов</h1>
+ <p class="report-archive-note">Выберите год, месяц и направление. Сотрудник видит и скачивает отчёты только своего направления; управление архивом доступно главному администратору.</p>{% if is_chief_admin %}<p class="report-archive-note">PDF, выпущенные до версии v75, не сохранялись в файловом архиве. Чтобы добавить их в архив, сформируйте отчёты заново.</p>{% endif %}</div>
+ {% if is_chief_admin %}<a class="btn btn-soft" href="{{ url_for('admin.event_reports') }}">К созданию отчётов</a>{% endif %}
+</section>
+<section class="card card-pad" style="margin-bottom:18px">
+ <form method="get" action="{{ url_for('admin.report_archive') }}" class="report-archive-filters">
+  <div><label for="archive-year">1. Год</label><select id="archive-year" name="year" onchange="this.form.submit()">{% for year in years %}<option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>{% endfor %}{% if not years %}<option value="{{ selected_year }}" selected>{{ selected_year }}</option>{% endif %}</select></div>
+  <div><label for="archive-month">2. Месяц</label><select id="archive-month" name="month" onchange="this.form.submit()"><option value="">Все месяцы</option>{% for month, label in [(1,'Январь'),(2,'Февраль'),(3,'Март'),(4,'Апрель'),(5,'Май'),(6,'Июнь'),(7,'Июль'),(8,'Август'),(9,'Сентябрь'),(10,'Октябрь'),(11,'Ноябрь'),(12,'Декабрь')] %}<option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  {% if not can_create_own_report %}<div><label for="archive-direction">3. Направление</label><select id="archive-direction" name="direction" onchange="this.form.submit()"><option value="">Все направления</option>{% for direction in directions %}<option value="{{ direction.id }}" {% if direction.id == selected_direction %}selected{% endif %}>{{ direction.name }}</option>{% endfor %}</select></div>{% endif %}
+  <div class="filter-submit"><button class="btn btn-primary" type="submit">Показать отчёты</button></div>
+ </form>
+</section>
+{% if can_create_own_report %}
+<section class="card card-pad" style="margin-bottom:18px">
+ <strong>Мои рабочие действия</strong>
+ <p class="report-archive-note">Создайте PDF только со своими действиями в системе за выбранный месяц. Чужие записи в этот документ не попадут.</p>
+ <a class="btn btn-soft" href="{{ url_for('admin.report_archive_my_work_pdf', year=selected_year, month=selected_month or 0) }}">Сформировать мой PDF</a>
+</section>
+{% endif %}
+{% if can_manage_years and selected_year %}
+<section class="card card-pad" style="margin-bottom:18px">
+ <strong>Управление архивом за {{ selected_year }} год</strong>
+ {% if is_chief_admin %}<p class="report-archive-note">Полное управление годовым архивом.</p>{% else %}<p class="report-archive-note">Для администратора архива доступно удаление отчётов выбранного года после создания проверенного ZIP.</p>{% endif %}
+ <p class="report-archive-note">Перед удалением общих отчётов направлений обязательно сформируйте ZIP. В ZIP попадут только подписанные общие PDF отчёты направлений, разложенные по папкам месяцев. ZIP сохраняется отдельно и не удаляется вместе с отчётами.</p>
+ <div class="report-archive-actions">
+  <a class="btn btn-soft" onclick="setTimeout(function(){window.location.reload();},1200)" href="{{ url_for('admin.report_archive_year_backup', year=selected_year) }}">Скачать ZIP за {{ selected_year }}</a>
+  {% if archive_backup_token %}
+  <form method="post" action="{{ url_for('admin.report_archive_year_delete', year=selected_year) }}" onsubmit="return confirm('Удалить общие отчёты направлений за {{ selected_year }} год? Резервный ZIP уже сформирован и останется сохранённым.');">
+   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="backup_token" value="{{ archive_backup_token }}">
+   <button class="btn btn-danger" type="submit">Удалить отчёты за {{ selected_year }} год</button>
+  </form>
+  {% endif %}
+ </div>
+</section>
+{% endif %}
+<section class="card table-wrap">
+ <div class="card-pad"><div class="eyebrow">PDF / {{ selected_year }}{% if selected_month %} · {{ '%02d'|format(selected_month) }}{% endif %}</div><h2>Доступные документы</h2>
+ <p class="report-archive-note">PDF доступны согласно правам роли и направлению. Сотрудникам доступны только просмотр и скачивание документов своего направления; наблюдатель имеет глобальный просмотр.</p></div>
+ <div class="table-scroll"><table><thead><tr><th>Документ</th><th>Месяц</th><th>Направление</th><th>Подпись</th><th>Дата</th><th>Скачать</th></tr></thead><tbody>
+ {% for item in documents %}
+ <tr><td><strong>{{ item.report_title }}</strong><div class="report-archive-note">{{ item.filename }}</div></td>
+ <td>{{ '%02d'|format(item.report_month) }}.{{ item.report_year }}</td>
+ <td>{{ document_direction_names.get(item.id, 'Личный отчёт') }}</td>
+ <td>{% if item.signature_code %}<span title="Подписано: {{ item.signed_by_name or '—' }}">{{ item.signature_code }}</span>{% else %}<span class="report-archive-note">Личный экспорт</span>{% endif %}</td>
+ <td>{{ item.created_at.strftime('%d.%m.%Y %H:%M') if item.created_at else '—' }}</td>
+ <td><a class="btn btn-primary" href="{{ url_for('admin.report_archive_download', document_id=item.id) }}">Скачать PDF</a></td></tr>
+ {% else %}<tr><td colspan="6" class="report-archive-empty">За выбранный период доступных отчётов нет.</td></tr>{% endfor %}
+ </tbody></table></div>
+</section>
+{% endblock %}

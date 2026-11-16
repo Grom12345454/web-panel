@@ -1,0 +1,69 @@
+/* GALAXY UI RELEASE · 2026.10.25 — last stylesheet in the actual site bundle.
+   Maintained here (frontend/assets), never edit static/css/site.bundle.css by hand. */
+.uc-body[data-ui-version="11"]{
+  --galaxy-release-cyan:#76e7ff;
+  --galaxy-release-violet:#ad9aff;
+  background-color:#040b1e;
+  background-image:radial-gradient(ellipse 70% 55% at 86% -10%,rgba(77,99,245,.23),transparent 78%),radial-gradient(ellipse 54% 48% at 4% 37%,rgba(7,185,242,.13),transparent 80%),linear-gradient(175deg,#050b22 3%,#07142d 65%,#091735 100%);
+}
+.uc-body[data-ui-version="11"] .app-shell{isolation:isolate}
+.uc-body[data-ui-version="11"] .sidebar{
+  border-right:1px solid rgba(121,196,255,.21);
+  background:linear-gradient(170deg,rgba(10,24,51,.97),rgba(5,13,32,.985) 60%,rgba(7,15,35,.98));
+  box-shadow:18px 0 65px rgba(0,3,24,.21),inset -1px 0 rgba(148,211,255,.065);
+}
+.uc-body[data-ui-version="11"] .sidebar::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#6ae5ff,#8b71ff,#ec8fd9);box-shadow:0 0 31px rgba(127,192,255,.45);pointer-events:none}
+.uc-body[data-ui-version="11"] .brand{padding-top:clamp(19px,2vw,31px);padding-bottom:22px;border-bottom:1px solid rgba(137,203,249,.13)}
+.uc-body[data-ui-version="11"] .brand-title{font-weight:850;letter-spacing:-.04em;color:#f1faff;text-wrap:balance}
+.uc-body[data-ui-version="11"] .brand-subtitle{font-size:9px!important;letter-spacing:.12em!important;font-weight:800!important;color:#84d8f5!important;line-height:1.55}
+.uc-body[data-ui-version="11"] .brand-mark{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 34px rgba(80,205,255,.18);transform:rotate(-6deg)}
+.uc-body[data-ui-version="11"] .nav-section{margin-bottom:5px}
+.uc-body[data-ui-version="11"] .nav-section-toggle{border-radius:14px!important;transition:color .22s,background .22s}
+.uc-body[data-ui-version="11"] :is(.nav-link,.nav-sub-link){border-radius:12px!important;transition:background .22s,color .22s,transform .22s,box-shadow .22s}
+.uc-body[data-ui-version="11"] .nav-link:hover{transform:translateX(3px);background:rgba(111,172,246,.14)!important}
+.uc-body[data-ui-version="11"] .nav-link.active{box-shadow:inset 3px 0 0 #73dcff,0 0 25px rgba(77,144,255,.12);background:linear-gradient(100deg,rgba(39,129,232,.31),rgba(89,79,175,.11))!important;color:#f6fdff!important}
+.uc-body[data-ui-version="11"] .galaxy-journal-badge{display:inline-block;margin-left:4px;font-weight:800;color:#95eaff;font-size:9px;letter-spacing:.04em;vertical-align:middle}
+.uc-body[data-ui-version="11"] .galaxy-journal-symbol{color:#78eaff!important;filter:drop-shadow(0 0 8px rgba(91,218,255,.55))}
+.uc-body[data-ui-version="11"] .galaxy-sidebar-monitor{position:relative;display:flex;gap:12px;align-items:center;min-width:0;margin:15px 9px 9px;padding:17px 14px;border:1px solid rgba(119,203,255,.37);border-radius:17px;text-decoration:none;background:linear-gradient(130deg,rgba(16,80,127,.48),rgba(70,50,133,.38));box-shadow:0 12px 30px rgba(0,7,30,.3),inset 0 1px rgba(224,247,255,.1);overflow:hidden;color:#eef9ff!important}
+.uc-body[data-ui-version="11"] .galaxy-sidebar-monitor::after{content:"";position:absolute;inset:-60% auto -60% -70%;width:30%;transform:rotate(22deg);background:linear-gradient(90deg,transparent,rgba(224,248,255,.15),transparent);animation:galaxy-monitor-light 6s ease-in-out infinite;pointer-events:none}
+.uc-body[data-ui-version="11"] .galaxy-monitor-orbit{display:grid;place-items:center;flex:none;width:43px;height:43px;border-radius:13px;font-size:25px;color:#a6ebff;background:radial-gradient(circle at 25% 20%,rgba(166,225,255,.3),rgba(70,93,204,.24));border:1px solid rgba(146,215,255,.23)}
+.uc-body[data-ui-version="11"] .galaxy-monitor-copy{display:grid;gap:5px;min-width:0}.uc-body[data-ui-version="11"] .galaxy-monitor-copy strong{font-size:12px;color:#f9fdff}.uc-body[data-ui-version="11"] .galaxy-monitor-copy small{font-size:10px;color:#a6c8e9}
+.uc-body[data-ui-version="11"] .galaxy-monitor-arrow{margin-left:auto;font-size:20px;color:#86ddff}
+.uc-body[data-ui-version="11"] .galaxy-sidebar-monitor:hover{border-color:#8adfff;transform:translateY(-2px);box-shadow:0 16px 46px rgba(6,66,115,.27)}
+.uc-body[data-ui-version="11"] .topbar{border-bottom:1px solid rgba(138,211,255,.18);background:linear-gradient(90deg,rgba(9,23,50,.92),rgba(15,23,63,.88));box-shadow:0 10px 37px rgba(0,5,27,.17);backdrop-filter:blur(22px)}
+.uc-body[data-ui-version="11"] .topbar-workspace{display:flex;flex-direction:column;gap:4px;min-width:0}
+.uc-body[data-ui-version="11"] .topbar-overline{font-size:9px;font-weight:850;letter-spacing:.17em;color:#8fd1ef;line-height:1.2}
+.uc-body[data-ui-version="11"] .topbar-overline span{color:#7990b2;margin-inline:4px}
+.uc-body[data-ui-version="11"] .top-title{font-size:clamp(15px,1.7vw,20px)!important;letter-spacing:-.045em!important;color:#f8fbff!important}
+.uc-body[data-ui-version="11"] .top-title-accent{color:#9caaff;background:linear-gradient(90deg,#79e9ff,#bd9cff);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.uc-body[data-ui-version="11"] .galaxy-top-signal{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;padding:9px 13px;border:1px solid rgba(108,196,243,.25);border-radius:99px;background:rgba(20,75,117,.2);font-size:10px;font-weight:750;color:#c7ecfb;letter-spacing:.025em}
+.uc-body[data-ui-version="11"] .galaxy-top-signal-orb{width:8px;height:8px;flex:none;border-radius:50%;background:#7ce1ff;box-shadow:0 0 0 4px rgba(115,205,255,.08),0 0 14px rgba(115,205,255,.45)}
+.uc-body[data-ui-version="11"] .page{position:relative;padding-top:clamp(20px,2.8vw,40px)}
+.uc-body[data-ui-version="11"] :is(.galaxy-hero,.galaxy-tool,.galaxy-direction,.galaxy-stat){outline-offset:4px}
+.uc-body[data-ui-version="11"] .galaxy-hero{border-color:rgba(155,224,255,.42);box-shadow:0 38px 100px rgba(0,5,30,.55),inset 0 1px rgba(225,245,255,.24),0 0 55px rgba(83,153,255,.09)}
+.uc-body[data-ui-version="11"] .galaxy-hero::after{content:"";position:absolute;right:-80px;bottom:-115px;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle,rgba(126,121,245,.16),transparent 68%);pointer-events:none}
+.uc-body[data-ui-version="11"] .galaxy-tool{min-height:230px}
+/* A completely new, visible monitoring module on the actual dashboard. */
+.uc-body[data-ui-version="11"] .galaxy-ops-hub{position:relative;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(245px,.8fr);gap:30px;align-items:center;isolation:isolate;overflow:hidden;padding:clamp(23px,3.4vw,43px);border-radius:27px;border:1px solid rgba(131,208,255,.4);background:radial-gradient(ellipse at 90% 40%,rgba(93,93,239,.25),transparent 58%),linear-gradient(123deg,rgba(11,48,90,.96),rgba(15,21,60,.96));box-shadow:0 28px 70px rgba(0,8,39,.4),inset 0 1px rgba(239,251,255,.14)}
+.uc-body[data-ui-version="11"] .galaxy-ops-visual{position:absolute;pointer-events:none;right:10%;top:50%;width:270px;aspect-ratio:1;transform:translateY(-50%);opacity:.52;z-index:-1}
+.uc-body[data-ui-version="11"] .galaxy-ops-world{position:absolute;inset:25%;border-radius:50%;background:radial-gradient(circle at 30% 23%,#bbeeff,#2783c1 39%,#283a97 68%,#0b1749);box-shadow:inset -22px -17px 32px rgba(1,5,33,.8),0 0 65px rgba(66,158,255,.43);animation:galaxy-ops-float 7s ease-in-out infinite alternate}
+.uc-body[data-ui-version="11"] .galaxy-ops-orbit{position:absolute;inset:18% -18%;border:3px solid rgba(149,223,255,.49);border-radius:50%;transform:rotate(-32deg) rotateX(63deg);box-shadow:0 0 30px rgba(113,198,255,.15)}
+.uc-body[data-ui-version="11"] .galaxy-ops-orbit-two{inset:0% -18%;transform:rotate(30deg) rotateX(75deg);border-color:rgba(194,155,255,.37)}
+.uc-body[data-ui-version="11"] .galaxy-ops-heading{position:relative;z-index:1}.uc-body[data-ui-version="11"] .galaxy-ops-heading h2{font-size:clamp(26px,3.8vw,47px);line-height:1.08;margin:9px 0 10px;color:#fff;letter-spacing:-.06em;text-wrap:balance}.uc-body[data-ui-version="11"] .galaxy-ops-heading p{max-width:50ch;color:#bfd5ee;font-size:13px;line-height:1.7;margin:0}
+.uc-body[data-ui-version="11"] .galaxy-ops-cta{display:inline-flex;align-items:center;justify-content:center;gap:17px;margin-top:22px;padding:13px 19px;background:linear-gradient(110deg,#69d7ff,#979bff);color:#061631!important;border-radius:12px;font-weight:850;font-size:12px;text-decoration:none;box-shadow:0 14px 34px rgba(51,135,220,.24);transition:transform .23s,box-shadow .23s}.uc-body[data-ui-version="11"] .galaxy-ops-cta:hover{transform:translateY(-3px);box-shadow:0 18px 45px rgba(51,135,220,.38)}
+.uc-body[data-ui-version="11"] .galaxy-ops-platforms{display:flex;flex-direction:column;gap:10px;justify-self:end;position:relative;z-index:1;width:min(100%,245px)}
+.uc-body[data-ui-version="11"] .galaxy-ops-platform{display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:13px;border:1px solid rgba(178,222,255,.23);background:rgba(5,13,40,.6);backdrop-filter:blur(10px);font-size:12px;font-weight:750;color:#f1f8ff}
+.uc-body[data-ui-version="11"] .galaxy-ops-platform b{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;font-size:14px;background:rgba(78,140,205,.31);color:#b1ecff}.uc-body[data-ui-version="11"] .galaxy-ops-platform-vk b{background:rgba(44,106,238,.31);color:#dae8ff}.uc-body[data-ui-version="11"] .galaxy-ops-platform-max b{background:rgba(142,74,215,.35);color:#f2ddff}
+/* Make the journal header part of the same design language. */
+.uc-body[data-ui-version="11"] .galaxy-journal-hero{position:relative;isolation:isolate;overflow:hidden;align-items:center;border:1px solid rgba(142,209,255,.34);border-radius:25px;padding:clamp(20px,3vw,36px);background:radial-gradient(ellipse at 80% 22%,rgba(91,71,219,.28),transparent 64%),linear-gradient(119deg,rgba(13,48,86,.96),rgba(8,19,49,.95));box-shadow:0 22px 66px rgba(0,8,38,.37)}
+.uc-body[data-ui-version="11"] .galaxy-journal-hero .journal-intro,.uc-body[data-ui-version="11"] .galaxy-journal-hero .journal-tools{position:relative;z-index:1}
+.uc-body[data-ui-version="11"] .galaxy-journal-space{position:absolute;right:-40px;top:-80px;width:300px;height:300px;pointer-events:none;opacity:.38}
+.uc-body[data-ui-version="11"] .galaxy-journal-core{position:absolute;inset:29%;border-radius:50%;background:radial-gradient(circle at 20% 20%,#bdfaff,#628ffb 34%,#141c66 79%);box-shadow:0 0 75px rgba(104,159,255,.5)}
+.uc-body[data-ui-version="11"] .galaxy-journal-ring{position:absolute;inset:12% -10%;border:5px solid rgba(176,218,255,.47);border-radius:50%;transform:rotate(-25deg) rotateX(68deg)}
+.uc-body[data-ui-version="11"] .galaxy-journal-platforms{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.uc-body[data-ui-version="11"] .galaxy-journal-platforms span{border:1px solid rgba(140,207,252,.25);border-radius:99px;padding:6px 11px;color:#dfedff;font-size:11px;font-weight:700;background:rgba(10,36,75,.63)}
+.uc-body[data-ui-version="11"] :is(a,button,input,select,textarea):focus-visible{outline:2px solid #87e8ff;outline-offset:3px}
+@keyframes galaxy-monitor-light{0%,57%{left:-70%}100%{left:155%}}
+@keyframes galaxy-ops-float{to{transform:translateY(-9px) rotate(9deg)}}
+@media(max-width:1100px){.uc-body[data-ui-version="11"] .galaxy-top-signal{display:none}}
+@media(max-width:760px){.uc-body[data-ui-version="11"] .topbar-overline{font-size:8px;letter-spacing:.09em}.uc-body[data-ui-version="11"] .top-title{font-size:14px!important}.uc-body[data-ui-version="11"] .galaxy-ops-hub{grid-template-columns:1fr;gap:21px}.uc-body[data-ui-version="11"] .galaxy-ops-platforms{justify-self:start;flex-direction:row;flex-wrap:wrap;width:100%}.uc-body[data-ui-version="11"] .galaxy-ops-platform{font-size:11px;padding:8px}.uc-body[data-ui-version="11"] .galaxy-ops-platform b{width:26px;height:26px}}
+@media(prefers-reduced-motion:reduce){.uc-body[data-ui-version="11"] .galaxy-sidebar-monitor::after,.uc-body[data-ui-version="11"] .galaxy-ops-world{animation:none!important}.uc-body[data-ui-version="11"] :is(.galaxy-ops-cta,.nav-link,.galaxy-sidebar-monitor){transition:none!important}}

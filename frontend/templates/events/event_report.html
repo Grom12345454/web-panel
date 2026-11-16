@@ -1,0 +1,21 @@
+{% extends "shared/base.html" %}
+{% block title %}Отчёт мероприятия: {{ report.title }} · Student App{% endblock %}
+{% block head %}<style>
+.report-muted{color:var(--text-muted,#8ba0b6);font-size:12px}.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:16px 0}.report-grid .card strong{font-size:24px}.report-actions{display:flex;gap:8px;flex-wrap:wrap}.report-table td,.report-table th{vertical-align:top;white-space:normal}
+</style>{% endblock %}
+{% block content %}
+<section class="section-title"><div><div class="eyebrow">ОТЧЁТ ПО МЕРОПРИЯТИЮ / #{{ report.event_id }}</div><h1>{{ report.title }}</h1><p>{{ report.dates }} · {{ report.location }} · {{ report.time_range }}</p></div><div class="report-actions"><a class="btn btn-soft" href="{{ url_for('admin.event_reports') }}">К отчётам</a>{% for direction_id in report.direction_ids %}<a class="btn btn-soft" href="{{ url_for('admin.direction_report_html', direction_id=direction_id) }}">К направлению</a>{% endfor %}<a class="btn btn-primary" href="{{ url_for('admin.event_report_pdf', event_id=report.event_id) }}">Скачать подписанный PDF</a></div></section>
+<div class="report-grid">
+ <article class="card card-pad"><div class="eyebrow">Лимит мест</div><strong>{{ report.capacity }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Всего записей</div><strong>{{ report.counts.total }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Посещений</div><strong>{{ report.counts.attended }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Пропусков</div><strong>{{ report.counts.absent }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Отмен участия</div><strong>{{ report.counts.cancelled }}</strong></article>
+ <article class="card card-pad"><div class="eyebrow">Отказов</div><strong>{{ report.counts.declined }}</strong></article>
+</div>
+<section class="card card-pad" style="margin-bottom:18px"><h2>Паспорт мероприятия</h2><p>{{ report.description or 'Описание не указано.' }}</p><p><strong>Направления:</strong> {{ report.directions|join(', ') if report.directions else 'Не привязаны' }}</p><p><strong>Статус публикации:</strong> {{ report.publication_status }}</p></section>
+<section class="card table-wrap" style="margin-bottom:18px"><div class="card-pad"><h2>Посещаемость участников</h2><p class="report-muted">Персональные причины отказов не показываются.</p></div><div class="table-scroll"><table class="report-table"><thead><tr><th>Дата</th><th>Участник</th><th>Группа</th><th>Статус</th></tr></thead><tbody>{% for row in report.attendance %}<tr><td>{{ row.date }}</td><td>{{ row.name }}</td><td>{{ row.group }}</td><td>{{ row.status }}</td></tr>{% else %}<tr><td colspan="4">Записей нет.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card table-wrap" style="margin-bottom:18px"><div class="card-pad"><h2>Отказы от участия</h2></div><div class="table-scroll"><table><thead><tr><th>Участник</th><th>Дата</th><th>Сведения</th></tr></thead><tbody>{% for row in report.declines %}<tr><td>{{ row.name }}</td><td>{{ row.date }}</td><td>Отказ зарегистрирован; личная причина скрыта.</td></tr>{% else %}<tr><td colspan="3">Отказов нет.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card table-wrap"><div class="card-pad"><h2>Действия направления и мероприятия</h2><p class="report-muted">Всего записей: {{ report.actions|length }}</p></div><div class="table-scroll"><table class="report-table"><thead><tr><th>Дата UTC</th><th>Направление</th><th>Действие</th><th>Описание</th></tr></thead><tbody>{% for row in report.actions %}<tr><td>{{ row.created_at }}</td><td>{{ row.direction }}</td><td>{{ row.action }}</td><td>{{ row.description }}</td></tr>{% else %}<tr><td colspan="4">История действий пуста.</td></tr>{% endfor %}</tbody></table></div></section>
+<p class="report-muted" style="margin-top:14px">PDF подписывается главным администратором {{ admin_signer_name }}. В нём сохраняется код подписи и контрольная сумма документа.</p>
+{% endblock %}

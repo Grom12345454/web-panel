@@ -1,0 +1,65 @@
+/* v59 — one volumetric smoke engine shared by the portal and Student App.
+   Every non-national-holiday theme draws from its own live palette tokens. */
+
+body.student-app-body[data-season],
+body.uc-body[data-theme]:not([data-page^="orders-"]) {
+  --theme-smoke-primary: var(--season-accent-rgb, var(--office-accent-rgb, 142, 203, 255));
+  --theme-smoke-secondary: var(--season-secondary-rgb, var(--office-secondary-rgb, 180, 140, 255));
+  --theme-smoke-highlight: 236, 246, 255;
+}
+
+/* Palette smoke for spring, summer, autumn, winter, academic and space themes.
+   The three clouds share one motion language but keep separate colour identities. */
+body.student-app-body[data-season]:not([data-season="russia_day"]):not([data-season="flag_day"]):not([data-season="unity_day"]):not([data-season="national_unity_day"]):not([data-season="constitution_day"]):not([data-season="national_day"]) .holiday-smoke--white,
+body.uc-body[data-theme]:not([data-theme="russia_day"]):not([data-theme="flag_day"]):not([data-theme="unity_day"]):not([data-theme="national_unity_day"]):not([data-theme="constitution_day"]):not([data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke--white {
+  background:
+    radial-gradient(ellipse 44% 38% at 34% 48%, rgba(var(--theme-smoke-primary), .48), transparent 73%),
+    radial-gradient(ellipse 38% 44% at 64% 40%, rgba(var(--theme-smoke-highlight), .22), transparent 77%),
+    radial-gradient(ellipse at 55% 55%, rgba(var(--theme-smoke-secondary), .18), transparent 76%);
+}
+body.student-app-body[data-season]:not([data-season="russia_day"]):not([data-season="flag_day"]):not([data-season="unity_day"]):not([data-season="national_unity_day"]):not([data-season="constitution_day"]):not([data-season="national_day"]) .holiday-smoke--blue,
+body.uc-body[data-theme]:not([data-theme="russia_day"]):not([data-theme="flag_day"]):not([data-theme="unity_day"]):not([data-theme="national_unity_day"]):not([data-theme="constitution_day"]):not([data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke--blue {
+  background:
+    radial-gradient(ellipse 46% 40% at 35% 46%, rgba(var(--theme-smoke-primary), .64), transparent 73%),
+    radial-gradient(ellipse 38% 46% at 68% 58%, rgba(var(--theme-smoke-secondary), .28), transparent 77%),
+    radial-gradient(ellipse at 50% 52%, rgba(var(--theme-smoke-primary), .24), transparent 78%);
+}
+body.student-app-body[data-season]:not([data-season="russia_day"]):not([data-season="flag_day"]):not([data-season="unity_day"]):not([data-season="national_unity_day"]):not([data-season="constitution_day"]):not([data-season="national_day"]) .holiday-smoke--red,
+body.uc-body[data-theme]:not([data-theme="russia_day"]):not([data-theme="flag_day"]):not([data-theme="unity_day"]):not([data-theme="national_unity_day"]):not([data-theme="constitution_day"]):not([data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke--red {
+  background:
+    radial-gradient(ellipse 45% 38% at 38% 46%, rgba(var(--theme-smoke-secondary), .58), transparent 73%),
+    radial-gradient(ellipse 38% 44% at 67% 58%, rgba(var(--theme-smoke-primary), .25), transparent 77%),
+    radial-gradient(ellipse at 52% 54%, rgba(var(--theme-smoke-secondary), .20), transparent 79%);
+}
+
+/* Give non-tricolour themes a soft matching tint in the fine vapor wisps. */
+body.student-app-body[data-season]:not([data-season="russia_day"]):not([data-season="flag_day"]):not([data-season="unity_day"]):not([data-season="national_unity_day"]):not([data-season="constitution_day"]):not([data-season="national_day"]) .holiday-smoke::before,
+body.uc-body[data-theme]:not([data-theme="russia_day"]):not([data-theme="flag_day"]):not([data-theme="unity_day"]):not([data-theme="national_unity_day"]):not([data-theme="constitution_day"]):not([data-theme="national_day"]):not([data-page^="orders-"]) .holiday-smoke::before {
+  background:
+    radial-gradient(ellipse 31% 30% at 28% 53%, rgba(var(--theme-smoke-highlight), .22), transparent 76%),
+    radial-gradient(ellipse 38% 34% at 62% 39%, rgba(var(--theme-smoke-primary), .34), transparent 78%),
+    radial-gradient(ellipse 26% 35% at 78% 66%, rgba(var(--theme-smoke-secondary), .24), transparent 76%);
+}
+
+/* Preserve the distinctive national-holiday smoke treatment unchanged. */
+body.student-app-body:is([data-season="russia_day"], [data-season="flag_day"], [data-season="unity_day"], [data-season="national_unity_day"], [data-season="constitution_day"], [data-season="national_day"]) .holiday-smoke,
+body.uc-body:is([data-theme="russia_day"], [data-theme="flag_day"], [data-theme="unity_day"], [data-theme="national_unity_day"], [data-theme="constitution_day"], [data-theme="national_day"]) .holiday-smoke {
+  --theme-smoke-primary: 0, 57, 166;
+  --theme-smoke-secondary: 213, 43, 30;
+  --theme-smoke-highlight: 255, 255, 255;
+}
+
+@media (max-width: 640px) {
+  body.student-app-body[data-season] .holiday-smoke,
+  body.uc-body[data-theme]:not([data-page^="orders-"]) .holiday-smoke {
+    max-width: 128vw;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body[data-season] .holiday-smoke,
+  body.uc-body[data-theme] .holiday-smoke,
+  body.student-app-body[data-season] .holiday-smoke::before,
+  body.uc-body[data-theme] .holiday-smoke::before {
+    animation: none !important;
+  }
+}

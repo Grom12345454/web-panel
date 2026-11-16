@@ -1,0 +1,48 @@
+/* Connected messenger accounts — consistent with Student App dark/glass language. */
+.accounts-intro{margin-bottom:20px}
+.accounts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px;margin:12px 0 18px}
+.account-tile{margin:0!important;min-height:156px;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.account-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.account-logo{display:grid;place-items:center;width:42px;height:42px;min-width:42px;border-radius:12px;font-weight:800;color:white;background:linear-gradient(140deg,#1987d6,#135c92);font-size:15px}
+.account-logo-vk{background:linear-gradient(140deg,#2285ec,#07569d)}
+.account-logo-max{background:linear-gradient(140deg,#8657ea,#5c34aa)}
+.account-heading-text{flex:1;min-width:115px}
+.account-heading-text h3{margin:0 0 4px;font-size:16px}
+.account-chip{border:1px solid rgba(255,255,255,.15);padding:5px 9px;border-radius:999px;font-size:11px;white-space:nowrap;color:var(--text-muted,#b5c4d2)}
+.account-chip-ok{color:#9cf4d8;border-color:rgba(34,197,150,.37);background:rgba(34,197,150,.10)}
+.account-controls{display:flex;align-items:center;gap:8px}
+.account-controls .btn{flex:1;text-align:center}
+.account-note{font-size:12px;opacity:.8}
+.account-instruction,.accounts-security,.accounts-notice{margin-top:16px}
+.account-instruction h2{margin:8px 0 12px}
+.account-instruction ol{line-height:1.85;padding-left:24px;font-size:13px}
+.account-code-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
+.account-code-row code{font:700 clamp(16px,3.2vw,24px)/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.15);padding:12px 15px;border-radius:13px;overflow-wrap:anywhere}
+.accounts-security p{line-height:1.6;margin:8px 0 14px;font-size:13px;opacity:.86}
+.account-overlay{position:fixed;inset:0;background:rgba(4,9,25,.74);display:grid;place-items:center;padding:20px;z-index:1000;backdrop-filter:blur(8px)}
+.account-dialog{width:min(100%,480px);padding:25px;border-radius:22px;background:#18283d;color:#eef4fa;border:1px solid rgba(255,255,255,.2);box-shadow:0 16px 70px rgba(0,0,0,.5)}
+.account-dialog h2{font-size:24px;margin:10px 0}.account-dialog p{font-size:14px;line-height:1.65;opacity:.85}
+.account-dialog .actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:20px}
+@media(max-width:540px){.account-dialog{padding:20px}.account-chip{margin-left:54px}.account-instruction ol{padding-left:20px}}
+
+.account-handle-label{display:block;margin:.7rem 0 .3rem;font-size:.8rem;font-weight:600;letter-spacing:.01em;opacity:.85}
+.account-handle-input{display:block;width:100%;max-width:28rem;margin-bottom:.65rem}
+.leader-contacts{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem}
+.leader-contacts .leader-contact{display:inline-flex;align-items:center;gap:.3rem}
+
+/* Two-step account connection decision controls */
+.account-pending-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; padding:1rem 0; border-top:1px solid var(--line, rgba(150,170,200,.22)); }
+.account-pending-row .actions { display:flex; gap:.5rem; flex-wrap:wrap; }
+@media(max-width:600px){.account-pending-row .actions{width:100%}.account-pending-row .actions .btn{flex:1}}
+
+/* Guided account pairing: accessible, compact, and responsive. */
+.account-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:17px 0 20px}
+.account-journey-step{display:flex;gap:12px;align-items:flex-start;min-width:0;min-height:91px;padding:17px;border:1px solid rgba(154,183,219,.2);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.058),rgba(255,255,255,.017))}
+.account-journey-num{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:11px;color:var(--sa-accent,#81ddf9);background:rgba(var(--sa-accent-rgb,49,217,255),.1);font:800 12px/1 ui-monospace,monospace}
+.account-journey-step b{display:block;font-size:13px;color:#f1f7ff}
+.account-journey-step small{display:block;margin-top:5px;line-height:1.45;color:#aac0d6;font-size:11px}
+.account-tile{transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.account-tile:hover{border-color:rgba(var(--sa-accent-rgb,49,217,255),.35);transform:translateY(-2px)}
+.account-tile .btn:focus-visible,.account-instruction .btn:focus-visible{outline:3px solid var(--sa-accent,#70d5f6);outline-offset:3px}
+@media(max-width:760px){.account-journey{grid-template-columns:1fr;gap:9px}.account-journey-step{min-height:0;padding:12px 14px}.account-journey-step small{margin-top:2px}}
+@media(prefers-reduced-motion:reduce){.account-tile{transition:none}.account-tile:hover{transform:none}}

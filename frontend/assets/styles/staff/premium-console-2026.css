@@ -1,0 +1,143 @@
+/* Premium Console 2026 — final maintained polish layer.
+   Accessible motion, consistent surfaces, improved staff journals & controls. */
+.uc-body[data-ui-version="11"]{
+  --console-accent:#79dcf5;--console-accent-2:#a6a0ff;
+  --console-ink:#eef6ff;--console-muted:#a9bfd6;
+  --console-line:rgba(150,192,224,.18);
+  --console-surface:rgba(15,30,52,.94);
+  background-color:#07111f;letter-spacing:.003em;
+}
+.uc-body .space-visual-scene,.uc-body .festive-atmosphere{opacity:.53;pointer-events:none}
+.uc-body .ambient{opacity:.32}
+.uc-body .starfield-canvas{opacity:.5;pointer-events:none}
+.uc-body[data-ui-version="11"] .sidebar{
+  background:linear-gradient(165deg,rgba(12,25,46,.98),rgba(7,17,32,.99));
+  border-right:1px solid rgba(154,204,245,.14);
+  box-shadow:14px 0 54px rgba(2,8,19,.23);
+}
+.uc-body[data-ui-version="11"] .brand{border-bottom-color:var(--console-line)}
+.uc-body[data-ui-version="11"] .brand-title{letter-spacing:-.025em}
+.uc-body[data-ui-version="11"] .sidebar-nav .nav-link,
+.uc-body[data-ui-version="11"] .sidebar-nav .nav-section-toggle{
+  border-radius:12px;transition:background-color .19s ease,color .19s ease,border-color .19s ease,transform .19s ease;
+}
+.uc-body[data-ui-version="11"] .sidebar-nav .nav-link:is(:hover,:focus-visible),
+.uc-body[data-ui-version="11"] .sidebar-nav .nav-section-toggle:is(:hover,:focus-visible){
+  background:rgba(104,164,223,.13);color:#f4faff;transform:translateX(2px);
+}
+.uc-body[data-ui-version="11"] .sidebar-nav .nav-link.active{
+  background:linear-gradient(90deg,rgba(54,155,210,.23),rgba(104,99,203,.1));
+  box-shadow:inset 3px 0 0 #72d9f6;border-color:rgba(114,217,246,.2);
+}
+.uc-body[data-ui-version="11"] .topbar{
+  background:rgba(8,20,37,.88);border-bottom:1px solid rgba(147,191,230,.17);
+  backdrop-filter:blur(24px) saturate(1.12);-webkit-backdrop-filter:blur(24px) saturate(1.12);
+}
+.uc-body[data-ui-version="11"] .top-title{letter-spacing:-.035em}
+.uc-body[data-ui-version="11"] .page{min-width:0}
+.uc-body[data-ui-version="11"] .page :is(h1,h2,h3){text-wrap:balance}
+.uc-body[data-ui-version="11"] .page :is(p,.subtle){text-wrap:pretty}
+.uc-body[data-ui-version="11"] :is(.card,.mission-panel,.mission-kpi,.galaxy-tool,.galaxy-direction,.calendar-board,.calendar-detail-panel){
+  border-color:var(--console-line);box-shadow:0 15px 38px rgba(2,8,22,.22);
+}
+.uc-body[data-ui-version="11"] .mission-hero-20{
+  border:1px solid rgba(136,197,239,.23);
+  background:radial-gradient(circle at 84% 28%,rgba(117,117,227,.20),transparent 48%),
+  linear-gradient(120deg,#142e4a,#0b1d34 68%,#0c1930);
+  box-shadow:0 22px 55px rgba(0,8,23,.24);
+}
+.uc-body[data-ui-version="11"] .mission-kpi{position:relative;overflow:hidden}
+.uc-body[data-ui-version="11"] .mission-kpi::before{
+  content:"";position:absolute;inset:0 auto auto 0;width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(131,221,247,.45),transparent);
+}
+.uc-body[data-ui-version="11"] .galaxy-tool{
+  background:linear-gradient(155deg,rgba(21,44,72,.95),rgba(10,25,46,.98));
+}
+.uc-body[data-ui-version="11"] :is(.btn,.journal-btn,.calendar-icon-button,.calendar-today-button){
+  transition:transform .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+@media(hover:hover) and (pointer:fine){
+  .uc-body[data-ui-version="11"] :is(.btn,.journal-btn,.calendar-today-button):not(:disabled):hover{transform:translateY(-2px)}
+}
+.uc-body[data-ui-version="11"] :is(a,button,input,select,textarea,summary):focus-visible{
+  outline:2px solid #88e4ff!important;outline-offset:3px!important;
+}
+.uc-body[data-ui-version="11"] :is(input,select,textarea){accent-color:#73cfee}
+.uc-body[data-ui-version="11"] :is(.input,.select,.journal-filters input,.journal-filters select){
+  border-color:rgba(142,190,225,.3);
+}
+.uc-body[data-ui-version="11"] :is(.input,.select,.journal-filters input,.journal-filters select):focus{
+  border-color:#80d8f4;box-shadow:0 0 0 3px rgba(90,181,227,.12);
+}
+/* Auditing / diagnostics are deliberately high-contrast and information-first. */
+.uc-body .audit-console-hero{position:relative;overflow:hidden;padding:clamp(20px,3vw,32px);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  border:1px solid rgba(130,202,247,.24);border-radius:24px;
+  background:radial-gradient(circle at 90% 10%,rgba(100,103,209,.17),transparent 47%),linear-gradient(135deg,#142d4b,#0b1c32 72%);
+  box-shadow:0 18px 45px rgba(2,8,24,.22);margin-bottom:16px;
+}
+.uc-body .audit-console-hero .eyebrow{color:#88ddf7;letter-spacing:.14em;font-weight:800}
+.uc-body .audit-console-hero h1{margin:9px 0 9px;font-size:clamp(28px,3vw,41px);letter-spacing:-.045em}
+.uc-body .audit-console-hero p{color:#b1c8df;max-width:65ch;line-height:1.62;margin:0}
+.uc-body .audit-console-hero .audit-overview{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.uc-body .audit-console-hero .audit-overview .btn{min-height:42px}
+.uc-body .audit-console-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0 0 18px}
+.uc-body .audit-console-metric{position:relative;min-width:0;display:grid;gap:9px;padding:19px 20px;
+  background:linear-gradient(150deg,rgba(23,48,78,.92),rgba(10,24,43,.98));
+  border:1px solid var(--console-line);border-radius:17px;box-shadow:0 10px 26px rgba(0,7,20,.19);
+}
+.uc-body .audit-console-metric::after{content:"";position:absolute;top:18px;right:18px;width:7px;height:7px;border-radius:50%;background:#79dafa;box-shadow:0 0 11px #79dafa55}
+.uc-body .audit-console-metric.is-error::after{background:#ffa6ae;box-shadow:0 0 12px #ffa6ae55}
+.uc-body .audit-console-metric.is-slow::after{background:#f9d58e;box-shadow:0 0 12px #f9d58e55}
+.uc-body .audit-console-metric small{color:#aec7dd;font-size:12px;font-weight:650}
+.uc-body .audit-console-metric strong{color:#f3faff;font-size:clamp(28px,3vw,38px);font-weight:820;letter-spacing:-.055em;font-variant-numeric:tabular-nums;line-height:1}
+.uc-body .audit-console-metric span{font-size:11px;color:#8faecb}
+.uc-body .audit-console-metric.is-error strong{color:#ffb7bc}
+.uc-body .audit-console-metric.is-slow strong{color:#f8dcaa}
+.uc-body .audit-operations-v5{border-color:var(--console-line);background:linear-gradient(145deg,rgba(19,41,68,.96),rgba(9,23,41,.98));box-shadow:0 14px 40px rgba(0,8,24,.18)}
+.uc-body .audit-quick a{background:rgba(48,100,144,.18);border-color:rgba(119,188,227,.24);transition:background .2s,border-color .2s}
+.uc-body .audit-quick a[aria-current="true"]{background:rgba(87,196,242,.19);border-color:#77daf3;color:#eafaff}
+.uc-body .audit-table{overflow:hidden;border:1px solid var(--console-line);border-radius:20px;margin-top:17px;background:linear-gradient(160deg,rgba(17,36,61,.98),rgba(9,23,43,.99))}
+.uc-body .audit-table h2{font-size:clamp(17px,1.65vw,22px);letter-spacing:-.022em}
+.uc-body .audit-table .table-scroll{max-height:660px;overflow:auto;scrollbar-width:thin;scrollbar-color:#3b708d transparent}
+.uc-body .audit-table table{border-collapse:separate;border-spacing:0;width:100%;font-variant-numeric:tabular-nums}
+.uc-body .audit-table thead th{position:sticky;top:0;z-index:1;background:#172e49;color:#c5dbed;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+.uc-body .audit-table tbody tr{transition:background .17s ease}
+.uc-body .audit-table tbody tr:hover{background:rgba(82,154,199,.09)}
+.uc-body .audit-table td{vertical-align:middle;overflow-wrap:anywhere;font-size:12px}
+.uc-body .audit-table .audit-date{white-space:nowrap;color:#c4d9eb}
+.uc-body .audit-request-id{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.uc-body .audit-request-id code{font-size:11px;overflow-wrap:anywhere;color:#addaf2}
+.uc-body .audit-copy-id{font:inherit;font-size:11px;font-weight:750;cursor:pointer;border:1px solid #4d7f9a;background:rgba(91,164,199,.13);color:#d4f3ff;border-radius:8px;padding:6px 9px}
+.uc-body .audit-copy-id:hover{background:rgba(92,190,235,.24)}
+.uc-body .audit-copy-feedback{font-size:12px;color:#98eacb;min-height:1em}
+/* Messenger journal — denser professional monitoring without hiding status. */
+.uc-body .journal-shell .journal-header,
+.uc-body .journal-shell .journal-panel,
+.uc-body .journal-shell .bot-delivery-summary{border-color:var(--console-line);box-shadow:0 14px 44px rgba(0,8,24,.22)}
+.uc-body .journal-shell .journal-event{transition:background-color .18s ease}
+.uc-body .journal-shell .journal-event:hover{background-color:rgba(100,164,213,.075)}
+.uc-body .journal-shell :is(.journal-stat,.delivery-item){border-color:rgba(135,194,230,.18)}
+.uc-body .journal-shell .journal-filters label span{color:#bdcede}
+.uc-body .journal-shell .journal-feed-heading{color:#aac6dd}
+.uc-body .journal-shell .journal-quick .journal-chip:is(:hover,:focus-visible){background:rgba(107,186,225,.18)}
+/* Entry/reveal motion is reserved for content, not for input focus or text selection. */
+@keyframes console-rise{from{opacity:.01;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+.uc-body .page > :first-child{animation:console-rise .52s cubic-bezier(.2,.8,.2,1) both}
+.uc-body .console-reveal{animation:console-rise .42s cubic-bezier(.2,.8,.2,1) both}
+@media(max-width:1020px){.uc-body .audit-console-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+  .uc-body .audit-console-hero{border-radius:18px;padding:18px}
+  .uc-body .audit-console-metrics{gap:9px}
+  .uc-body .audit-console-metric{padding:15px 13px;border-radius:14px}
+  .uc-body .audit-console-metric strong{font-size:29px}
+  .uc-body .audit-table .table-scroll{max-height:none}
+  .uc-body .audit-console-hero .audit-overview{width:100%}
+  .uc-body .audit-console-hero .audit-overview .btn{flex:1;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+  .uc-body .page > :first-child,.uc-body .console-reveal{animation:none!important}
+  .uc-body .sidebar-nav .nav-link,.uc-body .sidebar-nav .nav-section-toggle,.uc-body .btn,.uc-body .journal-btn{transition:none!important}
+  .uc-body .sidebar-nav .nav-link:hover,.uc-body .sidebar-nav .nav-section-toggle:hover{transform:none!important}
+}

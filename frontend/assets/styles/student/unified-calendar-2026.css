@@ -1,0 +1,52 @@
+/* Student App · one integrated event/lesson calendar (source stylesheet). */
+.student-app-body .student-calendar-shell{max-width:1260px;margin:0 auto;padding-bottom:calc(86px + env(safe-area-inset-bottom,0px));animation:sc-entry .55s both}
+.student-app-body .sc-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin:10px 0 23px}
+.student-app-body .sc-heading h1{font-size:clamp(28px,4vw,46px);line-height:1.14;letter-spacing:-.035em;margin:8px 0 10px;color:#f3f8ff}
+.student-app-body .sc-heading p{max-width:580px;margin:0;color:#a7bad2;font-size:14px;line-height:1.55}
+.student-app-body .sc-counts{display:flex;flex-wrap:wrap;gap:10px}
+.student-app-body .sc-counts>span{display:inline-flex;gap:7px;align-items:center;padding:11px 14px;border:1px solid #355172;border-radius:999px;background:#10243e;color:#d6e9fa;font-size:13px;white-space:nowrap}
+.student-app-body .sc-counts b{font-variant-numeric:tabular-nums;color:#fff}
+.student-app-body .sc-dot{width:8px;height:8px;display:inline-block;border-radius:99px;flex:none;box-shadow:0 0 12px currentColor}
+.student-app-body .sc-dot-lesson{background:#77dfff;color:#77dfff}.student-app-body .sc-dot-event{background:#bc9aff;color:#bc9aff}
+.student-app-body .sc-workspace{display:grid;grid-template-columns:minmax(0,1.38fr) minmax(295px,.85fr);gap:18px;align-items:start}
+.student-app-body .sc-board,.student-app-body .sc-day-panel{border:1px solid #345071;background:linear-gradient(155deg,rgba(22,47,77,.97),rgba(8,22,44,.96));border-radius:24px;box-shadow:0 12px 38px #01091370,inset 0 1px #ffffff13;padding:22px;min-width:0;overflow:hidden}
+.student-app-body .sc-board{position:relative;isolation:isolate}
+.student-app-body .sc-board:before{content:"";position:absolute;width:190px;height:190px;right:-85px;top:-100px;border-radius:50%;background:radial-gradient(circle,#9d9aff45,transparent 70%);z-index:-1;pointer-events:none;animation:sc-glow 7s ease-in-out infinite alternate}
+.student-app-body .sc-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.student-app-body .sc-period{display:flex;align-items:center;gap:10px;min-width:0}
+.student-app-body .sc-period strong{font-size:18px;line-height:1.25;min-width:0;text-transform:capitalize;white-space:nowrap;color:#f3f8ff}
+.student-app-body .sc-period button,.student-app-body .sc-today-btn{min-width:38px;min-height:38px;border:1px solid #496887;border-radius:12px;background:#152b47;color:#e8f7ff;cursor:pointer;font-size:21px;transition:background .2s,transform .2s,border-color .2s}
+.student-app-body .sc-today-btn{font-size:13px;font-weight:700;padding:0 14px}
+.student-app-body .sc-period button:hover,.student-app-body .sc-today-btn:hover{background:#24496c;border-color:#77dfff;transform:translateY(-2px)}
+.student-app-body .sc-filter{display:flex;gap:5px;padding:5px;border:1px solid #304562;border-radius:13px;background:#09182e;margin-bottom:17px}
+.student-app-body .sc-filter button{border:0;border-radius:9px;background:transparent;color:#a9bdd4;padding:10px 8px;flex:1;min-width:0;font-weight:700;font-size:12px;cursor:pointer;transition:background .2s,color .2s,box-shadow .2s}
+.student-app-body .sc-filter button.is-active{background:#254f76;color:white;box-shadow:inset 0 1px #ffffff16,0 2px 8px #01091455}
+.student-app-body .sc-weekdays,.student-app-body .sc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.student-app-body .sc-weekdays{margin-bottom:8px}.student-app-body .sc-weekdays span{font-size:11px;color:#b4c9df;text-align:center;font-weight:700;padding:4px 0}
+.student-app-body .sc-day{appearance:none;border:1px solid #304864;border-radius:12px;background:#0b1c35;color:#e5f6ff;min-width:0;min-height:72px;padding:9px 5px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform .18s,background .18s,border-color .18s,box-shadow .18s;position:relative}
+.student-app-body .sc-day:hover{transform:translateY(-2px);border-color:#77dfff;background:#173759;z-index:1}
+.student-app-body .sc-day:focus-visible,.student-app-body .sc-filter button:focus-visible,.student-app-body .sc-toolbar button:focus-visible{outline:3px solid #77dfff;outline-offset:2px}
+.student-app-body .sc-day.sc-day-muted{opacity:.36}.student-app-body .sc-day.sc-day-today{border-color:#77dfff}
+.student-app-body .sc-day.sc-day-selected{background:linear-gradient(145deg,#1e526c,#314278);box-shadow:0 0 0 1px #9edfff70,0 0 18px #77dfff25;border-color:#a4e7ff}
+.student-app-body .sc-date{font-size:15px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.student-app-body .sc-dots{display:flex;align-items:center;gap:5px;height:8px}.student-app-body .sc-day small{font-size:10px;color:#b3cadf;line-height:1.15}
+.student-app-body .sc-legend{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 0;font-size:12px;color:#c6d9ef}
+.student-app-body .sc-legend span{display:inline-flex;align-items:center;gap:8px}
+.student-app-body .sc-day-panel h2{font-size:26px;margin:9px 0 6px;color:#f3f8ff}.student-app-body .sc-day-panel>p{margin:0 0 16px;color:#adbed5}
+.student-app-body .sc-day-items{display:flex;flex-direction:column;gap:11px}
+.student-app-body .sc-day-items .mission-calendar-item{margin:0;padding:16px;display:flex;flex-direction:column;gap:10px;border-radius:16px}
+.student-app-body .sc-day-items .mission-lesson-date{width:100%;display:flex;gap:9px;align-items:center;justify-content:start}
+.student-app-body .sc-day-items .mission-lesson-details{width:100%;min-width:0}
+.student-app-body .sc-day-items .mission-calendar-item>.btn{width:100%;min-height:38px}
+.student-app-body .sc-empty{border:1px dashed #41607b;border-radius:14px;color:#adc2d9;padding:24px;text-align:center;line-height:1.5}
+.student-app-body .sc-agenda{margin:25px 0 0;display:grid;gap:12px}
+.student-app-body .sc-agenda .section-title{margin:0 0 6px}
+.student-app-body .sc-agenda>.mission-lesson{border-radius:16px;background:linear-gradient(135deg,#122a46,#091a33);border:1px solid #314e6c;transition:transform .2s,border-color .2s}
+.student-app-body .sc-agenda>.mission-lesson:hover{transform:translateY(-2px);border-color:#77dfff65}
+.student-app-body .sc-visited{margin-top:25px;padding:14px 18px;border-radius:16px;border:1px solid #345071}
+.student-app-body .sc-visited>summary{font-weight:700;color:#cbe7ff;cursor:pointer;padding:6px 0}
+@keyframes sc-entry{from{opacity:.05;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sc-glow{from{transform:translate(-20px,-10px) scale(.85)}to{transform:translate(10px,15px) scale(1.12)}}
+@media(max-width:900px){.student-app-body .sc-workspace{grid-template-columns:1fr}.student-app-body .sc-heading{align-items:start;flex-direction:column}.student-app-body .sc-day-panel{order:2}.student-app-body .sc-board{order:1}}
+@media(max-width:490px){.student-app-body .student-calendar-shell{padding:2px 0 calc(100px + env(safe-area-inset-bottom,0px))}.student-app-body .sc-board,.student-app-body .sc-day-panel{padding:13px;border-radius:18px}.student-app-body .sc-workspace{gap:12px}.student-app-body .sc-heading{gap:14px;margin-bottom:14px}.student-app-body .sc-heading h1{font-size:30px}.student-app-body .sc-counts>span{font-size:11px;padding:8px 11px}.student-app-body .sc-period{gap:6px}.student-app-body .sc-period strong{font-size:15px}.student-app-body .sc-period button{min-width:34px;min-height:36px}.student-app-body .sc-weekdays,.student-app-body .sc-grid{gap:3px}.student-app-body .sc-day{min-height:56px;border-radius:9px;padding:6px 1px;gap:4px}.student-app-body .sc-date{font-size:13px}.student-app-body .sc-day small{font-size:9px}.student-app-body .sc-filter button{padding:9px 4px;font-size:11px}.student-app-body .sc-agenda>.mission-lesson{padding:14px}}
+@media(prefers-reduced-motion:reduce){.student-app-body .sc-board:before,.student-app-body .student-calendar-shell{animation:none}.student-app-body .sc-day,.student-app-body .sc-agenda>.mission-lesson{transition:none}}

@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#07111b">
+    <meta name="description" content="Внутренняя цифровая среда студенческого совета: направления, студенты, занятия, мероприятия и аналитика.">
+    <meta name="color-scheme" content="dark">
+    <title>{% block title %}Управление студенческим советом{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.bundle.css', v=asset_version('css/site.bundle.css')) }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="uc-body role-{{ session.user_role or 'guest' }}{% if request.endpoint in ['auth.login'] %} is-login-page is-auth-page{% elif request.endpoint in ['admin.dashboard', 'staff.workspace'] %} is-dashboard-page{% endif %}{% if theme_change_animation %} theme-changing{% endif %}" data-theme="{{ active_visual_theme|default('autumn') }}" data-season="{{ active_visual_theme|default('autumn') }}" data-page="{{ request.endpoint|default('portal', true)|replace('.', '-') }}" data-ui-version="15" data-authenticated="{{ '1' if session.get('user_id') else '0' }}" data-build="{{ asset_version('js/site.bundle.js') }}:{{ asset_version('css/site.bundle.css') }}" style="--office-accent:{{ active_visual_theme_config.palette[0]|default('#FFB26B') }};--office-secondary:{{ active_visual_theme_config.palette[1]|default('#EE637D') }};--office-depth:{{ active_visual_theme_config.palette[2]|default('#100D1A') }};--office-accent-rgb:{{ active_visual_theme_accent_rgb|default('255,178,107') }};--office-secondary-rgb:{{ active_visual_theme_secondary_rgb|default('238,99,125') }};--season-accent:{{ active_visual_theme_config.palette[0]|default('#FFB26B') }};--season-secondary:{{ active_visual_theme_config.palette[1]|default('#EE637D') }}">
+    {% if session.get('user_id') %}
+    <a class="skip-link" href="#main-content">Перейти к содержимому</a>
+    {% else %}
+    <a class="skip-link" href="#login-content">Перейти к форме входа</a>
+    {% endif %}
+
+    {% if request.endpoint in ['auth.login'] %}
+    <div class="auth-atmosphere" aria-hidden="true"></div>
+    {% endif %}
+
+    {% if request.endpoint not in ['auth.login'] %}
+    <div class="cosmos-field" aria-hidden="true">
+        <span class="cosmos-field__nebula"></span>
+        <span class="cosmos-field__stars cosmos-field__stars--distant"></span>
+        <span class="cosmos-field__stars cosmos-field__stars--near"></span>
+        <span class="cosmos-field__horizon"></span>
+        <span class="cosmos-field__comet"></span>
+    </div>
+    <div class="space-visual-scene" aria-hidden="true"><span class="space-aurora-wave space-aurora-wave--one"></span><span class="space-aurora-wave space-aurora-wave--two"></span><span class="space-aurora-core"></span><span class="space-nebula"></span><span class="space-visual-dust"></span></div>
+    <div class="festive-atmosphere" aria-hidden="true"><span class="festive-halo"></span><span class="festive-ribbon festive-ribbon--a"></span><span class="festive-ribbon festive-ribbon--b"></span></div>
+    {% if session.get('user_id') and not (request.endpoint or '').startswith('orders.') %}
+    <div class="portal-theme-atmosphere" aria-hidden="true">
+        <span class="holiday-smoke holiday-smoke--white"></span>
+        <span class="holiday-smoke holiday-smoke--blue"></span>
+        <span class="holiday-smoke holiday-smoke--red"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+        <span class="holiday-particle"></span><span class="holiday-particle"></span>
+    </div>
+    {% endif %}
+    {% if session.user_role == 'super_admin' and (request.endpoint or '').startswith('admin.') %}
+    <div class="admin-entry-sky" data-admin-entry-sky aria-hidden="true">
+        <span class="admin-entry-sky__flare"></span>
+        <span class="admin-entry-sky__star"></span><span class="admin-entry-sky__star"></span>
+        <span class="admin-entry-sky__star"></span><span class="admin-entry-sky__star"></span>
+        <span class="admin-entry-sky__star"></span><span class="admin-entry-sky__star"></span>
+        <span class="admin-entry-sky__streak"></span>
+    </div>
+    {% endif %}
+    <canvas id="starfield-canvas" class="starfield-canvas" aria-hidden="true"></canvas>
+    <div class="ambient ambient-a" aria-hidden="true"></div>
+    <div class="ambient ambient-b" aria-hidden="true"></div>
+    <div class="ambient ambient-c" aria-hidden="true"></div>
+    {% endif %}
+
+    {% if session.get('user_id') %}
+    <div class="app-shell">
+        <aside class="sidebar" id="main-sidebar" data-sidebar aria-label="Боковая панель">
+            <a href="{{ url_for('admin.dashboard') }}" class="brand" aria-label="На главную страницу панели">
+                <span class="brand-mark" aria-hidden="true"><b></b></span>
+                <span class="brand-wordmark">
+                    <span class="brand-title">Управление студенческим советом</span>
+                </span>
+            </a>
+
+            {% set ep = request.endpoint or '' %}
+            {% set analytics_active = ep.startswith('stats.') or ep == 'admin.most_active_students' %}
+            {% set stats_endpoints = [
+                'stats.overview_statistics', 'stats.directions_statistics',
+                'stats.attendance_statistics', 'stats.events_statistics',
+                'stats.declines_statistics'
+            ] %}
+            {% set bot_endpoints = [
+                'admin.bot_activity', 'admin.bot_activity_registrations',
+                'admin.bot_activity_applications', 'admin.bot_activity_events',
+                'admin.bot_activity_history'
+            ] %}
+
+            
+            {% if session.user_role == 'staff' %}
+            <nav class="sidebar-nav" data-sidebar-nav aria-label="Главная навигация">
+                {% set work_active = ep in ['admin.dashboard', 'staff.workspace'] or ep.startswith('admin.report_archive') %}
+                {% set council_active = ep.startswith('directions.') or ep.startswith('quotas.') or ep.startswith('lessons.') or ep == 'admin.calendar' or ep == 'admin.notifications' or ep.startswith('orders.') %}
+                {% set people_active = ep in ['staff.students', 'admin.blocked_students', 'admin.leadership_public'] %}
+                {% set analytics_active = ep.startswith('stats.') or ep == 'admin.most_active_students' %}
+
+                <section class="nav-group nav-section {% if work_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle
+                            aria-expanded="{{ 'true' if work_active else 'false' }}" aria-controls="nav-section-work">
+                        <span class="nav-section-icon" aria-hidden="true">⌂</span><span>Рабочий стол</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not work_active %}is-collapsed{% endif %}" id="nav-section-work" data-nav-section-content>
+                        <a class="nav-link {% if ep == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}" {% if ep == 'admin.dashboard' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">⌂</span><span>Панель управления</span>
+                        </a>
+                        {% if staff_nav_access.report_archive %}
+                        <a class="nav-link {% if ep.startswith('admin.report_archive') %}active{% endif %}" href="{{ url_for('admin.report_archive') }}" {% if ep.startswith('admin.report_archive') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▤</span><span>Архив отчётов</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+
+                {% if staff_nav_access.directions or staff_nav_access.orders or staff_nav_access.notifications or staff_nav_access.events or staff_nav_access.lessons %}
+                <section class="nav-group nav-section {% if council_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle
+                            aria-expanded="{{ 'true' if council_active else 'false' }}" aria-controls="nav-section-council">
+                        <span class="nav-section-icon" aria-hidden="true">◈</span><span>Работа совета</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not council_active %}is-collapsed{% endif %}" id="nav-section-council" data-nav-section-content>
+                        {% if staff_nav_access.directions %}
+                        <a class="nav-link {% if ep.startswith('directions.') %}active{% endif %}" href="{{ url_for('directions.directions_list') }}" {% if ep.startswith('directions.') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">◈</span><span>Направления</span>
+                        </a>
+                        {% endif %}
+                        {% if staff_nav_access.orders %}
+                        <a class="nav-link {% if ep.startswith('orders.') %}active{% endif %}" href="{{ url_for('orders.archive') }}">
+                            <span class="nav-symbol" aria-hidden="true">▤</span><span>Приказы и документы</span>
+                        </a>
+                        {% endif %}
+                        {% if staff_nav_access.notifications %}
+                        <a class="nav-link {% if ep == 'admin.notifications' %}active{% endif %}" href="{{ url_for('admin.notifications') }}" {% if ep == 'admin.notifications' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">✉</span><span>Уведомления</span>
+                        </a>
+                        {% endif %}
+                        {% if staff_nav_access.events or staff_nav_access.lessons %}
+                        <a class="nav-link {% if ep == 'admin.calendar' or ep.startswith('quotas.') or ep.startswith('lessons.') %}active{% endif %}" href="{{ url_for('admin.calendar') }}" {% if ep == 'admin.calendar' or ep.startswith('quotas.') or ep.startswith('lessons.') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▦</span><span>Календарь</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if staff_nav_access.students or staff_nav_access.blocked_students or staff_nav_access.leadership_public %}
+                <section class="nav-group nav-section {% if people_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle
+                            aria-expanded="{{ 'true' if people_active else 'false' }}" aria-controls="nav-section-people">
+                        <span class="nav-section-icon" aria-hidden="true">◎</span><span>Студенты и участники</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not people_active %}is-collapsed{% endif %}" id="nav-section-people" data-nav-section-content>
+                        {% if staff_nav_access.students %}
+                        <a class="nav-link {% if ep == 'staff.students' %}active{% endif %}" href="{{ url_for('staff.students') }}" {% if ep == 'staff.students' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">◎</span><span>Студенты</span>
+                        </a>
+                        {% endif %}
+                        {% if staff_nav_access.blocked_students %}
+                        <a class="nav-link {% if ep == 'admin.blocked_students' %}active{% endif %}" href="{{ url_for('admin.blocked_students') }}" {% if ep == 'admin.blocked_students' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">⊘</span><span>Заблокированные</span>
+                        </a>
+                        {% endif %}
+                        {% if staff_nav_access.leadership_public %}
+                        <a class="nav-link {% if ep == 'admin.leadership_public' %}active{% endif %}" href="{{ url_for('admin.leadership_public') }}" {% if ep == 'admin.leadership_public' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">♙</span><span>Руководство студсовета</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if staff_nav_access.analytics %}
+                <section class="nav-group nav-section {% if analytics_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle
+                            aria-expanded="{{ 'true' if analytics_active else 'false' }}" aria-controls="nav-section-analytics">
+                        <span class="nav-section-icon" aria-hidden="true">▥</span><span>Аналитика</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not analytics_active %}is-collapsed{% endif %}" id="nav-section-analytics" data-nav-section-content>
+                        <a class="nav-link {% if ep.startswith('stats.') %}active{% endif %}" href="{{ url_for('stats.overview_statistics') }}" {% if ep.startswith('stats.') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▤</span><span>Общая таблица</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.most_active_students' %}active{% endif %}" href="{{ url_for('admin.most_active_students') }}" {% if ep == 'admin.most_active_students' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">★</span><span>Активные студенты</span>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
+                <div class="sidebar-nav-end" aria-hidden="true"></div>
+            </nav>
+            {% else %}
+            <nav class="sidebar-nav" data-sidebar-nav aria-label="Главная навигация">
+                {% set work_active = ep == 'admin.dashboard' or ep.startswith('admin.report_archive') %}
+                {% set council_active = ep.startswith('directions.') or ep.startswith('quotas.') or ep.startswith('lessons.') or ep == 'admin.calendar' or ep == 'admin.notifications' or ep.startswith('orders.') or ep.startswith('activity_chats.') %}
+                {% set people_active = ep in ['admin.students_management', 'staff.students', 'admin.blocked_students', 'admin.leadership_public'] %}
+                {% set analytics_active = session.user_role in ['super_admin', 'observer'] and (ep.startswith('stats.') or ep == 'admin.most_active_students') %}
+                {% set system_active = session.user_role == 'super_admin' and (ep in ['staff.accounts', 'admin.manage_leadership', 'admin.student_app_design', 'admin.system_maintenance', 'admin.system_runtime', 'admin.system_runtime_status', 'admin.event_reports', 'admin.event_report_pdf', 'admin.event_report_export', 'admin.event_report_html', 'admin.direction_report_pdf', 'admin.direction_report_html', 'admin.analytics_report_pdf', 'admin.bot_actions_report_pdf', 'admin.user_activity_pdf'] ) %}
+
+                <section class="nav-group nav-section {% if work_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle aria-expanded="{{ 'true' if work_active else 'false' }}" aria-controls="nav-section-work">
+                        <span class="nav-section-icon" aria-hidden="true">⌂</span><span>Рабочий стол</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not work_active %}is-collapsed{% endif %}" id="nav-section-work" data-nav-section-content>
+                        <a class="nav-link {% if ep == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}" {% if ep == 'admin.dashboard' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">⌂</span><span>Панель управления</span>
+                        </a>
+                        <a class="nav-link {% if ep.startswith('admin.report_archive') %}active{% endif %}" href="{{ url_for('admin.report_archive') }}" {% if ep.startswith('admin.report_archive') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▤</span><span>Архив отчётов</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="nav-group nav-section {% if council_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle aria-expanded="{{ 'true' if council_active else 'false' }}" aria-controls="nav-section-council">
+                        <span class="nav-section-icon" aria-hidden="true">◈</span><span>Работа совета</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not council_active %}is-collapsed{% endif %}" id="nav-section-council" data-nav-section-content>
+                        <a class="nav-link {% if ep.startswith('directions.') %}active{% endif %}" href="{{ url_for('directions.directions_list') }}" {% if ep.startswith('directions.') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">◈</span><span>{% if session.user_role == 'leader' %}Мои направления и участники{% else %}Направления{% endif %}</span>
+                        </a>
+                        <a class="nav-link {% if ep.startswith('orders.') %}active{% endif %}" href="{{ url_for('orders.archive') }}"><span class="nav-symbol" aria-hidden="true">▤</span><span>Приказы и документы</span></a>
+                        <a class="nav-link {% if ep.startswith('activity_chats.') %}active{% endif %}" href="{{ url_for('activity_chats.index') }}"><span class="nav-symbol" aria-hidden="true">💬</span><span>Чаты направления</span></a>
+                        <a class="nav-link {% if ep == 'admin.notifications' %}active{% endif %}" href="{{ url_for('admin.notifications') }}" {% if ep == 'admin.notifications' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">✉</span><span>Уведомления</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.calendar' or ep.startswith('quotas.') or ep.startswith('lessons.') %}active{% endif %}" href="{{ url_for('admin.calendar') }}" {% if ep == 'admin.calendar' or ep.startswith('quotas.') or ep.startswith('lessons.') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▦</span><span>Календарь</span>
+                        </a>
+                    </div>
+                </section>
+
+                {% if session.user_role != 'leader' %}
+                <section class="nav-group nav-section {% if people_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle aria-expanded="{{ 'true' if people_active else 'false' }}" aria-controls="nav-section-people">
+                        <span class="nav-section-icon" aria-hidden="true">◎</span><span>Студенты и участники</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not people_active %}is-collapsed{% endif %}" id="nav-section-people" data-nav-section-content>
+                        {% if session.user_role == 'super_admin' %}
+                        <a class="nav-link {% if ep == 'staff.students' %}active{% endif %}" href="{{ url_for('staff.students') }}" {% if ep == 'staff.students' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">◎</span><span>Студенты</span>
+                        </a>
+                        {% else %}
+                        <a class="nav-link {% if ep == 'admin.students_management' %}active{% endif %}" href="{{ url_for('admin.students_management') }}" {% if ep == 'admin.students_management' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">◎</span><span>Студенты</span>
+                        </a>
+                        {% endif %}
+                        <a class="nav-link {% if ep == 'admin.blocked_students' %}active{% endif %}" href="{{ url_for('admin.blocked_students') }}" {% if ep == 'admin.blocked_students' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">⊘</span><span>Заблокированные</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.leadership_public' %}active{% endif %}" href="{{ url_for('admin.leadership_public') }}" {% if ep == 'admin.leadership_public' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">♙</span><span>Руководство студсовета</span>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if session.user_role in ['super_admin', 'observer'] %}
+                <section class="nav-group nav-section {% if analytics_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle aria-expanded="{{ 'true' if analytics_active else 'false' }}" aria-controls="nav-section-analytics">
+                        <span class="nav-section-icon" aria-hidden="true">▥</span><span>Аналитика</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not analytics_active %}is-collapsed{% endif %}" id="nav-section-analytics" data-nav-section-content>
+                        <a class="nav-link {% if ep.startswith('stats.') %}active{% endif %}" href="{{ url_for('stats.overview_statistics') }}" {% if ep.startswith('stats.') %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▤</span><span>Общая таблица</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.most_active_students' %}active{% endif %}" href="{{ url_for('admin.most_active_students') }}" {% if ep == 'admin.most_active_students' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">★</span><span>Активные студенты</span>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if session.user_role == 'super_admin' %}
+                <section class="nav-group nav-section nav-admin-group {% if system_active %}is-active-section{% endif %}">
+                    <button class="nav-title nav-section-toggle" type="button" data-nav-section-toggle aria-expanded="{{ 'true' if system_active else 'false' }}" aria-controls="nav-section-system">
+                        <span class="nav-section-icon" aria-hidden="true">⚙</span><span>Администрирование</span><span class="nav-caret" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-section-content {% if not system_active %}is-collapsed{% endif %}" id="nav-section-system" data-nav-section-content>
+                        <a class="nav-link {% if ep == 'staff.accounts' %}active{% endif %}" href="{{ url_for('staff.accounts') }}" {% if ep == 'staff.accounts' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">♧</span><span>Сотрудники и доступы</span>
+                        </a>
+                        <a class="nav-link {% if ep in ['admin.event_reports', 'admin.event_report_pdf', 'admin.event_report_export', 'admin.event_report_html', 'admin.direction_report_pdf', 'admin.direction_report_html', 'admin.analytics_report_pdf', 'admin.bot_actions_report_pdf', 'admin.user_activity_pdf'] %}active{% endif %}" href="{{ url_for('admin.event_reports') }}" {% if ep in ['admin.event_reports', 'admin.event_report_pdf', 'admin.event_report_export', 'admin.event_report_html', 'admin.direction_report_pdf', 'admin.direction_report_html', 'admin.analytics_report_pdf', 'admin.bot_actions_report_pdf', 'admin.user_activity_pdf'] %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">▤</span><span>Конструктор отчётов</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.manage_leadership' %}active{% endif %}" href="{{ url_for('admin.manage_leadership') }}" {% if ep == 'admin.manage_leadership' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">♙</span><span>Руководство студенческого совета</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.student_app_design' %}active{% endif %}" href="{{ url_for('admin.student_app_design') }}" {% if ep == 'admin.student_app_design' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">✿</span><span>Дизайн и оформление</span>
+                        </a>
+                        <a class="nav-link {% if ep in ['admin.system_runtime', 'admin.system_runtime_status'] %}active{% endif %}" href="{{ url_for('admin.system_runtime') }}" {% if ep in ['admin.system_runtime', 'admin.system_runtime_status'] %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">◷</span><span>Здоровье системы и восстановление</span>
+                        </a>
+                        <a class="nav-link {% if ep == 'admin.system_maintenance' %}active{% endif %}" href="{{ url_for('admin.system_maintenance') }}" {% if ep == 'admin.system_maintenance' %}aria-current="page"{% endif %}>
+                            <span class="nav-symbol" aria-hidden="true">⌫</span><span>Очистка баз данных</span>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
+                <div class="sidebar-nav-end" aria-hidden="true"></div>
+            </nav>{% endif %}
+        </aside>
+
+        <div class="sidebar-backdrop" data-sidebar-backdrop aria-hidden="true"></div>
+
+        <section class="main">
+            <header class="topbar">
+                <div class="topbar-inner">
+                    <div class="topbar-heading">
+                        <button class="icon-btn mobile-nav-btn" type="button" data-mobile-nav aria-expanded="false" aria-controls="main-sidebar" aria-label="Открыть меню">☰</button>
+                        <div class="topbar-workspace"><div class="top-title">Центр управления <span class="top-title-accent">студсоветом</span></div></div>
+                    </div>
+                    <div class="top-actions">
+                        {% if session.user_role != 'staff' or staff_nav_access.notifications %}<a class="alert-top-link" href="{{ url_for('admin.notifications') }}" title="Центр уведомлений" aria-label="Уведомления" {% if ep == 'admin.notifications' %}aria-current="page"{% endif %}>
+                            <span class="alert-top-link-icon" aria-hidden="true">🔔</span><span class="alert-top-count" data-notification-count hidden></span>
+                        </a>{% endif %}
+                        <div class="top-account" title="Текущая учётная запись">
+                            <span class="top-account-avatar" aria-hidden="true">{{ (session.get('user_login', 'П')[:1] or 'П')|upper }}</span>
+                            <span class="top-account-copy">
+                                <strong>{{ session.get('user_login', 'Пользователь') }}</strong>
+                                <small>{% if session.user_role == 'super_admin' %}Главный админ{% elif session.user_role == 'observer' %}Наблюдатель{% elif session.user_role == 'leader' %}Руководитель{% elif session.user_role == 'staff' %}{{ staff_role_caption|default('Сотрудник · направление не назначено') }}{% else %}Аккаунт{% endif %}</small>
+                            </span>
+                        </div>
+                        <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="logout-btn" type="submit"><span aria-hidden="true">↪</span><span>Выйти</span></button>
+                        </form>
+                    </div>
+                </div>
+            </header>
+            {% if session.user_role == 'observer' %}
+            <div class="observer-readonly-banner" role="status" aria-label="Режим просмотра">
+                <span class="observer-readonly-banner__icon" aria-hidden="true">◉</span>
+                <span><strong>Режим просмотра</strong><small>Все рабочие разделы доступны для изучения. Изменение, создание и удаление данных отключены.</small></span>
+            </div>
+            {% endif %}
+
+            <main class="page" id="main-content" tabindex="-1">
+                {% block content %}{% endblock %}
+            </main>
+        </section>
+    </div>
+    {% else %}
+        {% block login_content %}{% endblock %}
+    {% endif %}
+
+    {% if request.endpoint not in ['auth.login'] %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-stack" role="status" aria-live="polite">
+            {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat|default('info') }}" data-dismiss>
+                <strong class="flash-heading">{% if cat == 'success' %}Готово{% elif cat == 'danger' %}Ошибка{% elif cat == 'warning' %}Внимание{% else %}Система{% endif %}</strong>
+                {{ msg }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    {% endif %}
+
+    <script>
+      // Remove the legacy messenger PWA worker from browsers that installed it earlier.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.filter(registration =>
+            [registration.active, registration.waiting, registration.installing].some(worker =>
+              worker && worker.scriptURL.includes('/messenger/service-worker.js')
+            )
+          ).forEach(registration => registration.unregister());
+        }).catch(() => {});
+      }
+    </script>
+    <script src="{{ url_for('static', filename='js/site.bundle.js', v=asset_version('js/site.bundle.js')) }}" defer></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

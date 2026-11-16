@@ -1,0 +1,51 @@
+{% extends "shared/base.html" %}
+{% block title %}Объявление о соревнованиях · Управление студенческим советом{% endblock %}
+{% block content %}
+<header class="section-title">
+  <div>
+    <div class="eyebrow">КОММУНИКАЦИИ / TELEGRAM · VK · MAX</div>
+    <h1>Объявление о соревнованиях</h1>
+    <p>Подготовьте единый текст объявления и при необходимости свяжите его с мероприятием.</p>
+  </div>
+  <a class="btn btn-soft" href="{{ url_for('quotas.quotas_list') }}">← К мероприятиям</a>
+</header>
+<div class="form-grid" style="align-items:start">
+  <form method="POST" action="{{ url_for('quotas.competition_announcement') }}" class="card card-pad">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field field-full">
+      <label class="label" for="announcement-title">Заголовок</label>
+      <input class="input" id="announcement-title" name="title" maxlength="255" required value="{{ announcement.title if announcement else settings_competition_title|default('🏆 Наша команда участвует в соревнованиях') }}">
+    </div>
+    <div class="field field-full">
+      <label class="label" for="announcement-body">Текст объявления</label>
+      <textarea class="textarea" id="announcement-body" name="body" rows="7" maxlength="12000" required>{{ announcement.body if announcement else settings_competition_body|default('Ищем желающих присоединиться к составу или группе поддержки. Количество мест ограничено — регистрация идёт по квоте.') }}</textarea>
+    </div>
+    <div class="field field-full">
+      <label class="label" for="announcement-quota">Связанное мероприятие (необязательно)</label>
+      <select class="select" id="announcement-quota" name="quota_id">
+        <option value="">Без привязки к мероприятию</option>
+        {% for quota in quotas %}<option value="{{ quota.id }}" {% if announcement and announcement.quota_id == quota.id %}selected{% endif %}>{{ quota.event_title }}{% if quota.is_closed %} · закрыто{% endif %}</option>{% endfor %}
+      </select>
+    </div>
+    <label class="check-card" for="announcement-active">
+      <input id="announcement-active" type="checkbox" name="is_active" {% if not announcement or announcement.is_active %}checked{% endif %}>
+      <span><strong>Объявление активно</strong><small>Объявление отправляется во все активные чаты Telegram, VK и MAX.</small></span>
+    </label>
+    <div class="form-foot">
+      <button class="btn btn-primary" type="submit">Сохранить объявление</button>
+    </div>
+  </form>
+  <aside class="card card-pad">
+    <div class="eyebrow">ПРЕДПРОСМОТР</div>
+    <h2 id="announcement-preview-title">{{ announcement.title if announcement else settings_competition_title|default('🏆 Наша команда участвует в соревнованиях') }}</h2>
+    <p id="announcement-preview-body">{{ announcement.body if announcement else settings_competition_body|default('Текст объявления появится здесь.') }}</p>
+    <div class="callout"><strong>Перед публикацией</strong><p>Проверьте формулировки и привязанное мероприятие. Публикация запускает единую рассылку во все привязанные чаты трёх мессенджеров. Время доставки зависит от API ботов.</p></div>
+    {% if announcement and announcement.is_active %}
+    <form method="POST" action="{{ url_for('quotas.publish_competition_announcement') }}" class="form-foot">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-soft" type="submit">Опубликовать во все три мессенджера →</button>
+    </form>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

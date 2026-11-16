@@ -1,0 +1,8 @@
+<nav class="admin-monitor-tabs admin-monitor-tabs--soc" aria-label="Мониторинг безопасности">
+  <a href="{{ url_for('admin.user_activity_log') }}" class="admin-monitor-tab {% if request.endpoint in ['admin.user_activity_log', 'admin.user_activity_export', 'admin.admin_audit_log', 'admin.admin_audit_check', 'admin.admin_audit_export'] %}is-active{% endif %}" {% if request.endpoint in ['admin.user_activity_log', 'admin.user_activity_export', 'admin.admin_audit_log', 'admin.admin_audit_check', 'admin.admin_audit_export'] %}aria-current="page"{% endif %}>
+    <span aria-hidden="true">⌁</span><span><b>Сотрудники</b><small>Действия сотрудников на сайте</small></span>
+  </a>
+  <a href="{{ url_for('admin.messenger_monitoring') }}" class="admin-monitor-tab {% if request.endpoint in ['admin.messenger_monitoring', 'admin.messenger_monitoring_snapshot', 'admin.messenger_monitoring_student_events_export', 'admin.messenger_monitoring_bot_events_export'] %}is-active{% endif %}" {% if request.endpoint in ['admin.messenger_monitoring', 'admin.messenger_monitoring_snapshot', 'admin.messenger_monitoring_student_events_export', 'admin.messenger_monitoring_bot_events_export'] %}aria-current="page"{% endif %}>
+    <span aria-hidden="true">◉</span><span><b>Сводка по ботам</b><small>Telegram · VK · MAX · действия участников</small></span>
+  </a>
+</nav>

@@ -1,0 +1,236 @@
+/* GALAXY DEPTH 2026: visible premium depth without WebGL, dependencies, or obstruction.
+   This source is included LAST in both generated stylesheets. */
+:root{--gd-ice:#9deaff;--gd-violet:#aa9bff;--gd-glow:rgba(77,169,255,.24);--gd-radius:24px}
+
+/* Staff: a multi-plane background, deliberately below all interactive content. */
+body.uc-body[data-ui-version="11"]{
+  background:radial-gradient(ellipse 65% 60% at 90% -15%,rgba(76,66,171,.28),transparent 78%),
+             radial-gradient(ellipse 55% 65% at -15% 72%,rgba(15,145,172,.13),transparent 80%),
+             linear-gradient(145deg,#071327 0%,#050b19 58%,#080d21 100%)!important;
+}
+body.uc-body[data-ui-version="11"] .topbar{
+  background:linear-gradient(110deg,rgba(9,29,52,.91),rgba(9,17,42,.82))!important;
+  border-bottom:1px solid rgba(129,204,255,.26)!important;
+  box-shadow:inset 0 1px rgba(236,252,255,.06),0 16px 45px rgba(1,5,24,.25);
+}
+body.uc-body[data-ui-version="11"] .top-title-accent{
+  color:#b7ecff;
+  text-shadow:0 0 24px rgba(107,214,255,.22);
+}
+body.uc-body[data-ui-version="11"] .sidebar{
+  background:linear-gradient(165deg,rgba(13,32,62,.98),rgba(7,15,34,.98))!important;
+  border-right-color:rgba(122,210,255,.24)!important;
+  box-shadow:9px 0 44px rgba(0,5,24,.26),inset -1px 0 rgba(144,219,255,.05);
+}
+body.uc-body[data-ui-version="11"] .sidebar .nav-link.active,
+body.uc-body[data-ui-version="11"] .sidebar .nav-sub-link.active{
+  background:linear-gradient(95deg,rgba(38,148,207,.24),rgba(92,75,190,.14))!important;
+  border-color:rgba(124,229,255,.38)!important;
+  box-shadow:inset 3px 0 #82eaff,0 5px 22px rgba(17,110,185,.10);
+}
+/* Main hero: a dimensional glass frame and moving aurora. Content stays in front. */
+body.uc-body[data-ui-version="11"] .mission-hero-20{
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(145,213,255,.45);
+  border-radius:30px;
+  background:radial-gradient(ellipse at 77% 19%,rgba(104,98,245,.34),transparent 54%),
+             radial-gradient(ellipse at 5% 95%,rgba(36,169,220,.18),transparent 62%),
+             linear-gradient(114deg,rgba(21,52,94,.99),rgba(8,22,51,.99) 65%,rgba(14,18,52,.99))!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.19),inset 0 -36px 65px rgba(2,7,30,.27),
+             0 30px 80px rgba(0,5,25,.48),0 0 45px rgba(55,135,247,.1);
+  transform-style:preserve-3d;
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20::before{
+  content:"";position:absolute;inset:-40%;z-index:0;pointer-events:none;
+  background:conic-gradient(from 35deg at 74% 48%,transparent 0 26%,rgba(77,192,248,.11) 39%,transparent 49%,rgba(145,106,249,.12) 62%,transparent 78%);
+  animation:galaxy-depth-aurora 25s linear infinite;
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20::after{
+  content:"";position:absolute;inset:1px;z-index:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(125deg,rgba(236,251,255,.075),transparent 25% 77%,rgba(152,122,255,.06));
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-hero-copy{position:relative;z-index:3;transform:translateZ(24px)}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-hero-visual{
+  z-index:2;filter:drop-shadow(0 20px 44px rgba(41,129,255,.27));
+  transform:scale(.95) rotateX(5deg) rotateY(-12deg);transform-style:preserve-3d;
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-planet{
+  box-shadow:inset -45px -38px 78px rgba(0,2,28,.86),inset 20px 13px 35px rgba(229,253,255,.31),
+    0 0 32px rgba(105,195,255,.40),0 0 94px rgba(73,122,255,.24);
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-planet-ring{
+  border-color:rgba(160,231,255,.52);
+  box-shadow:0 0 36px rgba(119,208,255,.34),inset 0 0 32px rgba(184,246,255,.22);
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20 h1{
+  font-weight:900;letter-spacing:-.052em;text-wrap:balance;
+  text-shadow:0 6px 22px rgba(2,13,33,.3);
+}
+body.uc-body[data-ui-version="11"] .mission-hero-20 .btn-primary{
+  box-shadow:0 11px 30px rgba(11,135,222,.30),inset 0 1px rgba(255,255,255,.38)!important;
+}
+
+/* Dashboard cards: 3D angles follow pointer, with reliable static depth on touch. */
+body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction){
+  position:relative;transform-style:preserve-3d;backface-visibility:hidden;
+  border:1px solid rgba(144,214,255,.32)!important;
+  box-shadow:inset 0 1px rgba(234,250,255,.12),inset 0 -18px 36px rgba(2,9,28,.17),
+             0 18px 38px rgba(0,7,27,.35),0 0 27px rgba(54,154,242,.045)!important;
+  transition:transform .30s cubic-bezier(.2,.75,.25,1),border-color .25s,box-shadow .28s;
+  background-image:radial-gradient(ellipse at 0 0,rgba(135,228,255,.13),transparent 58%),
+                   linear-gradient(145deg,rgba(29,57,93,.97),rgba(10,24,51,.96))!important;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .galaxy-tool-events{
+  background-image:radial-gradient(ellipse at 0 0,rgba(175,139,255,.18),transparent 55%),linear-gradient(135deg,rgba(37,33,91,.97),rgba(13,20,53,.97))!important;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard .galaxy-tool-leaders{
+  background-image:radial-gradient(ellipse at 0 0,rgba(101,242,210,.17),transparent 55%),linear-gradient(135deg,rgba(15,63,76,.96),rgba(9,26,49,.97))!important;
+}
+body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction).depth-card-2026:hover{
+  border-color:rgba(148,238,255,.7)!important;
+  box-shadow:inset 0 1px rgba(248,254,255,.18),0 31px 66px rgba(0,7,30,.55),
+             0 0 44px rgba(82,181,255,.14)!important;
+}
+@media(hover:hover) and (pointer:fine){
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction).depth-card-2026{
+    transform:perspective(1100px) translate3d(0,0,0) rotateX(var(--depth-rx,0deg)) rotateY(var(--depth-ry,0deg));
+  }
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction).depth-card-2026:hover{
+    transform:perspective(1100px) translate3d(0,-7px,14px) rotateX(var(--depth-rx,0deg)) rotateY(var(--depth-ry,0deg));
+  }
+  /* A subtle specular reflection tracks the pointer without tracking users. */
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard .depth-card-2026.depth-interacting{
+    background-image:radial-gradient(circle at var(--depth-px,50%) var(--depth-py,50%),rgba(163,245,255,.19),transparent 45%),
+                     linear-gradient(145deg,rgba(30,57,99,.97),rgba(10,24,51,.97))!important;
+  }
+}
+body.uc-body[data-ui-version="11"] .mission-kpi-icon,
+body.uc-body[data-ui-version="11"] .galaxy-tool-symbol,
+body.uc-body[data-ui-version="11"] .galaxy-direction-icon{
+  border:1px solid rgba(171,234,255,.23);
+  box-shadow:inset 0 1px rgba(255,255,255,.16),0 10px 26px rgba(3,15,42,.27);
+  transform:translateZ(17px);
+}
+body.uc-body[data-ui-version="11"] .mission-kpi strong{
+  color:#f6fcff;text-shadow:0 0 20px rgba(121,210,255,.18);
+}
+body.uc-body[data-ui-version="11"] :is(.mission-panel,.mission-bot-card,.galaxy-ops-hub){
+  border-color:rgba(143,203,246,.3);
+  box-shadow:inset 0 1px rgba(255,255,255,.09),0 20px 56px rgba(0,7,29,.31),
+             0 0 28px rgba(45,139,238,.035);
+}
+body.uc-body[data-ui-version="11"] .mission-panel-top h2{color:#f4f9ff;letter-spacing:-.042em}
+body.uc-body[data-ui-version="11"] .galaxy-tool h3,
+body.uc-body[data-ui-version="11"] .galaxy-direction h3{transform:translateZ(12px);color:#f6fcff}
+body.uc-body[data-ui-version="11"] .mission-bars .mission-bar,
+body.uc-body[data-ui-version="11"] .mission-rank-track>span{
+  box-shadow:0 0 17px rgba(99,209,255,.28),inset 0 1px rgba(255,255,255,.18);
+}
+/* Working forms and tables deliberately do not tilt. */
+body.uc-body[data-ui-version="11"] :is(input,textarea,select){color-scheme:dark}
+body.uc-body[data-ui-version="11"] .login-art{
+  box-shadow:inset 0 1px rgba(255,255,255,.16),inset -14px -20px 60px rgba(4,7,27,.2);
+}
+body.uc-body[data-ui-version="11"] .login-card{
+  border-color:rgba(131,207,255,.27);box-shadow:0 26px 70px rgba(0,4,22,.43),inset 0 1px rgba(255,255,255,.08);
+}
+body.uc-body[data-ui-version="11"] .login-art-planet{filter:drop-shadow(0 19px 30px rgba(81,151,254,.35))}
+
+/* Student app: richly layered hero with a brighter dimensional core. */
+body.student-app-body{
+  background:radial-gradient(ellipse 55% 50% at 90% -10%,rgba(92,91,213,.25),transparent 80%),
+             radial-gradient(ellipse 60% 60% at -15% 78%,rgba(22,144,180,.16),transparent 80%),
+             linear-gradient(150deg,#071528,#081126 65%,#0a1029)!important;
+}
+body.student-app-body .pro-student-toolbar{min-height:45px;letter-spacing:.06em}
+body.student-app-body .pro-student-toolbar__label{
+  display:inline-flex;gap:9px;padding:8px 13px;border:1px solid rgba(119,212,255,.2);
+  border-radius:999px;background:linear-gradient(110deg,rgba(28,54,89,.71),rgba(11,29,59,.47));
+  box-shadow:inset 0 1px rgba(255,255,255,.09),0 9px 22px rgba(1,8,25,.17);
+  color:#c9eaff;
+}
+body.student-app-body .student-orbit-scene{filter:drop-shadow(0 0 62px rgba(80,137,255,.22))}
+body.student-app-body .command-hero{
+  overflow:hidden;
+  border:1px solid rgba(148,229,255,.5)!important;
+  border-radius:clamp(22px,4vw,32px)!important;
+  background:radial-gradient(circle at 82% 19%,rgba(133,103,250,.31),transparent 48%),
+             radial-gradient(circle at 2% 90%,rgba(52,199,223,.18),transparent 63%),
+             linear-gradient(124deg,#133458 0%,#0e2247 60%,#17234e 100%)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.19),inset 0 -28px 54px rgba(3,10,32,.26),
+             0 25px 68px rgba(0,5,24,.47),0 0 38px rgba(91,167,255,.12)!important;
+  transform-style:preserve-3d;
+}
+body.student-app-body .command-hero::after{
+  content:"";position:absolute;inset:-65%;z-index:0;pointer-events:none;
+  background:conic-gradient(from 40deg,transparent 0 29%,rgba(78,216,250,.12) 42%,transparent 50%,rgba(158,113,250,.13) 65%,transparent 80%);
+  animation:galaxy-depth-aurora 28s linear infinite;
+}
+body.student-app-body .command-hero-copy{position:relative;z-index:3}
+body.student-app-body .command-world{
+  z-index:2;
+  transform:perspective(880px) rotateX(var(--pro-rotate-x,5deg)) rotateY(var(--pro-rotate-y,-9deg));
+  filter:drop-shadow(0 22px 35px rgba(38,109,255,.28));
+}
+body.student-app-body .command-world-planet{
+  box-shadow:inset -29px -27px 54px rgba(2,7,33,.78),inset 12px 12px 29px rgba(235,253,255,.25),
+             0 0 31px rgba(130,214,255,.32),0 0 75px rgba(77,146,244,.31);
+}
+body.student-app-body .command-world-orbit{filter:drop-shadow(0 0 13px rgba(130,221,255,.34))}
+body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button){
+  position:relative;transform-style:preserve-3d;backface-visibility:hidden;
+  border:1px solid rgba(135,212,251,.33)!important;
+  background:radial-gradient(ellipse at 6% -6%,rgba(134,210,255,.14),transparent 55%),
+             linear-gradient(145deg,rgba(25,56,89,.97),rgba(9,24,53,.97))!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.12),0 16px 35px rgba(0,6,28,.33)!important;
+  transition:transform .30s cubic-bezier(.2,.76,.3,1),border-color .22s,box-shadow .25s;
+}
+body.student-app-body .command-metric strong{color:#f9feff;text-shadow:0 0 21px rgba(93,223,255,.18)}
+body.student-app-body .command-metric-icon,
+body.student-app-body .mission-more-list>button>span:first-child{
+  transform:translateZ(13px);box-shadow:inset 0 1px rgba(255,255,255,.16),0 9px 22px rgba(3,15,41,.3);
+}
+body.student-app-body :is(.mission-student-disclosure,.mission-lesson,.account-tile,.command-edit-card){
+  border-color:rgba(140,207,248,.3)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.085),0 17px 38px rgba(0,6,27,.26);
+}
+body.student-app-body .mission-bottom-nav{
+  border-top-color:rgba(137,218,255,.3)!important;
+  box-shadow:0 -17px 44px rgba(0,5,28,.4),inset 0 1px rgba(255,255,255,.06);
+}
+body.student-app-body .mission-bottom-nav button.active{
+  background:linear-gradient(145deg,rgba(70,147,220,.27),rgba(91,74,180,.19));
+  box-shadow:inset 0 1px rgba(216,249,255,.16),0 7px 20px rgba(0,5,25,.23);
+}
+@media(hover:hover) and (pointer:fine){
+  body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button):hover{
+    transform:perspective(1000px) translate3d(0,-6px,9px) rotateX(var(--depth-rx,0deg)) rotateY(var(--depth-ry,0deg));
+    border-color:rgba(158,235,255,.7)!important;
+    box-shadow:inset 0 1px rgba(255,255,255,.17),0 28px 52px rgba(0,5,27,.47),0 0 28px rgba(77,175,245,.12)!important;
+  }
+  body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button).depth-interacting{
+    background:radial-gradient(circle at var(--depth-px,50%) var(--depth-py,50%),rgba(161,233,255,.20),transparent 50%),
+               linear-gradient(145deg,rgba(28,61,101,.97),rgba(10,24,54,.97))!important;
+  }
+}
+@keyframes galaxy-depth-aurora{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* Mobile users keep the full 3D artwork, with no pointer-driven jumps. */
+@media(max-width:760px){
+  body.uc-body[data-ui-version="11"] .mission-hero-20{border-radius:23px;box-shadow:0 18px 44px rgba(0,5,25,.38),inset 0 1px rgba(255,255,255,.12)}
+  body.uc-body[data-ui-version="11"] .mission-hero-20 .galaxy-hero-visual{transform:scale(.58);opacity:.45;pointer-events:none}
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction){transform:none!important}
+  body.student-app-body .command-world{transform:scale(.55)!important;opacity:.38;pointer-events:none}
+  body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button){transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body.uc-body[data-ui-version="11"] .mission-hero-20::before,
+  body.student-app-body .command-hero::after{animation:none!important}
+  body.uc-body[data-ui-version="11"] .galaxy-dashboard :is(.mission-kpi,.galaxy-tool,.galaxy-direction),
+  body.student-app-body :is(.command-metric,.mission-today-tile,.mission-more-list>button,.command-world){
+    animation:none!important;transition:none!important;transform:none!important;
+  }
+}
+@media(forced-colors:active){
+  body.uc-body[data-ui-version="11"] .mission-hero-20,
+  body.student-app-body .command-hero{border:2px solid CanvasText}
+}

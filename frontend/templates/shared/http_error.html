@@ -1,0 +1,7 @@
+{% extends "shared/base.html" %}
+{% block title %}{{ code }} · {{ title }}{% endblock %}
+{% macro error_ui() %}
+<div class="error-page"><section class="card error-card"><div class="error-code">{{ code }}</div><h1>{{ title }}</h1><p>{{ description }}</p>{% if code >= 500 and request_id %}<p class="error-request-id">Код обращения: <code>{{ request_id }}</code></p>{% endif %}<a class="btn btn-primary" href="{{ url_for('admin.dashboard') if session.get('user_id') else url_for('auth.login') }}">{{ 'Вернуться в систему' if session.get('user_id') else 'На страницу входа' }}</a></section></div>
+{% endmacro %}
+{% block content %}{{ error_ui() }}{% endblock %}
+{% block login_content %}{{ error_ui() }}{% endblock %}

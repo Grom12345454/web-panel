@@ -4,8 +4,9 @@ import logging
 from config import settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# Werkzeug emits one INFO line per successful HTTP request; keep 4xx/5xx diagnostics.
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
-
 
 if __name__ == "__main__":
     try:

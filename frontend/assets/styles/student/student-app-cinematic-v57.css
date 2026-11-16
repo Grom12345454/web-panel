@@ -1,0 +1,352 @@
+/* V57 · Student App cinematic polish.
+   Stronger atmosphere and tactile UI, without layout-shifting animation or heavy JS loops. */
+
+:root {
+  --student-cinema-ease: cubic-bezier(.18,.72,.2,1);
+  --student-cinema-line: rgba(158, 193, 255, .22);
+  --student-cinema-glow: rgba(var(--season-accent-rgb, 104, 174, 255), .22);
+}
+
+body.student-app-body {
+  background:
+    radial-gradient(ellipse 76% 48% at 50% -12%, rgba(var(--season-accent-rgb, 104,174,255), .20), transparent 70%),
+    radial-gradient(ellipse 48% 42% at 100% 40%, rgba(var(--season-secondary-rgb, 155,140,255), .14), transparent 72%),
+    radial-gradient(ellipse 54% 40% at 0% 92%, rgba(52, 177, 218, .10), transparent 74%),
+    linear-gradient(148deg, var(--season-bg-a, #040a18), var(--season-bg-b, #08182d) 52%, var(--season-bg-c, #030b18)) fixed !important;
+  background-attachment: fixed !important;
+}
+
+/* The atmosphere is a backdrop only: it never blocks controls or steals gestures. */
+body.student-app-body .student-theme-atmosphere {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  isolation: isolate;
+  contain: strict;
+}
+body.student-app-body #app { position: relative; z-index: 2; }
+body.student-app-body .student-theme-atmosphere::before {
+  inset: -18%;
+  opacity: .9;
+  filter: blur(38px) saturate(1.45);
+  background:
+    radial-gradient(ellipse 38% 34% at 12% 25%, rgba(var(--season-accent-rgb, 104,174,255), .25), transparent 76%),
+    radial-gradient(ellipse 42% 38% at 87% 70%, rgba(var(--season-secondary-rgb, 155,140,255), .22), transparent 76%),
+    radial-gradient(ellipse 38% 30% at 54% 100%, rgba(68, 188, 232, .12), transparent 78%);
+  animation: student-cinema-aurora 17s ease-in-out infinite alternate;
+}
+body.student-app-body .student-theme-atmosphere::after {
+  inset: -24%;
+  opacity: .78;
+  filter: blur(22px) saturate(1.6);
+  background:
+    linear-gradient(118deg, transparent 19%, rgba(255,255,255,.025) 34%, rgba(var(--season-accent-rgb, 104,174,255), .17) 45%, rgba(var(--season-secondary-rgb, 155,140,255), .095) 52%, transparent 68%),
+    radial-gradient(ellipse at 28% 78%, rgba(var(--season-accent-rgb, 104,174,255), .13), transparent 42%),
+    radial-gradient(ellipse at 78% 18%, rgba(var(--season-secondary-rgb, 155,140,255), .13), transparent 42%);
+  animation: student-cinema-light-sweep 22s ease-in-out infinite alternate;
+}
+
+/* Volumetric smoke: each of the three vapor streams has a body and two independent wisps.
+   Colour is smoke, never a flag-shaped graphic or a rectangular banner. */
+body.student-app-body .holiday-smoke {
+  display: block;
+  width: min(94vw, 1240px);
+  height: min(60vw, 660px);
+  border-radius: 48%;
+  opacity: .82;
+  filter: blur(clamp(28px, 4.2vw, 54px)) saturate(2.15) brightness(1.12);
+  mix-blend-mode: screen;
+  isolation: isolate;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}
+body.student-app-body .holiday-smoke--white {
+  top: 0%; left: -28%;
+  animation: student-smoke-current-a 12s var(--student-cinema-ease) infinite alternate;
+}
+body.student-app-body .holiday-smoke--blue {
+  top: 18%; right: -28%; left: auto;
+  animation: student-smoke-current-b 15s var(--student-cinema-ease) -5s infinite alternate;
+}
+body.student-app-body .holiday-smoke--red {
+  top: 38%; left: 8%;
+  animation: student-smoke-current-c 13.5s var(--student-cinema-ease) -8s infinite alternate;
+}
+body.student-app-body .holiday-smoke::before,
+body.student-app-body .holiday-smoke::after {
+  inset: -28%;
+  border-radius: 48%;
+  filter: blur(clamp(16px, 2.4vw, 34px));
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+body.student-app-body .holiday-smoke::before {
+  opacity: .96;
+  background:
+    radial-gradient(ellipse 23% 34% at 18% 55%, rgba(255,255,255,.38), transparent 76%),
+    radial-gradient(ellipse 29% 39% at 39% 38%, rgba(var(--smoke-accent-rgb), .36), transparent 78%),
+    radial-gradient(ellipse 25% 36% at 61% 63%, rgba(var(--smoke-secondary-rgb), .24), transparent 78%),
+    radial-gradient(ellipse 21% 31% at 82% 42%, rgba(255,255,255,.22), transparent 78%);
+  animation: student-smoke-curl-a 8.5s ease-in-out infinite alternate;
+}
+body.student-app-body .holiday-smoke::after {
+  inset: -18% -34%;
+  opacity: .78;
+  background:
+    radial-gradient(ellipse 17% 33% at 23% 46%, rgba(255,255,255,.30), transparent 75%),
+    radial-gradient(ellipse 20% 38% at 47% 58%, rgba(var(--smoke-accent-rgb), .28), transparent 78%),
+    radial-gradient(ellipse 18% 34% at 71% 40%, rgba(var(--smoke-secondary-rgb), .24), transparent 78%),
+    radial-gradient(ellipse 30% 26% at 56% 22%, rgba(255,255,255,.15), transparent 80%);
+  animation: student-smoke-curl-b 11s ease-in-out -3s infinite alternate-reverse;
+}
+body.student-app-body .holiday-smoke--white { opacity: .9; }
+body.student-app-body .holiday-smoke--white::before {
+  background:
+    radial-gradient(ellipse 24% 34% at 18% 55%, rgba(255,255,255,.55), transparent 76%),
+    radial-gradient(ellipse 30% 38% at 40% 40%, rgba(255,255,255,.36), transparent 78%),
+    radial-gradient(ellipse 25% 35% at 62% 63%, rgba(218,235,255,.24), transparent 78%),
+    radial-gradient(ellipse 20% 30% at 82% 42%, rgba(255,255,255,.32), transparent 78%);
+}
+body.student-app-body .holiday-smoke--blue { opacity: .94; }
+body.student-app-body .holiday-smoke--blue::before {
+  background:
+    radial-gradient(ellipse 25% 35% at 18% 55%, rgba(var(--smoke-accent-rgb),.56), transparent 76%),
+    radial-gradient(ellipse 30% 40% at 40% 40%, rgba(var(--smoke-accent-rgb), .62), transparent 78%),
+    radial-gradient(ellipse 25% 36% at 63% 63%, rgba(var(--smoke-accent-rgb),.40), transparent 78%),
+    radial-gradient(ellipse 20% 31% at 82% 42%, rgba(var(--smoke-accent-rgb),.32), transparent 78%);
+}
+body.student-app-body .holiday-smoke--red { opacity: .88; }
+body.student-app-body .holiday-smoke--red::before {
+  background:
+    radial-gradient(ellipse 24% 34% at 18% 55%, rgba(var(--smoke-secondary-rgb),.48), transparent 76%),
+    radial-gradient(ellipse 30% 39% at 40% 40%, rgba(var(--smoke-secondary-rgb), .58), transparent 78%),
+    radial-gradient(ellipse 25% 35% at 63% 63%, rgba(var(--smoke-secondary-rgb),.38), transparent 78%),
+    radial-gradient(ellipse 21% 30% at 82% 42%, rgba(var(--smoke-secondary-rgb),.28), transparent 78%);
+}
+
+@keyframes student-cinema-aurora {
+  0% { transform: translate3d(-2%, 1%, 0) scale(.94) rotate(-2deg); opacity: .62; }
+  55% { transform: translate3d(1.5%, -1.5%, 0) scale(1.04) rotate(1deg); opacity: .96; }
+  100% { transform: translate3d(3%, 1%, 0) scale(1.08) rotate(3deg); opacity: .76; }
+}
+@keyframes student-cinema-light-sweep {
+  0% { transform: translate3d(-5%, 2%, 0) rotate(-8deg) scale(.96); opacity: .35; }
+  50% { opacity: .9; }
+  100% { transform: translate3d(5%, -2%, 0) rotate(-2deg) scale(1.08); opacity: .56; }
+}
+@keyframes student-smoke-current-a {
+  0% { transform: translate3d(-8%, 3%, 0) rotate(-11deg) scale(.88); opacity: .58; }
+  50% { opacity: .92; }
+  100% { transform: translate3d(13%, -8%, 0) rotate(9deg) scale(1.2); opacity: .76; }
+}
+@keyframes student-smoke-current-b {
+  0% { transform: translate3d(8%, 5%, 0) rotate(10deg) scale(.9); opacity: .66; }
+  55% { opacity: .98; }
+  100% { transform: translate3d(-13%, -9%, 0) rotate(-12deg) scale(1.18); opacity: .74; }
+}
+@keyframes student-smoke-current-c {
+  0% { transform: translate3d(-4%, 9%, 0) rotate(8deg) scale(.86); opacity: .54; }
+  48% { opacity: .92; }
+  100% { transform: translate3d(11%, -11%, 0) rotate(-9deg) scale(1.16); opacity: .78; }
+}
+@keyframes student-smoke-curl-a {
+  0% { transform: translate3d(-3%, 4%, 0) rotate(-13deg) scale(.9, .94); opacity: .62; }
+  50% { transform: translate3d(3%, -5%, 0) rotate(4deg) scale(1.12, 1.06); opacity: 1; }
+  100% { transform: translate3d(7%, -2%, 0) rotate(15deg) scale(1.04, .92); opacity: .76; }
+}
+@keyframes student-smoke-curl-b {
+  0% { transform: translate3d(5%, -3%, 0) rotate(12deg) scale(1.05, .92); opacity: .52; }
+  55% { transform: translate3d(-4%, 4%, 0) rotate(-8deg) scale(.92, 1.12); opacity: .92; }
+  100% { transform: translate3d(-7%, -5%, 0) rotate(-17deg) scale(1.12, 1.02); opacity: .68; }
+}
+
+
+/* Fine luminous dust in the vapor: tiny non-semantic lights, not icons or stickers. */
+body.student-app-body .student-theme-atmosphere .holiday-particle {
+  position: absolute;
+  display: block !important;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: .12;
+  background: rgba(235, 247, 255, .96);
+  box-shadow: 0 0 7px 2px rgba(var(--season-accent-rgb, 104,174,255), .46), 0 0 18px rgba(220,239,255,.34);
+  animation: student-vapor-dust 7.5s ease-in-out infinite;
+}
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(4) { left: 8%; top: 28%; animation-delay: -1s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(5) { left: 17%; top: 72%; width: 2px; height: 2px; animation-delay: -4s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(6) { left: 27%; top: 18%; animation-delay: -2.5s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(7) { left: 38%; top: 57%; width: 2px; height: 2px; animation-delay: -5.5s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(8) { left: 47%; top: 31%; animation-delay: -3s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(9) { left: 56%; top: 82%; width: 2px; height: 2px; animation-delay: -6s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(10) { left: 66%; top: 20%; animation-delay: -1.8s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(11) { left: 74%; top: 62%; width: 2px; height: 2px; animation-delay: -4.8s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(12) { left: 83%; top: 38%; animation-delay: -2.2s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(13) { left: 91%; top: 76%; width: 2px; height: 2px; animation-delay: -5s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(14) { left: 33%; top: 88%; animation-delay: -3.8s; }
+body.student-app-body .student-theme-atmosphere .holiday-particle:nth-of-type(15) { left: 61%; top: 47%; width: 2px; height: 2px; animation-delay: -6.7s; }
+@keyframes student-vapor-dust {
+  0%, 100% { transform: translate3d(0, 8px, 0) scale(.55); opacity: .12; }
+  50% { transform: translate3d(8px, -18px, 0) scale(1.35); opacity: .82; }
+}
+
+/* Premium glass surfaces: depth, sharper hierarchy and a restrained luminous edge. */
+body.student-app-body #app .hero,
+body.student-app-body #app .glass {
+  border-color: rgba(165, 198, 255, .24);
+  box-shadow:
+    0 26px 76px rgba(0, 2, 18, .38),
+    0 0 34px rgba(var(--season-accent-rgb, 104,174,255), .075),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(3,12,28,.35);
+  backdrop-filter: blur(22px) saturate(1.22);
+  -webkit-backdrop-filter: blur(22px) saturate(1.22);
+}
+body.student-app-body #app .hero {
+  border-radius: clamp(20px, 3vw, 30px);
+  background:
+    radial-gradient(ellipse at 92% 0%, rgba(var(--season-accent-rgb, 104,174,255), .22), transparent 44%),
+    radial-gradient(ellipse at 4% 100%, rgba(var(--season-secondary-rgb, 155,140,255), .11), transparent 48%),
+    linear-gradient(145deg, rgba(19, 42, 76, .92), rgba(5, 15, 34, .92));
+}
+body.student-app-body #app .card,
+body.student-app-body #app .event,
+body.student-app-body #app .metric-tile,
+body.student-app-body #app .quick-action,
+body.student-app-body #app .stat {
+  position: relative;
+  border-radius: 18px !important;
+  border: 1px solid rgba(151, 185, 246, .17);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(var(--season-accent-rgb, 104,174,255), .075), rgba(13, 30, 55, .88) 42%, rgba(5, 14, 31, .93));
+  box-shadow: 0 14px 34px rgba(0, 2, 17, .24), inset 0 1px 0 rgba(255,255,255,.075);
+  transition: transform .24s var(--student-cinema-ease), border-color .24s ease, box-shadow .24s ease, background-color .24s ease;
+}
+body.student-app-body #app .section-title h2 {
+  color: #f1f7ff;
+  letter-spacing: -.025em;
+  text-shadow: 0 2px 18px rgba(var(--season-accent-rgb, 104,174,255), .14);
+}
+body.student-app-body #app .nav {
+  border: 1px solid rgba(153, 189, 255, .2);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(5, 15, 34, .92), rgba(3, 10, 24, .88));
+  box-shadow: 0 14px 34px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.07);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--season-accent-rgb, 104,174,255), .38) transparent;
+}
+body.student-app-body #app .nav button {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition: color .2s ease, background .24s ease, border-color .24s ease, box-shadow .24s ease, transform .2s ease;
+}
+body.student-app-body #app .nav button.active,
+body.student-app-body #app .nav button[aria-selected="true"] {
+  color: #fff;
+  border-color: rgba(196, 221, 255, .24);
+  background: linear-gradient(125deg, rgba(var(--season-accent-rgb, 104,174,255), .32), rgba(var(--season-secondary-rgb, 155,140,255), .25));
+  box-shadow: 0 7px 22px rgba(var(--season-accent-rgb, 104,174,255), .17), inset 0 1px 0 rgba(255,255,255,.13);
+}
+body.student-app-body #app .btn {
+  min-height: 40px;
+  border-radius: 12px;
+  transition: transform .18s var(--student-cinema-ease), box-shadow .2s ease, border-color .2s ease, filter .2s ease;
+}
+body.student-app-body #app .btn.primary {
+  border: 1px solid rgba(226, 239, 255, .22);
+  background: linear-gradient(118deg, var(--season-accent, #72baff), var(--season-secondary, #9c86ff));
+  box-shadow: 0 9px 24px rgba(var(--season-accent-rgb, 104,174,255), .27), inset 0 1px 0 rgba(255,255,255,.30);
+  color: #071326;
+  text-shadow: 0 1px rgba(255,255,255,.16);
+}
+body.student-app-body #app .input,
+body.student-app-body #app .select,
+body.student-app-body #app textarea,
+body.student-app-body #app input:not([type="checkbox"]):not([type="radio"]) {
+  border-color: rgba(156, 190, 246, .2);
+  background-color: rgba(3, 13, 30, .58);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.13);
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+body.student-app-body #app :is(.input, .select, textarea, input):focus-visible {
+  outline: none;
+  border-color: rgba(var(--season-accent-rgb, 104,174,255), .78);
+  box-shadow: 0 0 0 3px rgba(var(--season-accent-rgb, 104,174,255), .13), 0 0 24px rgba(var(--season-accent-rgb, 104,174,255), .1);
+}
+body.student-app-body #app :is(button, a, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid rgba(171, 217, 255, .92);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.student-app-body #app .card:hover,
+  body.student-app-body #app .event:hover,
+  body.student-app-body #app .metric-tile:hover,
+  body.student-app-body #app .quick-action:hover,
+  body.student-app-body #app .stat:hover {
+    transform: translateY(-3px);
+    border-color: rgba(var(--season-accent-rgb, 104,174,255), .38);
+    box-shadow: 0 20px 44px rgba(0, 2, 17, .30), 0 0 24px rgba(var(--season-accent-rgb, 104,174,255), .09), inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  body.student-app-body #app .nav button:hover { color: #f4f8ff; background: rgba(255,255,255,.055); }
+  body.student-app-body #app .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  body.student-app-body #app .btn.primary:hover { box-shadow: 0 14px 32px rgba(var(--season-accent-rgb, 104,174,255), .34), inset 0 1px 0 rgba(255,255,255,.34); }
+}
+body.student-app-body #app .btn:active,
+body.student-app-body #app .nav button:active,
+body.student-app-body #app [role="button"]:active { transform: scale(.975); }
+
+/* Adapt effect density to device class while retaining the same design language. */
+@media (max-width: 640px) {
+  body.student-app-body .holiday-smoke { width: 128vw; height: 76vw; filter: blur(clamp(22px, 6vw, 34px)) saturate(1.9) brightness(1.08); }
+  body.student-app-body .holiday-smoke::before,
+  body.student-app-body .holiday-smoke::after { filter: blur(clamp(14px, 3.5vw, 24px)); }
+  body.student-app-body .student-theme-atmosphere::before { filter: blur(28px) saturate(1.3); }
+  body.student-app-body .student-theme-atmosphere::after { filter: blur(18px) saturate(1.25); opacity: .58; }
+  body.student-app-body #app .hero,
+  body.student-app-body #app .glass { backdrop-filter: blur(16px) saturate(1.12); -webkit-backdrop-filter: blur(16px) saturate(1.12); }
+}
+@media (max-width: 360px) {
+  body.student-app-body .holiday-smoke { opacity: .7; filter: blur(22px) saturate(1.7); }
+  body.student-app-body #app .hero { border-radius: 20px; }
+  body.student-app-body #app .card,
+  body.student-app-body #app .event,
+  body.student-app-body #app .metric-tile,
+  body.student-app-body #app .quick-action { border-radius: 15px !important; }
+}
+@media (hover: none), (pointer: coarse) {
+  body.student-app-body #app .card,
+  body.student-app-body #app .event,
+  body.student-app-body #app .metric-tile,
+  body.student-app-body #app .quick-action,
+  body.student-app-body #app .stat { transition-duration: .16s; }
+  body.student-app-body #app .card:hover,
+  body.student-app-body #app .event:hover,
+  body.student-app-body #app .metric-tile:hover,
+  body.student-app-body #app .quick-action:hover,
+  body.student-app-body #app .stat:hover { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.student-app-body .holiday-smoke,
+  body.student-app-body .holiday-smoke::before,
+  body.student-app-body .holiday-smoke::after,
+  body.student-app-body .student-theme-atmosphere::before,
+  body.student-app-body .student-theme-atmosphere::after,
+  body.student-app-body #app .card,
+  body.student-app-body #app .event,
+  body.student-app-body #app .metric-tile,
+  body.student-app-body #app .quick-action,
+  body.student-app-body #app .stat,
+  body.student-app-body #app .btn,
+  body.student-app-body #app .nav button {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  body.student-app-body .holiday-smoke { opacity: .24 !important; }
+  body.student-app-body .student-theme-atmosphere .holiday-particle { animation: none !important; opacity: .18 !important; }
+}

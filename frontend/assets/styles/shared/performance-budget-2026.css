@@ -1,0 +1,131 @@
+/* Shared performance budget. Visuals are preserved; expensive layers are tiered. */
+
+/* Do not keep animated GPU layers alive behind a hidden tab or suspended WebView. */
+body.perf-page-hidden *,
+body.perf-page-hidden *::before,
+body.perf-page-hidden *::after {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
+/* Touch hardware gets a lighter backdrop while retaining the same visual hierarchy. */
+body.perf-touch .student-theme-atmosphere::before,
+body.perf-touch .portal-theme-atmosphere::before {
+  filter: blur(22px) saturate(1.22);
+}
+body.perf-touch .student-theme-atmosphere::after,
+body.perf-touch .portal-theme-atmosphere::after {
+  filter: blur(14px) saturate(1.18);
+  opacity: .52;
+}
+body.perf-touch .holiday-smoke {
+  filter: blur(20px) saturate(1.48) brightness(1.06);
+}
+body.perf-touch .holiday-smoke::before,
+body.perf-touch .holiday-smoke::after {
+  filter: blur(11px);
+}
+body.perf-touch.student-app-body {
+  background-attachment: scroll !important;
+}
+body.perf-touch.student-app-body #app .hero,
+body.perf-touch.student-app-body #app .glass {
+  backdrop-filter: blur(10px) saturate(1.08);
+  -webkit-backdrop-filter: blur(10px) saturate(1.08);
+}
+
+/* Balanced is the normal default, including capable desktops. Keep the same
+   atmosphere while reducing huge blur regions and extra compositing passes. */
+body.perf-balanced .student-theme-atmosphere::before,
+body.perf-balanced .portal-theme-atmosphere::before {
+  filter: blur(24px) saturate(1.14);
+  animation-duration: 54s;
+}
+body.perf-balanced .student-theme-atmosphere::after,
+body.perf-balanced .portal-theme-atmosphere::after {
+  filter: blur(13px) saturate(1.08);
+  opacity: .38;
+  animation-duration: 64s;
+}
+body.perf-balanced .holiday-smoke {
+  filter: blur(18px) saturate(1.25) brightness(1.03);
+  mix-blend-mode: normal;
+  will-change: auto;
+  animation-duration: 48s;
+}
+body.perf-balanced .holiday-smoke::before,
+body.perf-balanced .holiday-smoke::after {
+  filter: blur(9px);
+  will-change: auto;
+}
+body.perf-balanced .holiday-particle {
+  box-shadow: none;
+  animation-duration: 42s;
+}
+
+/* A genuinely low-power device keeps the smoke colours, but avoids several
+   simultaneous blur/compositing layers and decorative micro-animation. */
+body.perf-economy .student-theme-atmosphere::before,
+body.perf-economy .portal-theme-atmosphere::before {
+  filter: blur(14px) saturate(1.12);
+  animation-duration: 34s;
+}
+body.perf-economy .student-theme-atmosphere::after,
+body.perf-economy .portal-theme-atmosphere::after {
+  filter: none;
+  animation: none !important;
+  opacity: .24;
+}
+body.perf-economy .holiday-smoke {
+  filter: blur(14px) saturate(1.25) !important;
+  mix-blend-mode: normal;
+  will-change: auto;
+  animation-duration: 28s !important;
+}
+body.perf-economy .holiday-smoke::before,
+body.perf-economy .holiday-smoke::after {
+  filter: none !important;
+  will-change: auto;
+}
+body.perf-economy .holiday-smoke::after {
+  animation: none !important;
+  opacity: .22;
+}
+body.perf-economy .holiday-particle {
+  animation: none !important;
+  box-shadow: none !important;
+  opacity: .22 !important;
+}
+body.perf-economy.student-app-body #app .hero,
+body.perf-economy.student-app-body #app .glass,
+body.perf-economy.uc-body .glass,
+body.perf-economy.uc-body .panel {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.perf-economy.student-app-body #app .hero,
+body.perf-economy.student-app-body #app .glass {
+  background-color: rgba(8, 22, 42, .94);
+}
+body.perf-economy .student-entry-sky,
+body.perf-economy .admin-entry-sky {
+  animation: none !important;
+}
+
+/* Reduced-motion is a user preference, not a hardware tier. */
+body.perf-reduced-motion *,
+body.perf-reduced-motion *::before,
+body.perf-reduced-motion *::after {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+}
+
+@media (max-width: 760px) {
+  body.student-app-body {
+    background-attachment: scroll !important;
+  }
+  body.student-app-body .student-theme-atmosphere {
+    contain: layout paint !important;
+  }
+}

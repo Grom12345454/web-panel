@@ -1,0 +1,43 @@
+{% extends "shared/base.html" %}
+{% block title %}Заблокированные студенты{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-management.css', v=asset_version('css/admin-management.css')) }}">{% endblock %}
+{% block content %}
+<section class="admin-page-hero">
+  <div><div class="eyebrow">КОНТРОЛЬ ДОСТУПА</div><h1>Блокировки студентов</h1><p>{% if session.user_role == 'staff' %}Показаны активные блокировки студентов только в направлениях, доступных вашей учётной записи. Просмотр доступен без изменения ограничений.{% else %}Управляйте временными ограничениями. Можно заблокировать отдельное направление или все доступные студенту направления сразу.{% endif %}</p></div>
+  <div class="hero-actions"><span class="admin-total-pill">{{ items|length }} активных ограничений</span>{% if can_edit %}<button class="btn btn-primary" type="button" data-open-dialog="block-student-modal">＋ Заблокировать студента</button>{% endif %}</div>
+</section>
+{% if can_edit %}
+<dialog class="admin-modal" id="block-student-modal" aria-labelledby="block-modal-title">
+ <form method="POST" action="{{ url_for('admin.add_application_block') }}" class="admin-modal-panel" id="block-student-form" data-search-url="{{ url_for('admin.search_students') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="admin-modal-head"><div><div class="eyebrow">НОВОЕ ОГРАНИЧЕНИЕ</div><h2 id="block-modal-title">Заблокировать студента</h2><p>Поиск работает по ФИО и названию учебной группы.</p></div><button class="modal-close" type="button" data-close-dialog="block-student-modal" aria-label="Закрыть">×</button></div>
+  <div class="admin-modal-body">
+   <div class="field"><label class="label" for="block-student-search">Студент</label><input class="input" type="search" id="block-student-search" autocomplete="off" placeholder="Например: Иванов или ИК-21" required minlength="2"><input type="hidden" name="student_id" id="block-student-id" required><div class="student-search-results" id="block-student-results" role="listbox" aria-label="Результаты поиска студентов"></div><div class="selected-student" id="block-selected-student" hidden></div><small class="admin-help">Введите не менее двух символов, чтобы найти студента по ФИО или группе.</small></div>
+   <div class="field"><label class="label" for="block-direction">Область блокировки</label><select class="select" name="direction_id" id="block-direction" required><option value="all">⛔ Все доступные направления</option>{% for direction in block_directions %}<option value="{{ direction.id }}">{{ direction.icon or '◈' }} {{ direction.name }}</option>{% endfor %}</select><small class="admin-help">При выборе «Все направления» ограничение действует по каждому направлению, доступному по учебному контуру студента.</small></div>
+   <div class="admin-modal-grid"><div class="field"><label class="label" for="block-days">Срок, дней</label><input class="input" type="number" name="days" id="block-days" min="1" max="3650" step="1" value="7" required></div><div class="field"><label class="label" for="block-reason">Причина (обязательно)</label><textarea class="textarea" name="reason" id="block-reason" rows="3" required minlength="5" maxlength="1000" placeholder="Укажите причину понятным языком"></textarea></div></div>
+  </div>
+  <div class="admin-modal-footer"><span>Студент получит уведомление в Telegram, если бот может ему написать.</span><button class="btn btn-primary" type="submit">Подтвердить блокировку</button></div>
+ </form>
+</dialog>
+{% endif %}
+<section class="admin-table-card card table-wrap"><div class="admin-table-heading"><div><h2>Действующие ограничения</h2><p>Показаны не снятые блокировки, у которых ещё не истёк срок.</p></div><span class="admin-live-dot">Актуальные данные</span></div><div class="table-scroll"><table class="admin-data-table"><thead><tr><th>Студент</th><th>Направление</th><th>Причина</th><th>Добавлено</th><th>Доступ с</th>{% if can_edit %}<th>Управление</th>{% endif %}</tr></thead><tbody>
+{% for item in items %}{% set decision = item.decision %}<tr><td><div class="name-cell">{{ item.student.full_name if item.student else 'Студент #' ~ decision.student_id }}</div><div class="subtle">{{ item.student.group if item.student and item.student.group else 'Группа не указана' }}</div></td><td><span class="blocked-direction">{{ item.direction.name if item.direction else 'Направление #' ~ decision.direction_id }}</span></td><td class="blocked-reason">{{ decision.reason or 'Причина не сохранена в старой записи' }}</td><td>{{ decision.created_at.strftime('%d.%m.%Y %H:%M') if decision.created_at else '—' }}</td><td><strong>{{ decision.blocked_until.strftime('%d.%m.%Y %H:%M') if decision.blocked_until else '—' }}</strong></td>{% if can_edit %}<td><form method="POST" action="{{ url_for('admin.edit_application_block', decision_id=decision.id) }}" class="blocked-admin-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label class="label">Новый срок</label><input class="input" type="datetime-local" name="blocked_until" value="{{ decision.blocked_until.strftime('%Y-%m-%dT%H:%M') if decision.blocked_until else '' }}" required><input class="input" name="admin_reason" maxlength="1000" placeholder="Комментарий (необязательно)"><button class="btn btn-primary" type="submit" name="action" value="update">Сохранить срок</button><button class="btn btn-danger" type="submit" name="action" value="clear" data-confirm="Досрочно снять блокировку с этого студента в данном направлении?">Снять блокировку</button></form></td>{% endif %}</tr>
+{% else %}<tr><td colspan="{{ 6 if can_edit else 5 }}"><div class="empty"><div class="empty-icon">✓</div><h3>Активных блокировок нет</h3><p>Когда появится ограничение, оно будет отображено здесь.</p></div></td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
+{% block scripts %}
+<script>
+(()=>{
+ document.querySelectorAll('[data-open-dialog]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.openDialog)?.showModal()));
+ document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.closeDialog)?.close()));
+ const form=document.getElementById('block-student-form'); if(!form)return;
+ const search=document.getElementById('block-student-search'), results=document.getElementById('block-student-results'), id=document.getElementById('block-student-id'), selected=document.getElementById('block-selected-student');
+ let timer, requestNo=0;
+ function choose(s){id.value=s.id;search.value=s.full_name;selected.textContent=`✓ ${s.full_name} · ${s.group} · ${s.education_type==='college'?'Колледж':'Институт'}`;selected.hidden=false;results.replaceChildren();}
+ function render(items){results.replaceChildren(); if(!items.length){const p=document.createElement('div');p.className='student-search-empty';p.textContent='Ничего не найдено. Попробуйте другое ФИО или название группы.';results.append(p);return;}items.forEach(s=>{const b=document.createElement('button');b.type='button';b.className='student-search-result';b.setAttribute('role','option');const name=document.createElement('strong');name.textContent=s.full_name;const meta=document.createElement('span');meta.textContent=`${s.group} · ${s.education_type==='college'?'Колледж':'Институт'}${s.telegram_username?' · @'+s.telegram_username:''}`;b.append(name,meta);b.addEventListener('click',()=>choose(s));results.append(b);});}
+ search.addEventListener('input',()=>{clearTimeout(timer);id.value='';selected.hidden=true;const q=search.value.trim();const seq=++requestNo;if(q.length<2){results.replaceChildren();return;}timer=setTimeout(async()=>{try{const r=await fetch(`${form.dataset.searchUrl}?q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}});const d=await r.json();if(seq===requestNo)render(d.items||[]);}catch(_){if(seq===requestNo)render([]);}},180);});
+ form.addEventListener('submit',e=>{if(!id.value){e.preventDefault();search.focus();render([]);return;}if(!confirm('Подтвердить блокировку и отправить уведомление студенту?'))e.preventDefault();});
+ document.getElementById('block-student-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
+})();
+</script>
+{% endblock %}

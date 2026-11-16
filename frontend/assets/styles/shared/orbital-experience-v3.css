@@ -1,0 +1,29 @@
+/* Student Council — Orbital Experience 3.0 (compiled after original CSS layers). */
+:root{--orbit-ink:#071225;--orbit-panel:#10243e;--orbit-cyan:#77dfff;--orbit-violet:#a99bff;--orbit-text:#f3f8ff}
+.uc-body .topbar-inner,.student-app-body .hero{backdrop-filter:blur(22px) saturate(1.2)}
+.uc-body .brand-mark,.student-app-body .mission-mark{filter:drop-shadow(0 0 18px rgba(119,223,255,.35))}
+.uc-body .galaxy-hero,.uc-body .mission-panel,.uc-body .galaxy-students-hero,.student-app-body .command-hero,.student-app-body .mission-schedule,.student-app-body .mission-today,.student-app-body .account-tile{isolation:isolate}
+.uc-body .galaxy-hero::after,.student-app-body .command-hero::after{content:"";position:absolute;inset:auto -15% -110px 12%;height:180px;pointer-events:none;background:radial-gradient(ellipse,rgba(119,223,255,.22),transparent 67%);filter:blur(18px);animation:orbit-aurora 9s ease-in-out infinite alternate;z-index:-1}
+.uc-body .galaxy-hero-visual,.student-app-body .student-orbit-scene{transform-style:preserve-3d;animation:orbit-floating 9s ease-in-out infinite alternate}
+.uc-body .mission-kpi,.uc-body .mission-panel,.uc-body .galaxy-direction-card,.student-app-body .glass.card,.student-app-body .mission-today-tile{border-color:rgba(122,206,255,.26);transition:transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s,border-color .32s,background .32s;backface-visibility:hidden}
+@media(hover:hover) and (pointer:fine){.uc-body .mission-kpi:hover,.uc-body .galaxy-direction-card:hover,.student-app-body .mission-today-tile:hover,.student-app-body .account-tile:hover{transform:translateY(-6px) perspective(800px) rotateX(2deg);border-color:rgba(119,223,255,.62);box-shadow:0 22px 56px rgba(0,7,29,.52),0 0 28px rgba(119,223,255,.13)}.uc-body .mission-panel:hover,.student-app-body .glass.card:hover{border-color:rgba(119,223,255,.4);box-shadow:0 20px 55px rgba(0,7,29,.43)}}
+.uc-body .page > :first-child,.student-app-body .student-main > :first-child{animation:orbit-enter .62s cubic-bezier(.18,.9,.22,1) both}
+.uc-body :is(.btn-primary,.journal-btn--primary),.student-app-body :is(.btn.primary,.account-connect-button){position:relative;overflow:hidden;background-image:linear-gradient(118deg,#49bfff,#7977f6)!important;color:#061627!important;box-shadow:0 8px 24px rgba(54,160,254,.28)}
+.uc-body :is(.btn-primary,.journal-btn--primary)::after,.student-app-body .btn.primary::after{content:"";position:absolute;top:-60%;left:-60%;width:30%;height:220%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:rotate(24deg);animation:orbit-sheen 6s ease-in-out infinite;pointer-events:none}
+.uc-body .leadership-position-badge{display:inline-flex;white-space:normal;line-height:1.4;margin:3px 4px 3px 0;font-size:.73rem;text-wrap:pretty;border:1px solid rgba(119,223,255,.35)}
+@keyframes orbit-floating{0%{transform:translateY(0) rotate(-1deg)}100%{transform:translateY(-14px) rotate(2deg)}}
+@keyframes orbit-enter{from{opacity:0;transform:translateY(23px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes orbit-aurora{from{transform:translateX(-7%) scale(.85);opacity:.42}to{transform:translateX(15%) scale(1.12);opacity:1}}
+@keyframes orbit-sheen{0%,60%,100%{left:-60%}78%{left:140%}}
+@media(max-width:700px){.uc-body .galaxy-hero-visual,.student-app-body .student-orbit-scene{animation-duration:12s}.uc-body .page,.student-app-body .student-main{overflow-x:clip}}
+/* System accessibility preference is intentionally respected; no in-app effects toggle. */
+@media(prefers-reduced-motion:reduce){.uc-body .galaxy-hero-visual,.student-app-body .student-orbit-scene,.uc-body .galaxy-hero::after,.student-app-body .command-hero::after,.uc-body .page > :first-child,.student-app-body .student-main > :first-child,.uc-body .btn-primary::after,.student-app-body .btn.primary::after{animation:none!important}.uc-body .mission-panel,.uc-body .mission-kpi,.student-app-body .glass.card{transition:none!important}}
+
+/* Delivery state for each event: website publication is not a delivery receipt. */
+.quota-delivery-status{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 4px;font-size:11px;line-height:1.55}
+.quota-delivery-label{color:#c3d9ef;margin-right:3px;font-weight:650}
+.quota-delivery-pill{border-radius:999px;padding:3px 9px;border:1px solid rgba(155,188,220,.24);color:#b9c9dd;background:rgba(47,78,110,.18);font-weight:650}
+.quota-delivery-pill.done{color:#9af1d0;border-color:rgba(56,203,151,.3);background:rgba(24,110,92,.2)}
+.quota-delivery-pill.waiting{color:#aae8ff;border-color:rgba(88,196,244,.33);background:rgba(39,110,163,.22)}
+.quota-delivery-pill.blocked{color:#ffdb96;border-color:rgba(237,174,79,.31);background:rgba(132,87,30,.19)}
+.quota-delivery-pill.failed{color:#ffc1c9;border-color:rgba(242,112,125,.35);background:rgba(132,45,58,.18)}

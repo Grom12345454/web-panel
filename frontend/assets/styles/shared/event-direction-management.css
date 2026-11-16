@@ -1,0 +1,10 @@
+
+/* Safe management dialogs and restrained interface motion */
+.management-dialog{border:1px solid rgba(127,179,235,.30);border-radius:22px;background:#10243b;color:#eef6ff;box-shadow:0 28px 90px #0009;width:min(94vw,640px);max-height:88dvh;padding:0;overflow:auto;animation:management-enter .23s cubic-bezier(.2,.8,.2,1)}
+.management-dialog::backdrop{background:rgba(2,9,22,.75);backdrop-filter:blur(5px)}
+.management-dialog-body{padding:clamp(18px,3vw,32px);display:grid;gap:13px}
+.management-dialog-body label{font-weight:650;color:#c2d8ed}.management-dialog-header,.management-dialog-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.management-dialog-header h2{margin:0}
+.direction-management-panel{margin:16px 0;padding:22px}.direction-management-panel .section-title{display:flex;justify-content:space-between;align-items:center;gap:16px}.direction-management-panel details{margin-top:18px}.archived-directions form{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #ffffff20}
+.direction-archive-form{padding:14px;margin-top:12px;border-top:1px solid #ffffff18}.direction-archive-form label{font-size:.8rem;color:#aec4d9}.archive-action{display:flex;gap:9px;margin-top:7px}.archive-action input{min-width:0;flex:1}.activity-chat-toolbar{margin:20px 0}.activity-chat-card,.direction-work-card{transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease}.activity-chat-card:hover,.direction-work-card:hover{transform:translateY(-3px);box-shadow:0 18px 34px #0003}
+@keyframes management-enter{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.management-dialog,.activity-chat-card,.direction-work-card{animation:none!important;transition:none!important}}

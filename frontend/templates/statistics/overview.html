@@ -1,0 +1,120 @@
+{% extends "shared/base.html" %}
+{% block title %}Статистика по направлениям | Управление студенческим советом{% endblock %}
+{% block content %}
+<header class="stats-command-header">
+  <div class="stats-command-copy">
+    <div class="stats-command-eyebrow"><span class="stats-command-pulse"></span> STUDSOVET / АНАЛИТИКА</div>
+    <div class="section-title statistics-page-heading">
+      <div>
+        <h1>Статистика направлений</h1>
+        <p>Одна рабочая таблица для ежедневной проверки направлений, поиска отклонений и быстрого перехода к нужным данным.</p>
+      </div>
+      <div class="stats-header-actions">
+        <a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">← {{ 'Панель управления' if session.user_role == 'staff' else 'Дашборд' }}</a>
+        {% if session.user_role != 'staff' %}<a class="btn btn-primary" href="{{ url_for('admin.calendar') }}">Календарь →</a>{% endif %}
+      </div>
+    </div>
+    <div class="stats-command-side">
+      <span class="stats-command-live"><i></i> СРЕЗ СФОРМИРОВАН</span>
+      <span class="stats-command-updated">{{ stats_last_updated.strftime('%d.%m.%Y · %H:%M') }}</span>
+    </div>
+  </div>
+</header>
+
+<section class="stats-filter-workspace" aria-label="Фильтры статистики">
+  <div class="stats-workflow-heading">
+    <div><span class="stats-step-number">01</span><strong>Параметры отчёта</strong><span>Сначала выберите период и область анализа</span></div>
+    <a class="stats-reset-link" href="{{ url_for('stats.overview_statistics') }}">Сбросить все параметры</a>
+  </div>
+  <form class="stats-filter-form" method="get" action="{{ url_for('stats.overview_statistics') }}">
+    <label class="stats-filter-control stats-filter-period"><span>Период мероприятий</span>
+      <select name="period" id="stats-period-select">
+        <option value="all" {% if period_filter.period == 'all' %}selected{% endif %}>За всё время</option>
+        <option value="7d" {% if period_filter.period == '7d' %}selected{% endif %}>Последние 7 дней</option>
+        <option value="30d" {% if period_filter.period == '30d' %}selected{% endif %}>Последние 30 дней</option>
+        <option value="90d" {% if period_filter.period == '90d' %}selected{% endif %}>Последние 90 дней</option>
+        <option value="month" {% if period_filter.period == 'month' %}selected{% endif %}>С начала месяца</option>
+        <option value="prev_month" {% if period_filter.period == 'prev_month' %}selected{% endif %}>Прошлый месяц</option>
+        <option value="year" {% if period_filter.period == 'year' %}selected{% endif %}>С начала года</option>
+        <option value="custom" {% if period_filter.period == 'custom' %}selected{% endif %}>Свой период</option>
+      </select>
+    </label>
+    <label class="stats-filter-control"><span>С даты</span><input type="date" name="date_from" id="stats-date-from" value="{{ period_filter.date_from }}"></label>
+    <label class="stats-filter-control"><span>По дату</span><input type="date" name="date_to" id="stats-date-to" value="{{ period_filter.date_to }}"></label>
+    <label class="stats-filter-control stats-filter-direction"><span>Направление</span>
+      <select name="direction_id"><option value="">Все доступные направления</option>{% for direction in directions %}<option value="{{ direction.id }}" {% if selected_direction_id == direction.id %}selected{% endif %}>{{ direction.name }}</option>{% endfor %}</select>
+    </label>
+    <div class="stats-filter-actions"><button class="btn btn-primary" type="submit">Показать данные</button></div>
+  </form>
+  <div class="stats-quick-presets" role="group" aria-label="Быстрый выбор периода"><span>Быстрый период</span>
+    {% for value, label in [('7d','7 дней'),('30d','30 дней'),('month','Этот месяц'),('prev_month','Прошлый месяц'),('90d','90 дней'),('year','Этот год')] %}<button type="button" class="stats-quick-preset {% if period_filter.period == value %}is-active{% endif %}" data-stats-period="{{ value }}" aria-pressed="{{ 'true' if period_filter.period == value else 'false' }}">{{ label }}</button>{% endfor %}
+  </div>
+  <div class="stats-filter-meta">
+    <div class="stats-filter-applied"><span class="stats-filter-status-dot" aria-hidden="true"></span>
+      {% if period_filter.period == 'all' %}<strong>Период: всё время</strong>{% else %}<strong>Период: {{ period_filter.date_from or 'с начала данных' }} — {{ period_filter.date_to or 'по настоящее время' }}</strong>{% endif %}
+      {% if selected_direction_id %}<span class="stats-filter-chip">{{ (directions|selectattr('id','equalto',selected_direction_id)|first).name if directions|selectattr('id','equalto',selected_direction_id)|first else 'Выбранное направление' }}</span>{% else %}<span class="stats-filter-chip">Все доступные направления</span>{% endif %}
+    </div>
+    <span class="stats-updated-at">{{ direction_stats|length }} направлений в отчёте</span>
+  </div>
+  <p class="stats-filter-scope-note">Активные участники — текущее членство. Мероприятия, уникальные посещения и лидеры рассчитываются в выбранном периоде. Смена фильтров обновляет серверный отчёт.</p>
+</section>
+
+<section class="statistics-panel active" role="region" aria-label="Сводная таблица по направлениям">
+  <div class="stats-workflow-heading stats-table-heading">
+    <div><span class="stats-step-number">02</span><strong>Рабочая таблица</strong><span>Ищите, отбирайте и сравнивайте направления</span></div>
+    <span class="stats-table-tip">Нажмите на заголовок столбца для сортировки</span>
+  </div>
+  <div class="card table-wrap stats-data-table-card direction-table-card">
+    <div class="stats-daily-shortcuts" role="group" aria-label="Быстрые сценарии анализа">
+      <span class="stats-daily-shortcuts-label">Быстрый просмотр</span>
+      <button type="button" class="stats-view-chip is-active" data-direction-preset="all" aria-pressed="true">Все направления</button>
+      <button type="button" class="stats-view-chip" data-direction-preset="active" aria-pressed="false">Активные</button>
+      <button type="button" class="stats-view-chip" data-direction-preset="no-visits" aria-pressed="false">Без посещений</button>
+      <button type="button" class="stats-view-chip" data-direction-preset="inactive" aria-pressed="false">Без активности</button>
+    </div>
+    <div class="direction-table-tools">
+      <label class="direction-filter-field direction-search-field" for="direction-search"><span>Поиск по таблице</span><input id="direction-search" type="search" placeholder="Направление или ФИО лидера…" autocomplete="off" aria-describedby="direction-search-help"></label>
+      <label class="direction-filter-field direction-row-filter" for="direction-filter"><span>Дополнительный отбор</span><select id="direction-filter">
+        <option value="all">Все направления</option>
+        <option value="active">Есть активность</option>
+        <option value="inactive">Без активности</option>
+        <option value="visits">Есть посещения</option>
+        <option value="no-visits">Без посещений</option>
+        <option value="events">Есть мероприятия</option>
+        <option value="members">Есть активные участники</option>
+      </select></label>
+      <button type="button" class="stats-local-reset" id="direction-local-reset">Очистить поиск и отбор</button>
+      <span id="direction-filter-count" class="direction-filter-count" aria-live="polite">Показано: {{ direction_stats|length }} из {{ direction_stats|length }}</span>
+      <span id="direction-search-help" class="stats-visually-hidden">Поиск применяется сразу ко всем строкам отчёта, не только к текущей странице.</span>
+    </div>
+    <div class="table-scroll stats-data-table-scroll direction-table-scroll">
+      <table id="direction-statistics-table" data-statistics-table aria-describedby="direction-table-note">
+        <thead><tr>
+          <th scope="col" data-sort-label="Номер">№</th>
+          <th scope="col" data-sort-label="Направление">Направление</th>
+          <th scope="col" data-sort-label="Активные участники">Активные участники</th>
+          <th scope="col" data-sort-label="Студенты с явкой">Студенты с явкой</th>
+          <th scope="col" data-sort-label="Мероприятия">Мероприятия</th>
+          <th scope="col" data-sort-label="Уникальные посещения">Уникальные посещения</th>
+          <th scope="col" data-sort-label="Лидер по посещаемости">Лидер по посещаемости</th>
+        </tr></thead>
+        <tbody>
+          {% for item in direction_stats %}
+          <tr class="direction-stat-row" data-direction-name="{{ item.direction.name|lower|e }}" data-visits="{{ item.visit_count }}" data-events="{{ item.event_count }}" data-members="{{ item.members }}" data-attenders="{{ item.attenders }}">
+            <td class="subtle">{{ loop.index }}</td>
+            <td><div class="name-cell direction-name-cell">{{ item.direction.name }}</div></td>
+            <td><span class="badge">{{ item.members }}</span></td>
+            <td><span class="badge {% if item.attenders %}badge-approved{% endif %}">{{ item.attenders }}</span></td>
+            <td>{{ item.event_count }}</td>
+            <td><span class="badge badge-approved">{{ item.visit_count }}</span></td>
+            <td>{% if item.leaders %}{% for leader in item.leaders %}<div class="name-cell">{{ leader.student.full_name }}</div><div class="subtle">{{ leader.visits }} посещений</div>{% if not loop.last %}<div class="subtle stats-also-leader">Также лидер</div>{% endif %}{% endfor %}{% else %}<span class="subtle">Нет подтверждённых посещений</span>{% endif %}</td>
+          </tr>
+          {% else %}<tr><td colspan="7"><div class="empty"><h3>Направлений пока нет</h3><p>Данные появятся после создания направлений и регистрации участников.</p></div></td></tr>{% endfor %}
+          <tr id="direction-filter-empty" hidden><td colspan="7"><div class="empty"><h3>Совпадений нет</h3><p>Измените запрос или сбросьте быстрый отбор.</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="direction-table-footnote" id="direction-table-note"><span>Показатели сформированы по данным системы.</span><span>Сортировка выполняется по нажатию на заголовок. Экспорт учитывает текущий поиск и быстрый отбор.</span></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+/* Staff calendar and journal housekeeping · single-source styles. */
+.audit-business-actions{margin-bottom:18px;padding:20px}
+.audit-business-actions h2,.audit-table h2{margin:0 0 8px;font-size:20px}
+.audit-table>p{margin:0 0 16px;color:#adbed0}
+.audit-overview{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.journal-erase-form{display:grid;gap:9px;max-width:470px;margin-top:16px}
+.journal-erase-form .input{width:100%;min-width:0;background:#0b2038;border:1px solid #4c698a;color:#f3f8ff;border-radius:11px;min-height:42px;padding:10px 13px}
+.journal-erase-form .btn,.journal-erase-form .journal-btn{width:max-content;max-width:100%}
+.journal-maintenance{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:25px;align-items:start}
+.journal-maintenance h2{margin:8px 0}.journal-maintenance p{color:#acbfd7;font-size:13px;line-height:1.55}
+.journal-maintenance label{color:#e9f4ff;font-size:13px}
+.calendar-page-header .calendar-heading-copy h1{font-size:clamp(28px,3.4vw,43px)}
+@media(max-width:850px){.journal-maintenance{grid-template-columns:1fr}}
